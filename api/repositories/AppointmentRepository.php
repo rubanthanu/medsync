@@ -1,5 +1,5 @@
 <?php
-class AppointmnetRepository {
+class AppointmentRepository {
     private $conn;
 
     public function __construct($conn) {
