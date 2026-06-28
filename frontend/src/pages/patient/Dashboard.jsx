@@ -36,24 +36,6 @@ const PatientDashboard = () => {
         }
     };
 
-    const handleFeedbackSubmit = async (e) => {
-        e.preventDefault();
-        if (!feedbackText.trim()) {
-            showToast('danger', 'Please enter feedback before submitting.');
-            return;
-        }
-
-        setFeedbackLoading(true);
-        try {
-            await feedbackService.submit(feedbackText);
-            setFeedbackText('');
-            showToast('success', 'Feedback submitted successfully.');
-        } catch (err) {
-            showToast('danger', err?.response?.data?.message || 'Unable to submit feedback.');
-        } finally {
-            setFeedbackLoading(false);
-        }
-    };
 
     const handleMarkAsRead = async (notificationId) => {
         try {
