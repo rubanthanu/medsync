@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import logo from '../../assets/logo.png';
-import wellnessImage from '../../assets/images/misc/wellness.jpg';
-import mentalHealthImage from '../../assets/images/misc/mental-health.jpg';
-import nutritionImage from '../../assets/images/misc/nutrition.jpg';
-import defaultPostImage from '../../assets/images/misc/default-post.jpg';
+
+
 import medicalCenterImage from '../../assets/images/banners/medical-center.jpg';
 import aboutMedsyncImage from '../../assets/images/banners/about-medsync.jpg';
 
@@ -136,47 +134,8 @@ const Landing = () => {
                 </div>
             </div>
 
-            {/* Health Posts Section */}
-            <div className="py-5" id="health-posts">
-                <div className="text-center mb-5">
-                    <span className="badge bg-info-subtle text-info px-3 py-2 rounded-pill mb-3 fw-semibold">Health Posts</span>
-                    <h2 className="fw-bold text-dark">Latest Health Awareness</h2>
-                    <p className="text-muted">Stay informed with health tips and wellness guidance from our medical team.</p>
-                </div>
-
-                {posts.length > 0 ? (
-                    <div className="row g-4">
-                        {posts.map(post => (
-                            <div className="col-lg-4 col-md-6" key={post.post_id}>
-                                <div className="card h-100 border-0 shadow-sm bg-white rounded-4 overflow-hidden hover-grow">
-                                    <div className="position-relative" style={{ height: '200px', overflow: 'hidden' }}>
-                                        <img src={getCategoryImage(post)} alt={post.title} className="w-100 h-100 object-fit-cover transition-transform" />
-                                        <span className={`position-absolute top-0 start-0 m-3 badge rounded-pill px-3 py-2 shadow-sm fw-semibold ${getCategoryBadgeClass(post.category)}`}>
-                                            {post.category || 'Wellness'}
-                                        </span>
-                                    </div>
-                                    <div className="card-body p-4 d-flex flex-column">
-                                        <h5 className="fw-bold text-dark mb-2 line-clamp-2">{post.title}</h5>
-                                        <p className="text-muted small mb-4 flex-grow-1 line-clamp-3">{post.content}</p>
-                                        <div className="mt-auto border-top pt-3 text-secondary small d-flex justify-content-between align-items-center">
-                                            <span className="d-flex align-items-center gap-1">
-                                                <i className="bi bi-person text-primary"></i> 
-                                                <span className="fw-semibold">{post.author_name}</span>
-                                            </span>
-                                            <span><i className="bi bi-calendar3 me-1"></i> {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center py-5 bg-white rounded-4 shadow-sm">
-                        <i className="bi bi-journal-medical text-muted display-4"></i>
-                        <p className="text-muted mt-3">No health posts available at the moment. Check back soon!</p>
-                    </div>
-                )}
-            </div>
+           
+           
         </div>
     );
 };
