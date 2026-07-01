@@ -9,11 +9,15 @@ import OTP from './pages/auth/OTP';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 
+import CompleteProfile from './pages/patient/CompleteProfile';
+import PatientDashboard from './pages/patient/Dashboard';
+import BookAppointment from './pages/patient/BookAppointment';
+
 import Profile from './pages/auth/Profile';
 import NotFound from './pages/NotFound';
 
 const PrivateRoute = ({ children, roles }) => {
-  const { user, loading } = useContext(AuthContext);
+    const { user, loading } = useContext(AuthContext);
 
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" />;
@@ -33,7 +37,8 @@ const PrivateRoute = ({ children, roles }) => {
 };
 function App() {
 
-
+   const { user, loading } = useContext(AuthContext);
+    if (loading) return <div>Loading...</div>;
   return (
     <Router>
 
@@ -45,8 +50,30 @@ function App() {
           <Route path="/verify-otp" element={<OTP />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-
-
+           
+           {/* Patient Routes */}
+          <Route path="/complete-profile" element={
+            <PrivateRoute roles={['Patient']}>
+              <CompleteProfile />
+            </PrivateRoute>
+          } />
+          <Route path="/patient/dashboard" element={
+            <PrivateRoute roles={['Patient']}>
+              <PatientDashboard />
+            </PrivateRoute>
+          } />
+          <Route path="/patient/book" element={
+            <PrivateRoute roles={['Patient']}>
+              <BookAppointment />
+            </PrivateRoute>
+          } />
+           
+           {/* Profile Route */}
+          <Route path="/profile" element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          } />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
