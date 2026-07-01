@@ -1,0 +1,200 @@
+.patient-dashboard-shell {
+  position: relative;
+}
+
+.dashboard-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(13, 110, 253, 0.12), rgba(25, 135, 84, 0.08), rgba(255, 255, 255, 0.92));
+  border: 1px solid rgba(13, 110, 253, 0.12);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0d6efd;
+}
+
+.surface-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.surface-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -20% -40% auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
+  pointer-events: none;
+}
+
+.surface-panel {
+  padding: 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+}
+
+.appointment-card {
+  height: 100%;
+  padding: 20px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid rgba(13, 110, 253, 0.08);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+
+.appointment-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.appointment-meta div {
+  padding: 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.appointment-meta span {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.appointment-meta strong {
+  display: block;
+  color: #0f172a;
+  font-size: 0.95rem;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.status-booked {
+  color: #0d6efd;
+  background: rgba(13, 110, 253, 0.12);
+}
+
+.status-walk-in {
+  color: #fd7e14;
+  background: rgba(253, 126, 20, 0.12);
+}
+
+.status-current {
+  color: #198754;
+  background: rgba(25, 135, 84, 0.12);
+}
+
+.status-completed {
+  color: #6c757d;
+  background: rgba(108, 117, 125, 0.12);
+}
+
+.status-absent {
+    background: #ffe5e5;
+    color: #cc0000;
+}
+.status-cancelled {
+  color: #dc3545;
+  background: rgba(220, 53, 69, 0.12);
+}
+
+.notification-list .notification-item:last-child {
+  border-bottom: 0 !important;
+}
+
+.feedback-panel {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr;
+  gap: 24px;
+  padding: 28px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #0b1320 0%, #132238 55%, #1f3b63 100%);
+  color: #fff;
+  box-shadow: 0 28px 60px rgba(2, 6, 23, 0.22);
+}
+
+.feedback-panel .eyebrow,
+.feedback-panel .text-muted,
+.feedback-panel .form-label {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.feedback-form {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+}
+
+.feedback-textarea {
+  min-height: 130px;
+  resize: vertical;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.toast-alert {
+  position: sticky;
+  top: 16px;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  color: #fff;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.15);
+}
+
+.toast-alert-success {
+  background: linear-gradient(135deg, #198754, #13a56d);
+}
+
+.toast-alert-danger {
+  background: linear-gradient(135deg, #dc3545, #b4232e);
+}
+
+.empty-state {
+  border: 1px dashed rgba(15, 23, 42, 0.12);
+  border-radius: 20px;
+  background: rgba(248, 250, 252, 0.9);
+}
+
+@media (max-width: 991.98px) {
+  .dashboard-hero,
+  .feedback-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .appointment-meta {
+    grid-template-columns: 1fr;
+  }
+}
