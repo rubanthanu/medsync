@@ -2,6 +2,9 @@ import { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
 import Landing from './pages/auth/Landing';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -41,7 +44,7 @@ function App() {
     if (loading) return <div>Loading...</div>;
   return (
     <Router>
-
+      <Navbar/>
       <div className="container mt-4">
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -77,7 +80,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-
+      <Footer />
     </Router>
   );
 }
