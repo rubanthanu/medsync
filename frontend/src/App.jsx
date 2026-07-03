@@ -16,6 +16,7 @@ import CompleteProfile from './pages/patient/CompleteProfile';
 import PatientDashboard from './pages/patient/Dashboard';
 import BookAppointment from './pages/patient/BookAppointment';
 
+import AdminDashboard from './pages/admin/Dashboard';
 import Profile from './pages/auth/Profile';
 import NotFound from './pages/NotFound';
 
@@ -70,6 +71,14 @@ function App() {
               <BookAppointment />
             </PrivateRoute>
           } />
+
+           {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={
+            <PrivateRoute roles={['Admin']}>
+              <AdminDashboard />
+            </PrivateRoute>
+          } />
+
            
            {/* Profile Route */}
           <Route path="/profile" element={
