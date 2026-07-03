@@ -20,6 +20,8 @@ import AdminDashboard from './pages/admin/Dashboard';
 import Profile from './pages/auth/Profile';
 import NotFound from './pages/NotFound';
 
+import DoctorDashboard from './pages/doctor/Dashboard';
+
 const PrivateRoute = ({ children, roles }) => {
     const { user, loading } = useContext(AuthContext);
 
@@ -86,6 +88,14 @@ function App() {
               <Profile />
             </PrivateRoute>
           } />
+
+          {/* Doctor Route */}
+          <Route path="/doctor/dashboard" element={
+            <PrivateRoute roles={['Doctor']}>
+              <DoctorDashboard />
+            </PrivateRoute>
+          } />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
