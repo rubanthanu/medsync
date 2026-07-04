@@ -22,6 +22,8 @@ import NotFound from './pages/NotFound';
 
 import DoctorDashboard from './pages/doctor/Dashboard';
 
+import ReceptionistDashboard from './pages/receptionist/Dashboard';
+
 const PrivateRoute = ({ children, roles }) => {
     const { user, loading } = useContext(AuthContext);
 
@@ -93,6 +95,13 @@ function App() {
           <Route path="/doctor/dashboard" element={
             <PrivateRoute roles={['Doctor']}>
               <DoctorDashboard />
+            </PrivateRoute>
+          } />
+
+          {/* Receptionist Route */}
+          <Route path="/receptionist/dashboard" element={
+            <PrivateRoute roles={['Receptionist']}>
+              <ReceptionistDashboard />
             </PrivateRoute>
           } />
 
