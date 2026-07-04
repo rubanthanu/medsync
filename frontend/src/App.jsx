@@ -2,6 +2,9 @@ import { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
 import Landing from './pages/auth/Landing';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -13,8 +16,11 @@ import CompleteProfile from './pages/patient/CompleteProfile';
 import PatientDashboard from './pages/patient/Dashboard';
 import BookAppointment from './pages/patient/BookAppointment';
 
+import AdminDashboard from './pages/admin/Dashboard';
 import Profile from './pages/auth/Profile';
 import NotFound from './pages/NotFound';
+
+import DoctorDashboard from './pages/doctor/Dashboard';
 
 const PrivateRoute = ({ children, roles }) => {
     const { user, loading } = useContext(AuthContext);
@@ -41,7 +47,7 @@ function App() {
     if (loading) return <div>Loading...</div>;
   return (
     <Router>
-
+      <Navbar/>
       <div className="container mt-4">
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -67,6 +73,14 @@ function App() {
               <BookAppointment />
             </PrivateRoute>
           } />
+
+           {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={
+            <PrivateRoute roles={['Admin']}>
+              <AdminDashboard />
+            </PrivateRoute>
+          } />
+
            
            {/* Profile Route */}
           <Route path="/profile" element={
@@ -74,10 +88,18 @@ function App() {
               <Profile />
             </PrivateRoute>
           } />
+
+          {/* Doctor Route */}
+          <Route path="/doctor/dashboard" element={
+            <PrivateRoute roles={['Doctor']}>
+              <DoctorDashboard />
+            </PrivateRoute>
+          } />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-
+      <Footer />
     </Router>
   );
 }

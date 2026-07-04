@@ -1,29 +1,21 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import logo from '../../assets/logo.png';
+
 
 
 import medicalCenterImage from '../../assets/images/banners/medical-center.jpg';
 import aboutMedsyncImage from '../../assets/images/banners/about-medsync.jpg';
 
 const Landing = () => {
-    const [posts, setPosts] = useState([]);
+    
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const res = await healthPostService.getAll();
-                setPosts(res.data);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchPosts();
 
         // Handle direct url hash scroll
         if (window.location.hash) {
             const id = window.location.hash.replace('#', '');
-            setTimeout(() => {
+            setTimeout(() => {g
                 const element = document.getElementById(id);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth' });
@@ -32,24 +24,8 @@ const Landing = () => {
         }
     }, []);
 
-    const getCategoryImage = (post) => {
-        if (post.image_url) return post.image_url;
-        const cat = post.category?.toLowerCase();
-        if (cat === 'wellness') return wellnessImage;
-        if (cat === 'mental health') return mentalHealthImage;
-        if (cat === 'nutrition') return nutritionImage;
-        return defaultPostImage;
-    };
-
-    const getCategoryBadgeClass = (category) => {
-        const cat = category?.toLowerCase();
-        if (cat === 'wellness') return 'bg-success-subtle text-success';
-        if (cat === 'mental health') return 'bg-primary-subtle text-primary';
-        if (cat === 'nutrition') return 'bg-warning-subtle text-warning';
-        return 'bg-secondary-subtle text-secondary';
-    };
-
     return (
+       
         <div className="container py-3 animate-fade-in" id="home">
             {/* Hero Section */}
             <div className="row align-items-center mb-5 min-vh-75 py-4">
@@ -137,6 +113,7 @@ const Landing = () => {
            
            
         </div>
+        
     );
 };
 
