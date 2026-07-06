@@ -15,12 +15,15 @@ import ResetPassword from './pages/auth/ResetPassword';
 import CompleteProfile from './pages/patient/CompleteProfile';
 import PatientDashboard from './pages/patient/Dashboard';
 import BookAppointment from './pages/patient/BookAppointment';
+import LiveQueue from './pages/patient/LiveQueue';
 
 import AdminDashboard from './pages/admin/Dashboard';
 import Profile from './pages/auth/Profile';
 import NotFound from './pages/NotFound';
 
 import DoctorDashboard from './pages/doctor/Dashboard';
+
+import ReceptionistDashboard from './pages/receptionist/Dashboard';
 
 const PrivateRoute = ({ children, roles }) => {
     const { user, loading } = useContext(AuthContext);
@@ -74,6 +77,12 @@ function App() {
             </PrivateRoute>
           } />
 
+           <Route path="/patient/queue" element={
+            <PrivateRoute roles={['Patient']}>
+              <LiveQueue />
+            </PrivateRoute>
+           }/>
+           
            {/* Admin Routes */}
           <Route path="/admin/dashboard" element={
             <PrivateRoute roles={['Admin']}>
@@ -93,6 +102,13 @@ function App() {
           <Route path="/doctor/dashboard" element={
             <PrivateRoute roles={['Doctor']}>
               <DoctorDashboard />
+            </PrivateRoute>
+          } />
+
+          {/* Receptionist Route */}
+          <Route path="/receptionist/dashboard" element={
+            <PrivateRoute roles={['Receptionist']}>
+              <ReceptionistDashboard />
             </PrivateRoute>
           } />
 
