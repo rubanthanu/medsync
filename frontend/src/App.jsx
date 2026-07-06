@@ -77,6 +77,12 @@ function App() {
             </PrivateRoute>
           } />
 
+           <Route path="/patient/queue" element={
+            <PrivateRoute roles={['Patient']}>
+              <LiveQueue />
+            </PrivateRoute>
+           }/>
+           
            {/* Admin Routes */}
           <Route path="/admin/dashboard" element={
             <PrivateRoute roles={['Admin']}>
