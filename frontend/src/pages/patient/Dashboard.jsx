@@ -193,8 +193,8 @@ const PatientDashboard = () => {
                                     <small className="text-secondary">{new Date(notif.created_at).toLocaleString()}</small>
                                 </div>
                             </div>
-                            <button 
-                                className="btn btn-sm btn-outline-primary rounded-pill px-3" 
+                            <button
+                                className="btn btn-sm btn-outline-primary rounded-pill px-3"
                                 onClick={() => handleMarkAsRead(notif.notification_id)}
                             >
                                 Mark as read
@@ -208,7 +208,7 @@ const PatientDashboard = () => {
                 </div>
             </div>
 
-          
+
         </div>
     );
 };

@@ -9,7 +9,6 @@ class AdminService {
     private $conn;
     private $userRepo;
     private $appointmentRepo;
-    private $certificateRepo;
     private $prescriptionRepo;
     private $authService;
 
@@ -25,7 +24,6 @@ class AdminService {
         $stats = [];
         $stats['total_appointments'] = $this->appointmentRepo->getTotalCount();
         $stats['total_patients'] = $this->userRepo->getTotalPatients();
-        $stats['total_certificates'] = $this->certificateRepo->getTotalCount();
         $stats['total_prescriptions'] = $this->prescriptionRepo->getTotalCount();
         return $stats;
     }
