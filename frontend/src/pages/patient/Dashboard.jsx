@@ -10,8 +10,7 @@ const PatientDashboard = () => {
     const { toast, showToast, hideToast } = useToast();
     const { data: notifications, refetch: fetchNotifications } = useFetch(notificationService.getAll);
     const { data: appointments, loaded: appointmentsLoaded, refetch: refreshAppointments } = useFetch(appointmentService.getPatientAppointments);
-    const [feedbackText, setFeedbackText] = useState('');
-    const [feedbackLoading, setFeedbackLoading] = useState(false);
+
 
     const handleCancelAppointment = async (appointmentId) => {
         const result = await Swal.fire({
