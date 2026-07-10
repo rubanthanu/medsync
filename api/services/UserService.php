@@ -21,10 +21,18 @@ class UserService {
     public function completeProfile($userId, $data) {
         $this->conn->beginTransaction();
         try {
+             // Retrieve existing full name if not supplied in the profile completion form data
+            $fullName = $data->full_name ?? null;
+            if ($fullName === null || trim($fullName) === '') {
+                $user = $this->userRepo->findById($userId);
+                if ($user) {
+                    $fullName = $user['full_name'];
+                }
+            }
             // Update users table
             $this->userRepo->updateBasicProfile(
                 $userId,
-                $data->full_name ?? null,
+                $fullName,
                 $data->phone,
                 $data->gender,
                 $data->date_of_birth,
@@ -46,6 +54,13 @@ class UserService {
             $this->userRepo->createProfileLog($userId, 'Profile Completed');
 
             $this->conn->commit();
+            // Update PHP session so the user remains marked as profile completed on page refreshes
+            if (session_id() == '') {
+                session_start();
+            }
+            if (isset($_SESSION['user'])) {
+                $_SESSION['user']['profile_completed'] = true;
+            }
         } catch (Exception $e) {
             $this->conn->rollBack();
             throw $e;
