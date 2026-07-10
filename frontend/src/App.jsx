@@ -16,6 +16,7 @@ import CompleteProfile from './pages/patient/CompleteProfile';
 import PatientDashboard from './pages/patient/Dashboard';
 import BookAppointment from './pages/patient/BookAppointment';
 import LiveQueue from './pages/patient/LiveQueue';
+import Certificates from './pages/patient/Certificates';
 
 import AdminDashboard from './pages/admin/Dashboard';
 import Profile from './pages/auth/Profile';
