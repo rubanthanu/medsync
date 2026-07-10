@@ -3,8 +3,11 @@ require_once __DIR__ . '/../exceptions/ValidationException.php';
 
 class AuthValidator {
     public static function validateRegister($data) {
-        if (empty($data->full_name) || empty($data->email) || empty($data->password)) {
+       if (empty($data->full_name) || trim($data->full_name) === '' || empty($data->email) || empty($data->password)){
             throw new ValidationException("All fields are required.");
+        }
+        if (!preg_match('/^[a-zA-Z\s\.\-]+$/', $data->full_name)) {
+            throw new ValidationException("Full Name must only contain letters, spaces, dots, or hyphens.");
         }
 
         if (!str_ends_with($data->email, '@std.uwu.ac.lk') && !str_ends_with($data->email, '@uwu.ac.lk')) {
