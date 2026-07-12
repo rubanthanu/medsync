@@ -46,8 +46,13 @@ class AppointmentService {
             $window['status'] = $window['available_slots'] <= 0 ? 'Full' : 'Available';
 
             // Patients should not see windows that have already started today.
+            // unless the window is currently active (ongoing) for live queue tracking.
             if ($roleId == 4 && $date == $today && $window['start_time'] <= $current_time) {
-                continue;
+                if ($window['is_active'] > 0) {
+                    $window['status'] = 'Full';
+                } else {
+                    continue;
+                }
             }
 
             $filtered_windows[] = $window;

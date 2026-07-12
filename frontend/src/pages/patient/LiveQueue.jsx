@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as appointmentService from '../../services/appointmentService';
 import * as queueService from '../../services/queueService';
+import { getTodayISO } from '../../utils/dateUtils';
 
 const LiveQueue = () => {
     const [windows, setWindows] = useState([]);
@@ -10,7 +11,7 @@ const LiveQueue = () => {
 
     const fetchWindows = async () => {
         try {
-            const res = await appointmentService.getWindows(new Date().toISOString().split('T')[0]);
+            const res = await appointmentService.getWindows(getTodayISO());
             setWindows(res.data);
             const active = res.data.find(w => w.is_active > 0);
             if(active) {

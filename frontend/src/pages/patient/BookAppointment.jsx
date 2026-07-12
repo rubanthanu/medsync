@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import * as appointmentService from '../../services/appointmentService';
+import { getTodayISO, getMaxDateISO } from '../../utils/dateUtils';
 
 const BookAppointment = () => {
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState(getTodayISO());
     const [windows, setWindows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
@@ -21,10 +22,7 @@ const BookAppointment = () => {
         }
         setLoading(false);
     };
-
-    const maxDate = new Date();
-    maxDate.setDate(new Date().getDate() + 2);
-    const maxDateStr = maxDate.toISOString().split('T')[0];
+ const maxDateStr = getMaxDateISO(2);
 
     const handleBook = async (window_id) => {
         setMessage({ type: '', text: '' });
@@ -56,7 +54,7 @@ const BookAppointment = () => {
                             type="date" 
                             className="form-control" 
                             value={date} 
-                            min={new Date().toISOString().split('T')[0]}
+                            min={getTodayISO()}
                             max={maxDateStr}
                             onChange={(e) => setDate(e.target.value)} 
                         />
