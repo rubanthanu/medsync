@@ -1,6 +1,6 @@
 const DashboardHeader = ({ activeTab, onTabChange }) => {
     return (
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div className="dashboard-hero d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
             <div>
                 <h2 className="fw-bold mb-0">Receptionist Dashboard</h2>
                 <p className="text-muted mb-0">Manage daily queue and monitor clinic activities</p>
