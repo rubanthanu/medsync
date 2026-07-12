@@ -15,7 +15,7 @@ const Landing = () => {
         // Handle direct url hash scroll
         if (window.location.hash) {
             const id = window.location.hash.replace('#', '');
-            setTimeout(() => {g
+            setTimeout(() => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth' });
@@ -36,7 +36,7 @@ const Landing = () => {
                         UWU MedSync Portal
                     </h1>
                     <p className="lead text-muted mb-4 fs-5">
-                        Book appointments, track live queues, access e-prescriptions, and manage your university healthcare digitally — all in one integrated, campus-wide smart system.
+                        Book appointments, track live queues, access e-prescriptions, and manage your university healthcare digitally—all in one integrated, university-wide healthcare system
                     </p>
                     <div className="d-flex gap-3">
                         <Link to="/register" className="btn btn-primary btn-lg px-4 rounded-pill shadow-sm hover-grow">Get Started</Link>
@@ -66,7 +66,7 @@ const Landing = () => {
                             <i className="bi bi-hourglass-split fs-4"></i>
                         </div>
                         <h3 className="h5 fw-bold text-dark mb-3">Live Queue Tracking</h3>
-                        <p className="text-muted small">Track your exact position in the queue real-time from anywhere on campus.</p>
+                        <p className="text-muted small">Track your exact position in the queue in real-time from anywhere at the university.</p>
                     </div>
                 </div>
                 <div className="col-lg-3 col-md-6">
@@ -98,7 +98,7 @@ const Landing = () => {
                     <span className="badge bg-secondary-subtle text-secondary mb-3 px-3 py-2 rounded-pill fw-semibold">About UWU Medical</span>
                     <h2 className="fw-bold text-dark mb-3">Dedicated to Student Wellbeing</h2>
                     <p className="text-muted mb-4">
-                        The Uva Wellassa University Medical Center provides high-quality healthcare services to our university community. With the launch of **UWU MedSync**, we are modernizing care delivery. Our digital portal bridges the gap between medical staff and students, minimizing wait times and ensuring health support is always within reach.
+                        The Uva Wellassa University Medical Center provides high-quality healthcare services to our university community. With the launch of <strong>UWU MedSync</strong> we are modernizing care delivery. Our digital portal bridges the gap between medical staff and students, minimizing wait times and ensuring health support is always within reach.
                     </p>
                     <div className="d-flex align-items-center gap-3 bg-light p-3 rounded-4 border-start border-primary border-4">
                         <i className="bi bi-clock-history text-primary fs-3"></i>

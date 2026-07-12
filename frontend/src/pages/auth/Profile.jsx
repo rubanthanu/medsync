@@ -257,7 +257,7 @@ const Profile = () => {
                                 className="form-control rounded-pill px-3"
                                 value={profile?.phone || ''}
                                 onChange={e => setProfile({ ...profile, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10) })}
-                                placeholder="7712345678"
+                                placeholder="0771234567"
                                 maxLength="10"
                             />
                             {profile?.phone && profile.phone.length < 10 && <small className="text-danger d-block mt-1">Phone must be 10 digits</small>}
@@ -316,7 +316,7 @@ const Profile = () => {
                                     className="form-control rounded-pill px-3"
                                     value={profile?.emergency_contact_phone || ''}
                                     onChange={e => setProfile({ ...profile, emergency_contact_phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10) })}
-                                    placeholder="7712345678"
+                                    placeholder="0771234567"
                                     maxLength="10"
                                     required
                                 />

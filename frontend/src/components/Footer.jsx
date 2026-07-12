@@ -19,7 +19,7 @@ const Footer = () => {
                     {/* Brand Info */}
                     <div className="col-lg-4 col-md-6">
                         <h4 className="fw-bold text-primary mb-3">UWU MedSync</h4>
-                        <p className="text-white-50 mb-4">Smart University Healthcare Management System for Uva Wellassa University.</p>
+                        <p className="text-white-50 mb-4">A University based Medical Centre Management System.</p>
                         <div className="d-flex gap-3 fs-5">
                             <a href="#" className="text-white-50 hover-primary"><i className="bi bi-facebook"></i></a>
                             <a href="#" className="text-white-50 hover-primary"><i className="bi bi-twitter-x"></i></a>
