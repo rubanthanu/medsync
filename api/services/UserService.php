@@ -1,0 +1,176 @@
+<?php
+require_once __DIR__ . '/../repositories/UserRepository.php';
+require_once __DIR__ . '/../repositories/PatientRepository.php';
+require_once __DIR__ . '/../repositories/DoctorRepository.php';
+require_once __DIR__ . '/../helpers/UploadHelper.php';
+require_once __DIR__ . '/../exceptions/NotFoundException.php';
+
+class UserService {
+    private $conn;
+    private $userRepo;
+    private $patientRepo;
+    private $doctorRepo;
+
+    public function __construct($conn) {
+        $this->conn = $conn;
+        $this->userRepo = new UserRepository($conn);
+        $this->patientRepo = new PatientRepository($conn);
+        $this->doctorRepo = new DoctorRepository($conn);
+    }
+
+    public function completeProfile($userId, $data) {
+        $this->conn->beginTransaction();
+        try {
+             // Retrieve existing full name if not supplied in the profile completion form data
+            $fullName = $data->full_name ?? null;
+            if ($fullName === null || trim($fullName) === '') {
+                $user = $this->userRepo->findById($userId);
+                if ($user) {
+                    $fullName = $user['full_name'];
+                }
+            }
+            // Update users table
+            $this->userRepo->updateBasicProfile(
+                $userId,
+                $fullName,
+                $data->phone,
+                $data->gender,
+                $data->date_of_birth,
+                $data->address
+            );
+
+            // Update patients table
+            $this->patientRepo->updateProfile(
+                $userId,
+                $data->university_id,
+                $data->blood_group,
+                $data->allergies ?? null,
+                $data->medical_conditions ?? null,
+                $data->emergency_contact_name,
+                $data->emergency_contact_phone
+            );
+
+            // Profile log
+            $this->userRepo->createProfileLog($userId, 'Profile Completed');
+
+            $this->conn->commit();
+            // Update PHP session so the user remains marked as profile completed on page refreshes
+            if (session_id() == '') {
+                session_start();
+            }
+            if (isset($_SESSION['user'])) {
+                $_SESSION['user']['profile_completed'] = true;
+            }
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
+        }
+    }
+
+    public function getProfile($userId) {
+        // Fetch user basic details
+        $user = $this->userRepo->findById($userId);
+        if (!$user) {
+            throw new NotFoundException("User not found.");
+        }
+
+        // Fetch role specific details
+        $role_id = $user['role_id'];
+        if ($role_id == 4) { // Patient
+            $patient = $this->patientRepo->getPatientDetails($userId);
+            if ($patient) {
+                $user = array_merge($user, $patient);
+            }
+        } else if ($role_id == 2) { // Doctor
+            $doctor = $this->doctorRepo->getDoctorDetails($userId);
+            if ($doctor) {
+                $user = array_merge($user, $doctor);
+            }
+        }
+
+        return $user;
+    }
+
+    public function updateProfile($userId, $roleId, $data, $files) {
+        $this->conn->beginTransaction();
+        try {
+            // Handle profile image upload if any
+            $profile_image = null;
+            if (isset($files['profile_image']) && $files['profile_image']['error'] == UPLOAD_ERR_OK) {
+                $target_dir = __DIR__ . "/../uploads/profiles/";
+                $file_name = UploadHelper::uploadFile($files['profile_image'], $target_dir, 'image', 'profile_');
+                $profile_image = "uploads/profiles/" . $file_name;
+            }
+
+            // Update basic users details
+            $this->userRepo->updateBasicProfile(
+                $userId,
+                $data->full_name,
+                $data->phone,
+                $data->gender,
+                $data->date_of_birth,
+                $data->address,
+                $profile_image
+            );
+
+            // Update role specific details
+            if ($roleId == 4) { // Patient
+                $this->patientRepo->updateProfile(
+                    $userId,
+                    $data->university_id,
+                    $data->blood_group,
+                    $data->allergies,
+                    $data->medical_conditions,
+                    $data->emergency_contact_name,
+                    $data->emergency_contact_phone
+                );
+            } else if ($roleId == 2) { // Doctor
+                // Handle digital signature upload if any
+                $digital_signature = null;
+                if (isset($files['digital_signature']) && $files['digital_signature']['error'] == UPLOAD_ERR_OK) {
+                    $target_dir = __DIR__ . "/../uploads/signatures/";
+                    $file_name = UploadHelper::uploadFile($files['digital_signature'], $target_dir, 'image', 'sig_');
+                    $digital_signature = "uploads/signatures/" . $file_name;
+                }
+
+                $this->doctorRepo->updateSpecialization($userId, $data->specialization, $digital_signature);
+            }
+
+            // Profile log
+            $this->userRepo->createProfileLog($userId, 'Profile Updated');
+
+            $this->conn->commit();
+
+            // Get updated values to return
+            $updated_image = $profile_image;
+            if (!$updated_image) {
+                $updated_image = $this->userRepo->getProfileImage($userId);
+            }
+
+            // Update Auth Session if user full_name changed
+            if (session_id() == '') {
+                session_start();
+            }
+            $_SESSION['user']['full_name'] = $data->full_name;
+            $_SESSION['user']['profile_image'] = $updated_image;
+
+            return [
+                'profile_image' => $updated_image,
+                'full_name' => $data->full_name
+            ];
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
+        }
+    }
+
+    public function getPatientDetails($patientId) {
+        $patient = $this->patientRepo->findById($patientId);
+        if (!$patient) {
+            throw new NotFoundException("Patient not found.");
+        }
+        return $patient;
+    }
+}
+?>
+

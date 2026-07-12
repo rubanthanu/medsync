@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import DashboardHeader from './DashboardHeader';
 import QuickBookingForm from './QuickBookingForm';
 import WindowQueueTable from './WindowQueueTable';
+import { getTodayISO } from '../../utils/dateUtils';
 
 
 const ReceptionistDashboard = () => {
@@ -12,7 +13,7 @@ const ReceptionistDashboard = () => {
     const [selectedWindow, setSelectedWindow] = useState(null);
     const [queue, setQueue] = useState([]);
     const [activeTab, setActiveTab] = useState('queue');
-    const [bookingData, setBookingData] = useState({ email: '', window_id: '', appointment_date: new Date().toISOString().split('T')[0] });
+    const [bookingData, setBookingData] = useState({ email: '', window_id: '', appointment_date: getTodayISO() });
     const [bookingMsg, setBookingMsg] = useState({ text: '', type: '' });
     
     useEffect(() => {

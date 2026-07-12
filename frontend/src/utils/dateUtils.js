@@ -24,11 +24,18 @@ export const formatDateShort = (dateStr) => {
 };
 
 export const getTodayISO = () => {
-    return new Date().toISOString().split('T')[0];
+   const localDate = new Date();
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };
 
 export const getMaxDateISO = (daysAhead) => {
-    const date = new Date();
-    date.setDate(date.getDate() + daysAhead);
-    return date.toISOString().split('T')[0];
+       const localDate = new Date();
+    localDate.setDate(localDate.getDate() + daysAhead);
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };

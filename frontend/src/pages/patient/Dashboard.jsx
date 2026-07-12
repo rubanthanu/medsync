@@ -10,8 +10,7 @@ const PatientDashboard = () => {
     const { toast, showToast, hideToast } = useToast();
     const { data: notifications, refetch: fetchNotifications } = useFetch(notificationService.getAll);
     const { data: appointments, loaded: appointmentsLoaded, refetch: refreshAppointments } = useFetch(appointmentService.getPatientAppointments);
-    const [feedbackText, setFeedbackText] = useState('');
-    const [feedbackLoading, setFeedbackLoading] = useState(false);
+
 
     const handleCancelAppointment = async (appointmentId) => {
         const result = await Swal.fire({
@@ -193,8 +192,8 @@ const PatientDashboard = () => {
                                     <small className="text-secondary">{new Date(notif.created_at).toLocaleString()}</small>
                                 </div>
                             </div>
-                            <button 
-                                className="btn btn-sm btn-outline-primary rounded-pill px-3" 
+                            <button
+                                className="btn btn-sm btn-outline-primary rounded-pill px-3"
                                 onClick={() => handleMarkAsRead(notif.notification_id)}
                             >
                                 Mark as read
@@ -208,7 +207,7 @@ const PatientDashboard = () => {
                 </div>
             </div>
 
-          
+
         </div>
     );
 };
