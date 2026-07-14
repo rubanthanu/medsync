@@ -54,7 +54,7 @@ api.interceptors.request.use(async (config) => {
 });
 
 
-const AUTH_ROUTES = ['/auth/login', '/auth/register', '/auth/verify_otp', '/auth/resend_otp', '/auth/forgot_password', '/auth/verify_forgot_password_otp', '/auth/reset_password'];
+const AUTH_ROUTES = ['/auth/login', '/auth/register', '/auth/verify_otp', '/auth/resend_otp', '/auth/forgot_password', '/auth/verify_forgot_password_otp', '/auth/reset_password', '/auth/me'];
 
 api.interceptors.response.use(
     (response) => response,
