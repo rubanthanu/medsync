@@ -62,7 +62,7 @@ const CompleteProfile = () => {
                         <div className="row mb-4">
                             <div className="col-md-6 mb-3">
                                 <label className="form-label fw-semibold">University ID</label>
-                                <input type="text" className="form-control" value={formData.university_id} onChange={e => setFormData({...formData, university_id: e.target.value})} required />
+                                <input type="text" className="form-control" value={formData.university_id} onChange={e => setFormData({...formData, university_id: e.target.value})} placeholder="UWU/CST/23/001" required />
                             </div>
                             <div className="col-md-6 mb-3">
                                 <label className="form-label fw-semibold">Phone Number (10 digits)</label>
@@ -71,7 +71,7 @@ const CompleteProfile = () => {
                                     className="form-control" 
                                     value={formData.phone} 
                                     onChange={e => setFormData({...formData, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10)})} 
-                                    placeholder="7712345678"
+                                    placeholder="0771234567"
                                     maxLength="10"
                                     required 
                                 />
@@ -131,7 +131,7 @@ const CompleteProfile = () => {
                                     className="form-control" 
                                     value={formData.emergency_contact_phone} 
                                     onChange={e => setFormData({...formData, emergency_contact_phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10)})} 
-                                    placeholder="7712345678"
+                                    placeholder="0771234567"
                                     maxLength="10"
                                     required 
                                 />
