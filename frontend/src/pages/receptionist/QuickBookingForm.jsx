@@ -1,6 +1,6 @@
 const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, bookingMsg }) => {
     return (
-        <div className="card border-0 shadow-sm rounded-4 sticky-top" style={{ top: '20px' }}>
+        <div className="card border-0 shadow-sm rounded-4 " style={{ top: '20px' }}>
             <div className="card-header bg-white border-bottom-0 pt-4 px-4 pb-2">
                 <h5 className="fw-bold mb-0">Quick Booking</h5>
                 <small className="text-muted">Register walk-in or manual booking</small>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as notificationService from '../../services/notificationService';
 import * as appointmentService from '../../services/appointmentService';
+import * as feedbackService from '../../services/feedbackService';
 import Swal from 'sweetalert2';
 import useFetch from '../../hooks/useFetch';
 import useToast from '../../hooks/useToast';
@@ -10,7 +11,8 @@ const PatientDashboard = () => {
     const { toast, showToast, hideToast } = useToast();
     const { data: notifications, refetch: fetchNotifications } = useFetch(notificationService.getAll);
     const { data: appointments, loaded: appointmentsLoaded, refetch: refreshAppointments } = useFetch(appointmentService.getPatientAppointments);
-
+    const [feedbackText, setFeedbackText] = useState('');
+    const [feedbackLoading, setFeedbackLoading] = useState(false);
 
     const handleCancelAppointment = async (appointmentId) => {
         const result = await Swal.fire({
@@ -32,6 +34,24 @@ const PatientDashboard = () => {
             await refreshAppointments();
         } catch (err) {
             showToast('danger', err?.response?.data?.message || 'Unable to cancel appointment.');
+        }
+    };
+     const handleFeedbackSubmit = async (e) => {
+        e.preventDefault();
+        if (!feedbackText.trim()) {
+            showToast('danger', 'Please enter feedback before submitting.');
+            return;
+        }
+
+        setFeedbackLoading(true);
+        try {
+            await feedbackService.submit(feedbackText);
+            setFeedbackText('');
+            showToast('success', 'Feedback submitted successfully.');
+        } catch (err) {
+            showToast('danger', err?.response?.data?.message || 'Unable to submit feedback.');
+        } finally {
+            setFeedbackLoading(false);
         }
     };
 
@@ -206,6 +226,29 @@ const PatientDashboard = () => {
                     )}
                 </div>
             </div>
+             
+             <div className="feedback-panel mt-5">
+                <div className="feedback-copy">
+                    <p className="eyebrow mb-1">Feedback</p>
+                    <h4 className="fw-bold mb-2 text-white">Submit Feedback</h4>
+                    <p className="mb-0 text-muted">Share a quick note about your visit or the platform experience.</p>
+                </div>
+
+                <form className="feedback-form mt-4 card border-0 shadow-sm p-4 rounded-4" onSubmit={handleFeedbackSubmit}>
+                    <textarea
+                        className="form-control feedback-textarea rounded-4 p-3 mb-3"
+                        rows="4"
+                        placeholder="Tell us what went well or what we can improve..."
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                    ></textarea>
+                    <div className="d-flex justify-content-end">
+                        <button type="submit" className="btn btn-primary rounded-pill px-5 shadow-sm" disabled={feedbackLoading}>
+                            {feedbackLoading ? 'Submitting...' : 'Submit Feedback'}
+                        </button>
+                    </div>
+                </form>
+            </div> 
 
 
         </div>
