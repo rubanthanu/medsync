@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import * as appointmentService from '../../services/appointmentService';
 import * as queueService from '../../services/queueService';
+import * as feedbackService from '../../services/feedbackService';
 import * as doctorService from '../../services/doctorService';
 import * as prescriptionService from '../../services/prescriptionService';
 import * as userService from '../../services/userService';
@@ -11,11 +12,12 @@ import useFetch from '../../hooks/useFetch';
 
 import QueueTab from './components/QueueTab';
 import PrescriptionModal from './components/PrescriptionModal';
+import FeedbackTab from './components/FeedbackTab';
 import LeaveTab from './components/LeaveTab';
 
 const DoctorDashboard = () => {
     // Custom hooks
-    
+    const { data: feedbacks } = useFetch(feedbackService.getAll, { initialData: [], transform: data => Array.isArray(data) ? data : [] });
     const { data: leaves, refetch: fetchLeaves } = useFetch(doctorService.getLeaves);
 
     // Window & queue state (complex logic, kept as-is)
@@ -185,7 +187,7 @@ const DoctorDashboard = () => {
                     onOpenPrescription={handleOpenPrescription}
                 />
             )}
-
+            {activeTab === 'feedbacks' && <FeedbackTab feedbacks={feedbacks} />}
             {activeTab === 'leaves' && (
                 <LeaveTab
                     leaves={leaves} leaveDate={leaveDate} setLeaveDate={setLeaveDate}
