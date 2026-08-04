@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
+import * as healthPostService from '../../services/healthPostService';
 import logo from '../../assets/logo.png';
 
 
@@ -8,10 +9,18 @@ import medicalCenterImage from '../../assets/images/banners/medical-center.jpg';
 import aboutMedsyncImage from '../../assets/images/banners/about-medsync.jpg';
 
 const Landing = () => {
-    
+    const [posts, setPosts] = useState([]); 
 
     useEffect(() => {
-
+       const fetchPosts = async () => {
+            try {
+                const res = await healthPostService.getAll();
+                setPosts(res.data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchPosts();
         // Handle direct url hash scroll
         if (window.location.hash) {
             const id = window.location.hash.replace('#', '');
@@ -24,6 +33,23 @@ const Landing = () => {
         }
     }, []);
 
+     const getCategoryImage = (post) => {
+        if (post.image_url) return post.image_url;
+        const cat = post.category?.toLowerCase();
+        if (cat === 'wellness') return 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&q=80';
+        if (cat === 'mental health') return 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=600&q=80';
+        if (cat === 'nutrition') return 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=600&q=80';
+        return 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80';
+    };
+
+    const getCategoryBadgeClass = (category) => {
+        const cat = category?.toLowerCase();
+        if (cat === 'wellness') return 'bg-success-subtle text-success';
+        if (cat === 'mental health') return 'bg-primary-subtle text-primary';
+        if (cat === 'nutrition') return 'bg-warning-subtle text-warning';
+        return 'bg-secondary-subtle text-secondary';
+    };
+    
     return (
        
         <div className="container py-3 animate-fade-in" id="home">
