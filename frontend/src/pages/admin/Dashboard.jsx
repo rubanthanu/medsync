@@ -71,6 +71,7 @@ const AdminDashboard = () => {
                 />
             )}
 
+
              {activeTab === 'posts' && (
                 <HealthPostsManager 
                     posts={posts}
@@ -80,6 +81,7 @@ const AdminDashboard = () => {
                     onDeletePost={handleDeletePost}
                 />
             )}
+
             
            {activeTab === 'feedbacks' && (
                 <FeedbackTable feedbacks={feedbacks} />

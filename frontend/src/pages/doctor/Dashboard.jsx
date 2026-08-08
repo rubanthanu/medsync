@@ -4,21 +4,26 @@ import Swal from 'sweetalert2';
 import * as appointmentService from '../../services/appointmentService';
 import * as queueService from '../../services/queueService';
 import * as feedbackService from '../../services/feedbackService';
+import * as certificateService from '../../services/certificateService';
 import * as doctorService from '../../services/doctorService';
 import * as prescriptionService from '../../services/prescriptionService';
 import * as userService from '../../services/userService';
 import useFetch from '../../hooks/useFetch';
-
+import useHealthPosts from '../../hooks/useHealthPosts';
 
 import QueueTab from './components/QueueTab';
 import PrescriptionModal from './components/PrescriptionModal';
+import CertificateTab from './components/CertificateTab';
+import HealthPostTab from './components/HealthPostTab';
 import FeedbackTab from './components/FeedbackTab';
 import LeaveTab from './components/LeaveTab';
 
 const DoctorDashboard = () => {
     // Custom hooks
+    const { posts, newPost, setNewPost, handleCreatePost, handleDeletePost } = useHealthPosts();
     const { data: feedbacks } = useFetch(feedbackService.getAll, { initialData: [], transform: data => Array.isArray(data) ? data : [] });
     const { data: leaves, refetch: fetchLeaves } = useFetch(doctorService.getLeaves);
+    const { data: certificates, refetch: fetchCertificates } = useFetch(certificateService.getCertificateRequests);
 
     // Window & queue state (complex logic, kept as-is)
     const [windows, setWindows] = useState([]);
@@ -26,7 +31,10 @@ const DoctorDashboard = () => {
     const [selectedWindow, setSelectedWindow] = useState(null);
     const [queue, setQueue] = useState([]);
 
-  
+     // Certificate review states
+    const [selectedCert, setSelectedCert] = useState(null);
+    const [rejectionReason, setRejectionReason] = useState('');
+    const [reviewing, setReviewing] = useState(false);
 
     // Leave management states
     const [leaveDate, setLeaveDate] = useState('');
@@ -187,6 +195,23 @@ const DoctorDashboard = () => {
                     onOpenPrescription={handleOpenPrescription}
                 />
             )}
+
+             {activeTab === 'certificates' && (
+                <CertificateTab
+                    certificates={certificates} selectedCert={selectedCert}
+                    rejectionReason={rejectionReason} setSelectedCert={setSelectedCert}
+                    setRejectionReason={setRejectionReason} reviewing={reviewing}
+                    onReview={handleReviewCertificate}
+                />
+            )}
+
+            {activeTab === 'posts' && (
+                <HealthPostTab
+                    posts={posts} newPost={newPost} setNewPost={setNewPost}
+                    onCreatePost={handleCreatePost} onDeletePost={handleDeletePost}
+                />
+            )}
+            
             {activeTab === 'feedbacks' && <FeedbackTab feedbacks={feedbacks} />}
             {activeTab === 'leaves' && (
                 <LeaveTab
