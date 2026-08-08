@@ -21,6 +21,7 @@ const Landing = () => {
             }
         };
         fetchPosts();
+        
         // Handle direct url hash scroll
         if (window.location.hash) {
             const id = window.location.hash.replace('#', '');

@@ -9,8 +9,8 @@ import AdminTabs from './AdminTabs';
 import UserManagement from './UserManagement';
 import FeedbackTable from './FeedbackTable';
 import AppointmentWindows from './AppointmentWindows';
-
-
+import useHealthPosts from '../../hooks/useHealthPosts';
+import HealthPostsManager from './HealthPostsManager';
 
 const AdminDashboard = () => {
     const { data: stats } = useFetch(adminService.getStats, { initialData: { total_appointments: 0, total_patients: 0, total_certificates: 0, total_prescriptions: 0 } });
@@ -20,6 +20,7 @@ const AdminDashboard = () => {
     const [newUser, setNewUser] = useState({ full_name: '', email: '', password: '', role_id: '4' });
     const [showAddUser, setShowAddUser] = useState(false);
     const [activeTab, setActiveTab] = useState('users');
+    const { posts, newPost, setNewPost, handleCreatePost, handleDeletePost } = useHealthPosts();
 
     const toggleStatus = async (user_id, current_status) => {
         const newStatus = current_status === 'Active' ? 'Blocked' : 'Active';
@@ -69,6 +70,17 @@ const AdminDashboard = () => {
                     onToggleStatus={toggleStatus}
                 />
             )}
+
+             {activeTab === 'posts' && (
+                <HealthPostsManager 
+                    posts={posts}
+                    newPost={newPost}
+                    setNewPost={setNewPost}
+                    onCreatePost={handleCreatePost}
+                    onDeletePost={handleDeletePost}
+                />
+            )}
+            
            {activeTab === 'feedbacks' && (
                 <FeedbackTable feedbacks={feedbacks} />
             )}
