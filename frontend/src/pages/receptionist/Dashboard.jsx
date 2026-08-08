@@ -3,6 +3,7 @@ import * as appointmentService from '../../services/appointmentService';
 import * as queueService from '../../services/queueService';
 import * as certificateService from '../../services/certificateService';
 import Swal from 'sweetalert2';
+import useFetch from '../../hooks/useFetch';
 import DashboardHeader from './DashboardHeader';
 import QuickBookingForm from './QuickBookingForm';
 import WindowQueueTable from './WindowQueueTable';
