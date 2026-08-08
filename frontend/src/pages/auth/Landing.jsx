@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import * as healthPostService from '../../services/healthPostService';
 import logo from '../../assets/logo.png';
-
-
-
+import wellnessImage from '../../assets/images/misc/wellness.jpg';
+import mentalHealthImage from '../../assets/images/misc/mental-health.jpg';
+import nutritionImage from '../../assets/images/misc/nutrition.jpg';
+import defaultPostImage from '../../assets/images/misc/default-post.jpg';
 import medicalCenterImage from '../../assets/images/banners/medical-center.jpg';
 import aboutMedsyncImage from '../../assets/images/banners/about-medsync.jpg';
 
@@ -21,6 +22,7 @@ const Landing = () => {
             }
         };
         fetchPosts();
+
         // Handle direct url hash scroll
         if (window.location.hash) {
             const id = window.location.hash.replace('#', '');
@@ -51,7 +53,6 @@ const Landing = () => {
     };
     
     return (
-       
         <div className="container py-3 animate-fade-in" id="home">
             {/* Hero Section */}
             <div className="row align-items-center mb-5 min-vh-75 py-4">
@@ -135,12 +136,8 @@ const Landing = () => {
                     </div>
                 </div>
             </div>
-
-           
-           
-        
-        
-                   {/* Health Posts Section */}
+            
+            {/* Health Posts Section */}
             <div className="py-5" id="health-posts">
                 <div className="text-center mb-5">
                     <span className="badge bg-info-subtle text-info px-3 py-2 rounded-pill mb-3 fw-semibold">Health Posts</span>
