@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import * as healthPostService from '../../services/healthPostService';
 import logo from '../../assets/logo.png';
 import wellnessImage from '../../assets/images/misc/wellness.jpg';
