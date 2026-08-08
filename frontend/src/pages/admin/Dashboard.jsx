@@ -69,6 +69,7 @@ const AdminDashboard = () => {
                     onToggleStatus={toggleStatus}
                 />
             )}
+            
            {activeTab === 'feedbacks' && (
                 <FeedbackTable feedbacks={feedbacks} />
             )}
