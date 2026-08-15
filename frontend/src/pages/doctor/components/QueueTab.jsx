@@ -1,6 +1,8 @@
 import Swal from 'sweetalert2';
 
 const QueueTab = ({ windows, selectedWindow, queue, onSelectWindow, onStartWindow, onStopWindow, onNextPatient, onOpenPrescription }) => {
+    const hasActiveWindow = windows.some(w => w.is_active > 0);
+
     return (
         <div>
             {/* Today's Windows List */}
@@ -14,9 +16,21 @@ const QueueTab = ({ windows, selectedWindow, queue, onSelectWindow, onStartWindo
                                     {win.start_time} - {win.end_time}
                                 </p>
                                 {!win.is_active && (
-                                    <button className="btn btn-outline-primary btn-sm rounded-pill mt-3 w-100" onClick={(e) => { e.stopPropagation(); onStartWindow(win.window_id); }}>
-                                        Start Window
-                                    </button>
+                                    <>
+                                        <button
+                                            className="btn btn-outline-primary btn-sm rounded-pill mt-3 w-100"
+                                            onClick={(e) => { e.stopPropagation(); onStartWindow(win.window_id); }}
+                                            disabled={hasActiveWindow}
+                                            title={hasActiveWindow ? "Please finish the current active window before starting another window." : ""}
+                                        >
+                                            Start Window
+                                        </button>
+                                        {hasActiveWindow && (
+                                            <small className="text-muted d-block mt-1" style={{ fontSize: '0.75rem' }}>
+                                                <i className="bi bi-info-circle me-1"></i>Another window is active
+                                            </small>
+                                        )}
+                                    </>
                                 )}
                                 {win.is_active > 0 && (
                                     <>
