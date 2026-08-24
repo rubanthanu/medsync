@@ -7,14 +7,14 @@ class CertificateRepository {
     }
 
     public function create($patientId, $startDate, $endDate, $reason, $proofPdf) {
-        $query = "INSERT INTO medical_certificates (patient_id, start_date, end_date, reason, proof_pdf, status) 
-                  VALUES (:patient_id, :start_date, :end_date, :reason, :proof_pdf, 'Pending')";
+        $query = "INSERT INTO medical_certificates (patient_id, start_date, end_date, reason, proof_document, status) 
+                  VALUES (:patient_id, :start_date, :end_date, :reason, :proof_document, 'Pending')";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":patient_id", $patientId);
         $stmt->bindParam(":start_date", $startDate);
         $stmt->bindParam(":end_date", $endDate);
         $stmt->bindParam(":reason", $reason);
-        $stmt->bindParam(":proof_pdf", $proofPdf);
+        $stmt->bindParam(":proof_document", $proofPdf);
         $stmt->execute();
         return $this->conn->lastInsertId();
     }

@@ -72,7 +72,7 @@ const CertificateTab = ({ certificates, selectedCert, rejectionReason, setSelect
                             <div className="mb-4">
                                 <label className="form-label fw-semibold text-secondary small">1. VERIFY PROOF FILE</label>
                                 <a
-                                    href={getMedicalProofUrl(selectedCert.proof_pdf)}
+                                    href={getMedicalProofUrl(selectedCert.proof_document)}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="btn btn-outline-info d-block rounded-pill text-center py-2 shadow-sm text-decoration-none"
