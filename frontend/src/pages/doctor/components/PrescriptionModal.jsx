@@ -31,7 +31,6 @@ const PrescriptionModal = ({ activeAppointment, patientProfile, patientHistory, 
                                             <div className="col-6"><strong>Gender:</strong> {patientProfile.gender || 'Not specified'}</div>
                                             <div className="col-6"><strong>Blood Group:</strong> <span className="badge bg-danger rounded-pill px-2">{patientProfile.blood_group || 'N/A'}</span></div>
                                             <div className="col-6"><strong>Phone:</strong> {patientProfile.phone || 'N/A'}</div>
-                                            <div className="col-6"><strong>University ID:</strong> {patientProfile.university_id || 'N/A'}</div>
                                             <div className="col-12 mt-2">
                                                 <strong className="text-danger"><i className="bi bi-exclamation-triangle"></i> Allergies:</strong>
                                                 <div className="p-2 bg-danger-subtle text-danger-emphasis rounded-3 mt-1 fw-semibold">{patientProfile.allergies || 'None reported'}</div>

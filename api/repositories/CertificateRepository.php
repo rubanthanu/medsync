@@ -21,7 +21,7 @@ class CertificateRepository {
 
     public function findById($certificateId) {
         $query = "SELECT mc.*, p.user_id as patient_user_id, u.full_name as patient_name, u.email as patient_email, 
-                         u.gender, u.date_of_birth, p.university_id 
+                         u.gender, u.date_of_birth 
                   FROM medical_certificates mc 
                   JOIN patients p ON mc.patient_id = p.patient_id 
                   JOIN users u ON p.user_id = u.user_id 
@@ -51,7 +51,7 @@ class CertificateRepository {
     }
 
     public function getAll() {
-        $query = "SELECT mc.*, u.full_name as patient_name, p.university_id 
+        $query = "SELECT mc.*, u.full_name as patient_name 
                   FROM medical_certificates mc 
                   JOIN patients p ON mc.patient_id = p.patient_id 
                   JOIN users u ON p.user_id = u.user_id 

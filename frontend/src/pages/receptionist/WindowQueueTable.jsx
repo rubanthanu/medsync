@@ -31,7 +31,6 @@ const WindowQueueTable = ({ windows, selectedWindow, onSelectWindow, queue, onUp
                                     <td className="ps-4 fw-bold text-primary fs-5">#{q.queue_number}</td>
                                     <td>
                                         <div className="fw-bold">{q.patient_name}</div>
-                                        <div className="text-muted small">{q.university_id || 'Student/Staff'}</div>
                                     </td>
                                     <td>
                                         <span className={`badge px-3 py-2 rounded-pill font-monospace ${

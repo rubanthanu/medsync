@@ -8,7 +8,6 @@ const CompleteProfile = () => {
     const navigate = useNavigate();
     
     const [formData, setFormData] = useState({
-        university_id: '',
         blood_group: '',
         allergies: '',
         medical_conditions: '',
@@ -60,10 +59,6 @@ const CompleteProfile = () => {
                     <form onSubmit={handleSubmit}>
                         <h5 className="text-secondary mb-3 border-bottom pb-2">Personal Information</h5>
                         <div className="row mb-4">
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label fw-semibold">University ID</label>
-                                <input type="text" className="form-control" value={formData.university_id} onChange={e => setFormData({...formData, university_id: e.target.value})} placeholder="UWU/CST/23/001" required />
-                            </div>
                             <div className="col-md-6 mb-3">
                                 <label className="form-label fw-semibold">Phone Number (10 digits)</label>
                                 <input 
