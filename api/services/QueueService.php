@@ -29,13 +29,35 @@ class QueueService {
         // Get Doctor ID
         $doctor = $this->doctorRepo->findByUserId($userId);
 
-        // Check if window is already started
-        if ($this->appointmentRepo->isWindowActive($windowId, $date)) {
-            throw new AppointmentException("This window is already ongoing.");
-        }
+        $this->conn->beginTransaction();
+        try {
+            // Check if this specific window is already started
+            if ($this->appointmentRepo->isWindowActive($windowId, $date)) {
+                $this->conn->rollBack();
+                throw new AppointmentException("This window is already ongoing.");
+            }
 
-        // Start window
-        $this->appointmentRepo->startWindow($doctor['doctor_id'], $windowId, $date);
+            // Check if doctor has ANY other active window (with FOR UPDATE lock for race-condition safety)
+            $existingActive = $this->appointmentRepo->hasAnyActiveWindow($doctor['doctor_id'], $date);
+            if ($existingActive) {
+                $this->conn->rollBack();
+                throw new AppointmentException("Please finish the current active window before starting another window.");
+            }
+
+            // Start window
+            $this->appointmentRepo->startWindow($doctor['doctor_id'], $windowId, $date);
+            $this->conn->commit();
+        } catch (AppointmentException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            throw $e;
+        } catch (Exception $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            throw $e;
+        }
     }
 
     public function nextPatient($userId, $windowId) {

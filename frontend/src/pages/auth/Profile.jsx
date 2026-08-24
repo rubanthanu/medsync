@@ -102,7 +102,6 @@ const Profile = () => {
 
             // Role specific fields custom handling if missing
             if (user.role === 'Patient') {
-                formData.append('university_id', profile.university_id || '');
                 formData.append('blood_group', profile.blood_group || '');
                 formData.append('allergies', profile.allergies || '');
                 formData.append('medical_conditions', profile.medical_conditions || '');
@@ -287,10 +286,6 @@ const Profile = () => {
                     <div className="card border-0 shadow-sm bg-white p-4 rounded-4 mb-4">
                         <h5 className="fw-bold text-dark mb-4 border-bottom pb-2">Medical Information</h5>
                         <div className="row g-3">
-                            <div className="col-md-6">
-                                <label className="form-label fw-semibold text-secondary small">UNIVERSITY ID</label>
-                                <input type="text" className="form-control rounded-pill px-3" value={profile?.university_id || ''} onChange={e => setProfile({ ...profile, university_id: e.target.value })} placeholder="UWU/STD/21/001" required />
-                            </div>
                             <div className="col-md-6">
                                 <label className="form-label fw-semibold text-secondary small">BLOOD GROUP</label>
                                 <select className="form-select rounded-pill px-3" value={profile?.blood_group || ''} onChange={e => setProfile({ ...profile, blood_group: e.target.value })}>

@@ -43,9 +43,8 @@ class PatientRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function updateProfile($userId, $universityId, $bloodGroup, $allergies, $medicalConditions, $emergencyContactName, $emergencyContactPhone) {
+    public function updateProfile($userId, $bloodGroup, $allergies, $medicalConditions, $emergencyContactName, $emergencyContactPhone) {
         $query = "UPDATE patients SET 
-                    university_id = :uid, 
                     blood_group = :bg, 
                     allergies = :allergies, 
                     medical_conditions = :mc, 
@@ -53,7 +52,6 @@ class PatientRepository {
                     emergency_contact_phone = :ecp 
                   WHERE user_id = :user_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":uid", $universityId);
         $stmt->bindParam(":bg", $bloodGroup);
         $stmt->bindParam(":allergies", $allergies);
         $stmt->bindParam(":mc", $medicalConditions);
@@ -64,7 +62,7 @@ class PatientRepository {
     }
 
     public function getPatientDetails($userId) {
-        $query = "SELECT university_id, blood_group, allergies, medical_conditions, emergency_contact_name, emergency_contact_phone 
+        $query = "SELECT blood_group, allergies, medical_conditions, emergency_contact_name, emergency_contact_phone 
                   FROM patients WHERE user_id = :user_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":user_id", $userId);

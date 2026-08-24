@@ -42,7 +42,6 @@ class UserService {
             // Update patients table
             $this->patientRepo->updateProfile(
                 $userId,
-                $data->university_id,
                 $data->blood_group,
                 $data->allergies ?? null,
                 $data->medical_conditions ?? null,
@@ -117,7 +116,6 @@ class UserService {
             if ($roleId == 4) { // Patient
                 $this->patientRepo->updateProfile(
                     $userId,
-                    $data->university_id,
                     $data->blood_group,
                     $data->allergies,
                     $data->medical_conditions,

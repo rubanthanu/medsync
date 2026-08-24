@@ -182,12 +182,12 @@ class UserRepository {
     }
 
     public function checkProfileCompleted($userId) {
-        $query = "SELECT university_id FROM patients WHERE user_id = :user_id";
+        $query = "SELECT blood_group FROM patients WHERE user_id = :user_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":user_id", $userId);
         $stmt->execute();
         $patient = $stmt->fetch(PDO::FETCH_ASSOC);
-        return !empty($patient['university_id']);
+        return !empty($patient['blood_group']);
     }
 }
 ?>

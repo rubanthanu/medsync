@@ -21,7 +21,6 @@ const MCRequestsTable = ({ mcRequests }) => {
                                 <tr key={mc.certificate_id}>
                                     <td className="ps-4">
                                         <div className="fw-bold">{mc.patient_name}</div>
-                                        <div className="text-muted small">{mc.university_id}</div>
                                     </td>
                                     <td>{mc.reason}</td>
                                     <td className="small">

@@ -14,7 +14,6 @@ const CertificateTab = ({ certificates, selectedCert, rejectionReason, setSelect
                                 <thead className="table-light text-secondary">
                                     <tr>
                                         <th className="ps-4">Patient Name</th>
-                                        <th>University ID</th>
                                         <th>Date Range</th>
                                         <th>Reason</th>
                                         <th>Status</th>
@@ -25,7 +24,6 @@ const CertificateTab = ({ certificates, selectedCert, rejectionReason, setSelect
                                     {certificates.map(cert => (
                                         <tr key={cert.certificate_id}>
                                             <td className="ps-4 fw-semibold text-dark">{cert.patient_name}</td>
-                                            <td className="text-muted">{cert.university_id}</td>
                                             <td className="text-dark small">{cert.start_date} to {cert.end_date}</td>
                                             <td className="text-muted small text-wrap" style={{ maxWidth: '250px' }}>{cert.reason}</td>
                                             <td>
@@ -66,7 +64,7 @@ const CertificateTab = ({ certificates, selectedCert, rejectionReason, setSelect
                         </div>
                         <div className="card-body p-4">
                             <div className="mb-4 bg-light p-3 rounded-4 small">
-                                <p className="mb-1"><strong>Patient:</strong> {selectedCert.patient_name} ({selectedCert.university_id})</p>
+                                <p className="mb-1"><strong>Patient:</strong> {selectedCert.patient_name}</p>
                                 <p className="mb-1"><strong>Requested Leave Period:</strong> {selectedCert.start_date} to {selectedCert.end_date}</p>
                                 <p className="mb-1"><strong>Reason for Leave:</strong> {selectedCert.reason}</p>
                             </div>
@@ -74,7 +72,7 @@ const CertificateTab = ({ certificates, selectedCert, rejectionReason, setSelect
                             <div className="mb-4">
                                 <label className="form-label fw-semibold text-secondary small">1. VERIFY PROOF FILE</label>
                                 <a
-                                    href={getMedicalProofUrl(selectedCert.proof_pdf)}
+                                    href={getMedicalProofUrl(selectedCert.proof_document)}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="btn btn-outline-info d-block rounded-pill text-center py-2 shadow-sm text-decoration-none"

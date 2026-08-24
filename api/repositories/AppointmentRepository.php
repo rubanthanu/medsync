@@ -173,6 +173,17 @@ $query ="SELECT aw.*,
         return $stmt->rowCount() > 0;
     }
 
+    public function hasAnyActiveWindow($doctorId, $date) {
+        $query = "SELECT active_id, window_id FROM active_windows 
+                  WHERE doctor_id = :doctor_id AND appointment_date = :date AND status = 'Ongoing'
+                  FOR UPDATE";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":doctor_id", $doctorId);
+        $stmt->bindParam(":date", $date);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function startWindow($doctorId, $windowId, $date) {
         $query = "INSERT INTO active_windows (doctor_id, window_id, appointment_date, status) VALUES (:doctor_id, :window_id, :date, 'Ongoing')";
         $stmt = $this->conn->prepare($query);
