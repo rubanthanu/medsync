@@ -15,7 +15,7 @@ import HealthPostsManager from './HealthPostsManager';
 const AdminDashboard = () => {
     const { data: stats } = useFetch(adminService.getStats, { initialData: { total_appointments: 0, total_patients: 0, total_certificates: 0, total_prescriptions: 0 } });
     const { data: users, refetch: fetchUsers } = useFetch(adminService.getUsers);
-    const { data: feedbacks } = useFetch(feedbackService.getAll, { initialData: [], transform: data => Array.isArray(data) ? data : [] });
+    const { data: feedbacks, refetch: fetchFeedbacks } = useFetch(feedbackService.getAll, { initialData: [], transform: data => Array.isArray(data) ? data : [] });
     const { data: windows, refetch: fetchWindows } = useFetch(adminService.getAppointmentWindows);
     const [newUser, setNewUser] = useState({ full_name: '', email: '', password: '', role_id: '4' });
     const [showAddUser, setShowAddUser] = useState(false);
@@ -84,7 +84,17 @@ const AdminDashboard = () => {
 
             
            {activeTab === 'feedbacks' && (
-                <FeedbackTable feedbacks={feedbacks} />
+                <FeedbackTable feedbacks={feedbacks} onDelete={async (id) => {
+                    const result = await Swal.fire({ title: 'Delete Feedback?', text: 'This action cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Yes, delete it!' });
+                    if (!result.isConfirmed) return;
+                    try {
+                        await feedbackService.deleteFeedback(id);
+                        fetchFeedbacks();
+                        Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Feedback has been deleted.', timer: 1500, showConfirmButton: false });
+                    } catch (err) {
+                        Swal.fire('Error!', err.response?.data?.message || 'Failed to delete feedback', 'error');
+                    }
+                }} />
             )}
 
              {activeTab === 'windows' && (

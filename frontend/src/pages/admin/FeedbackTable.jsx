@@ -1,4 +1,4 @@
-const FeedbackTable = ({ feedbacks }) => {
+const FeedbackTable = ({ feedbacks, onDelete }) => {
     return (
         <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div className="card-header bg-white border-bottom-0 p-4">
@@ -14,6 +14,7 @@ const FeedbackTable = ({ feedbacks }) => {
                                     <th>Email</th>
                                     <th>Feedback Message</th>
                                     <th>Submitted At</th>
+                                    <th className="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -23,6 +24,15 @@ const FeedbackTable = ({ feedbacks }) => {
                                         <td className="text-muted">{f.patient_email}</td>
                                         <td className="text-dark py-3">{f.feedback_text}</td>
                                         <td className="text-muted small">{f.submitted_at ? new Date(f.submitted_at).toLocaleString() : 'N/A'}</td>
+                                        <td className="text-center">
+                                            <button
+                                                className="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                                onClick={() => onDelete(f.feedback_id)}
+                                                title="Delete feedback"
+                                            >
+                                                <i className="bi bi-trash me-1"></i> Delete
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

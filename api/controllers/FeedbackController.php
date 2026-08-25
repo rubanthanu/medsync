@@ -58,5 +58,28 @@ class FeedbackController extends BaseController {
             $this->handleException($e);
         }
     }
+
+    public function delete($id = null) {
+        try {
+            $auth = AuthMiddleware::authenticate();
+            if ($auth->role_id != 1) {
+                throw new PermissionException("Only admins can delete feedback.");
+            }
+
+            if (!$id) {
+                throw new ValidationException("Feedback ID is required.");
+            }
+
+            $deleted = $this->feedbackRepo->delete($id);
+            if ($deleted === 0) {
+                throw new NotFoundException("Feedback not found.");
+            }
+
+            http_response_code(200);
+            echo json_encode(["message" => "Feedback deleted successfully."]);
+        } catch (Exception $e) {
+            $this->handleException($e);
+        }
+    }
 }
 ?>
