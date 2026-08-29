@@ -6,6 +6,10 @@ class CertificateValidator {
         if (empty($startDate) || empty($endDate) || empty($reason) || !$hasFile) {
             throw new ValidationException("All fields and proof file are required.");
         }
+
+        if (strtotime($startDate) > strtotime($endDate)) {
+            throw new ValidationException("Start date cannot be greater than end date.");
+        }
     }
 
     public static function validateReview($data) {

@@ -36,8 +36,14 @@ const Certificates = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setMessage({ type: '', text: '' });
+
+        if (formData.start_date && formData.end_date && formData.start_date > formData.end_date) {
+            setMessage({ type: 'danger', text: 'Start date cannot be after end date.' });
+            return;
+        }
+
+        setLoading(true);
 
         const data = new FormData();
         data.append('start_date', formData.start_date);
@@ -92,11 +98,32 @@ const Certificates = () => {
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label className="form-label fw-semibold text-secondary small">START DATE</label>
-                                        <input type="date" className="form-control rounded-pill px-3" value={formData.start_date} onChange={e => setFormData({ ...formData, start_date: e.target.value })} required />
+                                        <input 
+                                            type="date" 
+                                            className="form-control rounded-pill px-3" 
+                                            value={formData.start_date} 
+                                            max={formData.end_date || undefined}
+                                            onChange={e => {
+                                                const newStart = e.target.value;
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    start_date: newStart,
+                                                    end_date: prev.end_date && prev.end_date < newStart ? '' : prev.end_date
+                                                }));
+                                            }} 
+                                            required 
+                                        />
                                     </div>
                                     <div className="col-md-6">
                                         <label className="form-label fw-semibold text-secondary small">END DATE</label>
-                                        <input type="date" className="form-control rounded-pill px-3" value={formData.end_date} onChange={e => setFormData({ ...formData, end_date: e.target.value })} required />
+                                        <input 
+                                            type="date" 
+                                            className="form-control rounded-pill px-3" 
+                                            value={formData.end_date} 
+                                            min={formData.start_date || undefined}
+                                            onChange={e => setFormData({ ...formData, end_date: e.target.value })} 
+                                            required 
+                                        />
                                     </div>
                                 </div>
                                 <div className="mb-3">
