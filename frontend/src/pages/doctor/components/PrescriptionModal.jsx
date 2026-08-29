@@ -12,9 +12,9 @@ const PrescriptionModal = ({ activeAppointment, patientProfile, patientHistory, 
                     <button type="button" className="btn-close" onClick={onClose}></button>
                 </div>
 
-                <div className="card-body p-0 d-flex flex-column flex-md-row overflow-hidden">
-                    {/* Left Side: Medical Info & Checkup History (45% width) */}
-                    <div className="w-100 w-md-45 border-end p-4 overflow-y-auto bg-light" style={{ maxHeight: '100%' }}>
+                <div className="card-body p-0 d-flex flex-column flex-lg-row overflow-auto">
+                    {/* Left Side: Medical Info & Checkup History (45% width on desktop) */}
+                    <div className="w-100 col-lg-5 border-end p-4 overflow-y-auto bg-light" style={{ maxHeight: '100%' }}>
                         <h5 className="fw-bold text-dark mb-3 border-bottom pb-2">Patient Health Profile</h5>
 
                         {loadingHistory ? (
@@ -75,8 +75,8 @@ const PrescriptionModal = ({ activeAppointment, patientProfile, patientHistory, 
                         )}
                     </div>
 
-                    {/* Right Side: Writing Prescription Form (55% width) */}
-                    <form onSubmit={onSave} className="w-100 w-md-55 p-4 overflow-y-auto d-flex flex-column justify-content-between" style={{ maxHeight: '100%' }}>
+                    {/* Right Side: Writing Prescription Form (55% width on desktop) */}
+                    <form onSubmit={onSave} className="w-100 col-lg-7 p-4 overflow-y-auto d-flex flex-column justify-content-between" style={{ maxHeight: '100%' }}>
                         <div>
                             <h5 className="fw-bold text-dark mb-4 border-bottom pb-2">Record Diagnosis & Prescribe</h5>
 
@@ -93,18 +93,18 @@ const PrescriptionModal = ({ activeAppointment, patientProfile, patientHistory, 
                                 <textarea className="form-control rounded-4 p-3" rows="4" placeholder={"e.g. Paracetamol 500mg\nAmoxicillin 250mg"} value={prescriptionForm.medicines} onChange={e => setPrescriptionForm({ ...prescriptionForm, medicines: e.target.value })} required></textarea>
                             </div>
                             <div className="row mb-3">
-                                <div className="col-md-6">
+                                <div className="col-12 col-sm-6 mb-3 mb-sm-0">
                                     <label className="form-label fw-semibold text-secondary small">DOSAGE (E.G. 1-0-1, 1-1-1)</label>
                                     <input type="text" className="form-control rounded-pill px-3" placeholder="e.g. Twice daily after meals" value={prescriptionForm.dosage} onChange={e => setPrescriptionForm({ ...prescriptionForm, dosage: e.target.value })} />
                                 </div>
-                                <div className="col-md-6">
+                                <div className="col-12 col-sm-6">
                                     <label className="form-label fw-semibold text-secondary small">DURATION / INSTRUCTIONS</label>
                                     <input type="text" className="form-control rounded-pill px-3" placeholder="e.g. Take for 5 days" value={prescriptionForm.instructions} onChange={e => setPrescriptionForm({ ...prescriptionForm, instructions: e.target.value })} />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="border-top pt-3 d-flex justify-content-end gap-2">
+                        <div className="border-top pt-3 d-flex flex-column flex-sm-row justify-content-end gap-2">
                             <button type="button" className="btn btn-outline-secondary rounded-pill px-4" onClick={onClose}>Cancel</button>
                             <button type="submit" className="btn btn-primary rounded-pill px-5 shadow-sm" disabled={savingPrescription}>
                                 {savingPrescription ? (

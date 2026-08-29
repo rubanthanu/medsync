@@ -52,17 +52,17 @@ const Navbar = () => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav me-auto align-items-center">
+                    <ul className="navbar-nav me-auto align-items-start align-items-lg-center gap-1 gap-lg-0 my-2 my-lg-0">
                         {!user && (
                             <>
                                 <li className="nav-item">
-                                    <button className="nav-link btn btn-link text-decoration-none border-0" onClick={() => handleNavClick('home')}>Home</button>
+                                    <button className="nav-link btn btn-link text-decoration-none border-0 text-start" onClick={() => handleNavClick('home')}>Home</button>
                                 </li>
                                 <li className="nav-item">
-                                    <button className="nav-link btn btn-link text-decoration-none border-0" onClick={() => handleNavClick('about')}>About</button>
+                                    <button className="nav-link btn btn-link text-decoration-none border-0 text-start" onClick={() => handleNavClick('about')}>About</button>
                                 </li>
                                 <li className="nav-item">
-                                    <button className="nav-link btn btn-link text-decoration-none border-0" onClick={() => handleNavClick('health-posts')}>Health Posts</button>
+                                    <button className="nav-link btn btn-link text-decoration-none border-0 text-start" onClick={() => handleNavClick('health-posts')}>Health Posts</button>
                                 </li>
                             </>
                         )}
@@ -94,9 +94,9 @@ const Navbar = () => {
                             </>
                         )}
                     </ul>
-                    <ul className="navbar-nav ms-auto align-items-center">
+                    <ul className="navbar-nav ms-auto align-items-start align-items-lg-center gap-2 gap-lg-0 mt-2 mt-lg-0">
                         {user ? (
-                            <li className="nav-item dropdown">
+                            <li className="nav-item dropdown w-100 w-lg-auto">
                                 <a className="nav-link dropdown-toggle fw-semibold d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
                                     {user.profile_image ? (
                                         <img
@@ -110,7 +110,7 @@ const Navbar = () => {
                                             {user.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}
                                         </div>
                                     )}
-                                    <span>{user.full_name} <small className="text-muted d-none d-md-inline" style={{ fontSize: '0.8em' }}>({user.role})</small></span>
+                                    <span>{user.full_name} <small className="text-muted d-inline" style={{ fontSize: '0.8em' }}>({user.role})</small></span>
                                 </a>
                                 <ul className="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2">
                                     <li><Link className="dropdown-item" to="/profile">My Profile</Link></li>
@@ -119,14 +119,10 @@ const Navbar = () => {
                                 </ul>
                             </li>
                         ) : (
-                            <>
-                                <li className="nav-item">
-                                    <Link className="btn btn-outline-primary me-lg-2 mb-2 mb-lg-0 px-4 rounded-pill" to="/login">Login</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link className="btn btn-primary px-4 rounded-pill" to="/register">Register</Link>
-                                </li>
-                            </>
+                            <li className="nav-item w-100 w-lg-auto d-flex flex-column flex-lg-row gap-2">
+                                <Link className="btn btn-outline-primary me-lg-2 px-4 rounded-pill text-center" to="/login">Login</Link>
+                                <Link className="btn btn-primary px-4 rounded-pill text-center" to="/register">Register</Link>
+                            </li>
                         )}
                     </ul>
                 </div>

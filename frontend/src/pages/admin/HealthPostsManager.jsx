@@ -2,7 +2,7 @@ const HealthPostsManager = ({ posts, newPost, setNewPost, onCreatePost, onDelete
     return (
         <div className="row g-4">
             {/* Create Post Form */}
-            <div className="col-lg-5">
+            <div className="col-12 col-lg-5">
                 <div className="card border-0 shadow-sm p-4 rounded-4 bg-white">
                     <h5 className="fw-bold mb-4 text-dark border-bottom pb-2">Publish New Health Post</h5>
                     <form onSubmit={onCreatePost}>
@@ -34,19 +34,19 @@ const HealthPostsManager = ({ posts, newPost, setNewPost, onCreatePost, onDelete
             </div>
 
             {/* Existing Posts */}
-            <div className="col-lg-7">
+            <div className="col-12 col-lg-7">
                 <div className="card border-0 shadow-sm p-4 rounded-4 bg-white">
                     <h5 className="fw-bold mb-4 text-dark border-bottom pb-2">Existing Health Posts</h5>
                     {posts.length > 0 ? (
                         <div className="list-group list-group-flush">
                             {posts.map(post => (
-                                <div key={post.post_id} className="list-group-item p-3 mb-3 border-0 bg-light rounded-4 d-flex justify-content-between align-items-center hover-grow">
+                                <div key={post.post_id} className="list-group-item p-3 mb-3 border-0 bg-light rounded-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 hover-grow">
                                     <div>
                                         <h6 className="fw-bold text-primary mb-1">{post.title}</h6>
                                         <span className="badge bg-secondary-subtle text-secondary rounded-pill me-2 px-2 small">{post.category || 'Wellness'}</span>
                                         <small className="text-muted">By {post.author_name} | {new Date(post.created_at).toLocaleDateString()}</small>
                                     </div>
-                                    <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => onDeletePost(post.post_id)}>Delete</button>
+                                    <button className="btn btn-sm btn-outline-danger rounded-pill px-3 align-self-end align-self-sm-center" onClick={() => onDeletePost(post.post_id)}>Delete</button>
                                 </div>
                             ))}
                         </div>

@@ -52,7 +52,7 @@ function App() {
   return (
     <Router>
       <Navbar/>
-      <div className="container mt-4">
+      <main className="main-content flex-grow-1">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={!user ? <Login /> : <Navigate to={`/${user.role.toLowerCase()}/dashboard`} />} />
@@ -121,7 +121,7 @@ function App() {
 
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </div>
+      </main>
       <Footer />
     </Router>
   );

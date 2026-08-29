@@ -4,7 +4,7 @@ import { getTodayISO } from '../../../utils/dateUtils';
 const LeaveTab = ({ leaves, leaveDate, setLeaveDate, leaveReason, setLeaveReason, markingLeave, onMarkLeave, onDeleteLeave }) => {
     return (
         <div className="row g-4">
-            <div className="col-lg-5">
+            <div className="col-12 col-lg-5">
                 <div className="card border-0 shadow-sm p-4 rounded-4 bg-white">
                     <h5 className="fw-bold mb-4 text-dark border-bottom pb-2">Plan a Leave</h5>
                     <div className="alert alert-warning small rounded-3 mb-4">
@@ -44,13 +44,13 @@ const LeaveTab = ({ leaves, leaveDate, setLeaveDate, leaveReason, setLeaveReason
                 </div>
             </div>
 
-            <div className="col-lg-7">
+            <div className="col-12 col-lg-7">
                 <div className="card border-0 shadow-sm p-4 rounded-4 bg-white">
                     <h5 className="fw-bold mb-4 text-dark border-bottom pb-2">My Planned Leaves</h5>
                     {leaves.length > 0 ? (
                         <div className="list-group list-group-flush">
                             {leaves.map(leave => (
-                                <div key={leave.leave_id} className="list-group-item p-3 mb-3 border-0 bg-light rounded-4 d-flex justify-content-between align-items-center">
+                                <div key={leave.leave_id} className="list-group-item p-3 mb-3 border-0 bg-light rounded-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
                                     <div>
                                         <h6 className="fw-bold text-dark mb-1">
                                             <i className="bi bi-calendar-date text-primary me-2"></i>
@@ -58,7 +58,7 @@ const LeaveTab = ({ leaves, leaveDate, setLeaveDate, leaveReason, setLeaveReason
                                         </h6>
                                         <p className="text-muted small mb-0">Reason: {leave.reason}</p>
                                     </div>
-                                    <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => onDeleteLeave(leave.leave_id)}>
+                                    <button className="btn btn-sm btn-outline-danger rounded-pill px-3 align-self-end align-self-sm-center" onClick={() => onDeleteLeave(leave.leave_id)}>
                                         Cancel Leave
                                     </button>
                                 </div>

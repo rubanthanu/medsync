@@ -93,7 +93,7 @@ const PatientDashboard = () => {
             </div>
 
             <div className="row g-4 mb-4">
-                <div className="col-md-6 col-lg-3">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 bg-primary-subtle text-primary text-center rounded-4 hover-grow shadow-sm surface-card">
                         <i className="bi bi-calendar2-check display-4 mb-3"></i>
                         <h5 className="fw-bold">Book Appointment</h5>
@@ -101,7 +101,7 @@ const PatientDashboard = () => {
                         <Link to="/patient/book" className="btn btn-primary rounded-pill mt-auto">Book Now</Link>
                     </div>
                 </div>
-                <div className="col-md-6 col-lg-3">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 bg-success-subtle text-success text-center rounded-4 hover-grow shadow-sm surface-card">
                         <i className="bi bi-person-lines-fill display-4 mb-3"></i>
                         <h5 className="fw-bold">Live Queue</h5>
@@ -109,7 +109,7 @@ const PatientDashboard = () => {
                         <Link to="/patient/queue" className="btn btn-success rounded-pill mt-auto">View Queue</Link>
                     </div>
                 </div>
-                <div className="col-md-6 col-lg-3">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 bg-warning-subtle text-warning-emphasis text-center rounded-4 hover-grow shadow-sm surface-card">
                         <i className="bi bi-file-earmark-medical display-4 mb-3"></i>
                         <h5 className="fw-bold">Certificates & Prescriptions</h5>
@@ -117,7 +117,7 @@ const PatientDashboard = () => {
                         <Link to="/patient/certificates" className="btn btn-warning text-white rounded-pill mt-auto">View Documents</Link>
                     </div>
                 </div>
-                <div className="col-md-6 col-lg-3">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 bg-info-subtle text-info-emphasis text-center rounded-4 hover-grow shadow-sm surface-card">
                         <i className="bi bi-person-gear display-4 mb-3"></i>
                         <h5 className="fw-bold">My Profile</h5>
@@ -172,7 +172,7 @@ const PatientDashboard = () => {
                                     <div className="mt-3">
                                         <button
                                             type="button"
-                                            className="btn btn-outline-danger rounded-pill px-4"
+                                            className="btn btn-outline-danger rounded-pill px-4 w-100 w-sm-auto"
                                             onClick={() => handleCancelAppointment(appointment.appointment_id)}
                                         >
                                             Cancel Appointment
@@ -201,9 +201,9 @@ const PatientDashboard = () => {
 
                 <div className="list-group notification-list shadow-sm border-0 rounded-4">
                     {notifications.filter(n => n.is_read == 0).length > 0 ? notifications.filter(n => n.is_read == 0).map(notif => (
-                        <div key={notif.notification_id} className="list-group-item p-3 border-0 border-bottom d-flex align-items-center justify-content-between notification-item">
+                        <div key={notif.notification_id} className="list-group-item p-3 border-0 border-bottom d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 notification-item">
                             <div className="d-flex align-items-center">
-                                <div className="bg-light rounded-circle p-2 me-3">
+                                <div className="bg-light rounded-circle p-2 me-3 flex-shrink-0">
                                     <i className="bi bi-bell text-primary"></i>
                                 </div>
                                 <div>
@@ -213,7 +213,7 @@ const PatientDashboard = () => {
                                 </div>
                             </div>
                             <button
-                                className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                className="btn btn-sm btn-outline-primary rounded-pill px-3 align-self-end align-self-sm-center flex-shrink-0"
                                 onClick={() => handleMarkAsRead(notif.notification_id)}
                             >
                                 Mark as read
@@ -243,7 +243,7 @@ const PatientDashboard = () => {
                         onChange={(e) => setFeedbackText(e.target.value)}
                     ></textarea>
                     <div className="d-flex justify-content-end">
-                        <button type="submit" className="btn btn-primary rounded-pill px-5 shadow-sm" disabled={feedbackLoading}>
+                        <button type="submit" className="btn btn-primary rounded-pill px-5 w-100 w-sm-auto shadow-sm" disabled={feedbackLoading}>
                             {feedbackLoading ? 'Submitting...' : 'Submit Feedback'}
                         </button>
                     </div>
