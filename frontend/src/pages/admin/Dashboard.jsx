@@ -11,6 +11,7 @@ import FeedbackTable from './FeedbackTable';
 import AppointmentWindows from './AppointmentWindows';
 import useHealthPosts from '../../hooks/useHealthPosts';
 import HealthPostsManager from './HealthPostsManager';
+import AdminPatients from './AdminPatients';
 
 const AdminDashboard = () => {
     const { data: stats } = useFetch(adminService.getStats, { initialData: { total_appointments: 0, total_patients: 0, total_certificates: 0, total_prescriptions: 0 } });
@@ -69,6 +70,10 @@ const AdminDashboard = () => {
                     onAddUser={handleAddUser}
                     onToggleStatus={toggleStatus}
                 />
+            )}
+
+            {activeTab === 'patients' && (
+                <AdminPatients />
             )}
 
 

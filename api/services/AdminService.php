@@ -3,6 +3,7 @@ require_once __DIR__ . '/../repositories/UserRepository.php';
 require_once __DIR__ . '/../repositories/AppointmentRepository.php';
 require_once __DIR__ . '/../repositories/PrescriptionRepository.php';
 require_once __DIR__ . '/../repositories/CertificateRepository.php';
+require_once __DIR__ . '/../repositories/PatientRepository.php';
 require_once __DIR__ . '/../services/AuthService.php';
 require_once __DIR__ . '/../exceptions/ValidationException.php';
 
@@ -12,6 +13,7 @@ class AdminService {
     private $appointmentRepo;
     private $prescriptionRepo;
     private $certificateRepo;
+    private $patientRepo;
     private $authService;
 
     public function __construct($conn) {
@@ -20,6 +22,7 @@ class AdminService {
         $this->appointmentRepo = new AppointmentRepository($conn);
         $this->prescriptionRepo = new PrescriptionRepository($conn);
         $this->certificateRepo = new CertificateRepository($conn);
+        $this->patientRepo = new PatientRepository($conn);
         $this->authService = new AuthService($conn);
     }
 
@@ -54,6 +57,18 @@ class AdminService {
 
     public function updateWindowSlots($windowId, $maxSlots) {
         $this->appointmentRepo->updateWindowSlots($windowId, $maxSlots);
+    }
+
+    public function getPatients($params) {
+        return $this->patientRepo->searchPatients($params);
+    }
+
+    public function getPatientDetails($patientId) {
+        $patient = $this->patientRepo->getFullDetails($patientId);
+        if (!$patient) {
+            throw new NotFoundException("Patient not found.");
+        }
+        return $patient;
     }
 }
 ?>

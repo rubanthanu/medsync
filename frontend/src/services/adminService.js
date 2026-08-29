@@ -12,4 +12,12 @@ export const getAppointmentWindows = () => api.get('/admin/get_appointment_windo
 
 export const updateWindowSlots = (window_id, max_slots) => api.post('/admin/update_window_slots', { window_id, max_slots: parseInt(max_slots) });
 
+export const getPatients = (params = {}) => {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, val]) => {
+        if (val !== '' && val !== null && val !== undefined) query.append(key, val);
+    });
+    return api.get(`/admin/get_patients?${query.toString()}`);
+};
 
+export const getPatientDetails = (patient_id) => api.get(`/admin/get_patient_details?patient_id=${patient_id}`);
