@@ -167,7 +167,7 @@ const DoctorDashboard = () => {
                 </li>
                 <li className="nav-item">
                     <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'certificates' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('certificates')}>
-                        <i className="bi bi-file-earmark-medical me-2"></i> Certificate Requests 
+                        <i className="bi bi-file-earmark-medical me-2"></i> Certificate Requests {certificates.filter(c => c.status === 'Pending').length > 0 && <span className="badge bg-danger ms-2">{certificates.filter(c => c.status === 'Pending').length}</span>}
                     </button>
                 </li>
                 <li className="nav-item">

@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../repositories/UserRepository.php';
 require_once __DIR__ . '/../repositories/AppointmentRepository.php';
 require_once __DIR__ . '/../repositories/PrescriptionRepository.php';
+require_once __DIR__ . '/../repositories/CertificateRepository.php';
 require_once __DIR__ . '/../services/AuthService.php';
 require_once __DIR__ . '/../exceptions/ValidationException.php';
 
@@ -10,6 +11,7 @@ class AdminService {
     private $userRepo;
     private $appointmentRepo;
     private $prescriptionRepo;
+    private $certificateRepo;
     private $authService;
 
     public function __construct($conn) {
@@ -17,6 +19,7 @@ class AdminService {
         $this->userRepo = new UserRepository($conn);
         $this->appointmentRepo = new AppointmentRepository($conn);
         $this->prescriptionRepo = new PrescriptionRepository($conn);
+        $this->certificateRepo = new CertificateRepository($conn);
         $this->authService = new AuthService($conn);
     }
 
@@ -24,6 +27,7 @@ class AdminService {
         $stats = [];
         $stats['total_appointments'] = $this->appointmentRepo->getTotalCount();
         $stats['total_patients'] = $this->userRepo->getTotalPatients();
+        $stats['total_certificates'] = $this->certificateRepo->getTotalCount();
         $stats['total_prescriptions'] = $this->prescriptionRepo->getTotalCount();
         return $stats;
     }

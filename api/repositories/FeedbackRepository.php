@@ -24,5 +24,13 @@ class FeedbackRepository {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function delete($feedbackId) {
+        $query = "DELETE FROM feedback WHERE feedback_id = :feedback_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":feedback_id", $feedbackId);
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
 }
 ?>
