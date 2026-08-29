@@ -13,8 +13,8 @@ const PrescriptionModal = ({ activeAppointment, patientProfile, patientHistory, 
                 </div>
 
                 <div className="card-body p-0 d-flex flex-column flex-lg-row overflow-auto">
-                    {/* Left Side: Medical Info & Checkup History (45% width on desktop) */}
-                    <div className="w-100 col-lg-5 border-end p-4 overflow-y-auto bg-light" style={{ maxHeight: '100%' }}>
+                    {/* Left Side: Medical Info & Checkup History (5 cols on desktop, 12 cols on mobile) */}
+                    <div className="col-12 col-lg-5 border-end p-4 overflow-y-auto bg-light" style={{ maxHeight: '100%' }}>
                         <h5 className="fw-bold text-dark mb-3 border-bottom pb-2">Patient Health Profile</h5>
 
                         {loadingHistory ? (
@@ -75,8 +75,8 @@ const PrescriptionModal = ({ activeAppointment, patientProfile, patientHistory, 
                         )}
                     </div>
 
-                    {/* Right Side: Writing Prescription Form (55% width on desktop) */}
-                    <form onSubmit={onSave} className="w-100 col-lg-7 p-4 overflow-y-auto d-flex flex-column justify-content-between" style={{ maxHeight: '100%' }}>
+                    {/* Right Side: Writing Prescription Form (7 cols on desktop, 12 cols on mobile) */}
+                    <form onSubmit={onSave} className="col-12 col-lg-7 p-4 overflow-y-auto d-flex flex-column justify-content-between" style={{ maxHeight: '100%' }}>
                         <div>
                             <h5 className="fw-bold text-dark mb-4 border-bottom pb-2">Record Diagnosis & Prescribe</h5>
 
