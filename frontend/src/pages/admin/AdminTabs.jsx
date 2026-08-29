@@ -7,6 +7,11 @@ const AdminTabs = ({ activeTab, onTabChange }) => {
                 </button>
             </li>
             <li className="nav-item">
+                <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'patients' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => onTabChange('patients')}>
+                    <i className="bi bi-person-lines-fill me-2"></i> Patients
+                </button>
+            </li>
+            <li className="nav-item">
                 <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'posts' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => onTabChange('posts')}>
                     <i className="bi bi-journal-medical me-2"></i> Manage Health Posts
                 </button>
