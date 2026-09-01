@@ -6,6 +6,8 @@ require_once __DIR__ . '/../repositories/PatientRepository.php';
 require_once __DIR__ . '/../services/NotificationService.php';
 require_once __DIR__ . '/../helpers/PDFHelper.php';
 require_once __DIR__ . '/../exceptions/NotFoundException.php';
+require_once __DIR__ . '/../exceptions/PermissionException.php';
+require_once __DIR__ . '/../exceptions/ValidationException.php';
 
 class PrescriptionService {
     private $conn;
@@ -125,16 +127,22 @@ class PrescriptionService {
     }
 
     public function getHistory($userId, $roleId, $patientId = null) {
-        if (empty($patientId)) {
-            // If patient is checking their own history
-            if ($roleId == 4) {
-                $patient = $this->patientRepo->findByUserId($userId);
-                $patientId = $patient['patient_id'] ?? null;
+        if ($roleId == 4) { // Patient
+            $patient = $this->patientRepo->findByUserId($userId);
+            if (!$patient) {
+                throw new NotFoundException("Patient record not found.");
             }
-        }
-
-        if (empty($patientId)) {
-            throw new \Exception("Patient ID is required.");
+            $patientId = $patient['patient_id'];
+        } else if ($roleId == 1 || $roleId == 2) { // Admin or Doctor
+            if (empty($patientId)) {
+                throw new ValidationException("Patient ID is required.");
+            }
+            $patient = $this->patientRepo->findById($patientId);
+            if (!$patient) {
+                throw new NotFoundException("Patient not found.");
+            }
+        } else {
+            throw new PermissionException("Unauthorized access.");
         }
 
         return $this->prescriptionRepo->getHistory($patientId);
