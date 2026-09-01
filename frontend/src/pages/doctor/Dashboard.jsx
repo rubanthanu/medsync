@@ -41,11 +41,25 @@ const DoctorDashboard = () => {
     const [leaveReason, setLeaveReason] = useState('Medical Leave');
     const [markingLeave, setMarkingLeave] = useState(false);
 
+    // Helper for default medicine item
+    const createDefaultMedicine = () => ({
+        name: '',
+        dosage: '1-0-1',
+        timing: 'After meals',
+        duration: '3 days',
+        instruction: ''
+    });
+
     // Prescription modal states
     const [activeAppointment, setActiveAppointment] = useState(null);
     const [patientHistory, setPatientHistory] = useState([]);
     const [patientProfile, setPatientProfile] = useState(null);
-    const [prescriptionForm, setPrescriptionForm] = useState({ diagnosis: '', notes: '', medicines: '', dosage: '', instructions: '' });
+    const [prescriptionForm, setPrescriptionForm] = useState({
+        diagnosis: '',
+        notes: '',
+        general_instructions: '',
+        medicines: [createDefaultMedicine()]
+    });
     const [loadingHistory, setLoadingHistory] = useState(false);
     const [savingPrescription, setSavingPrescription] = useState(false);
 
@@ -102,7 +116,12 @@ const DoctorDashboard = () => {
 
     const handleOpenPrescription = async (appt) => {
         setActiveAppointment(appt);
-        setPrescriptionForm({ diagnosis: '', notes: '', medicines: '', dosage: '', instructions: '' });
+        setPrescriptionForm({
+            diagnosis: '',
+            notes: '',
+            general_instructions: '',
+            medicines: [createDefaultMedicine()]
+        });
         setLoadingHistory(true);
         try {
             const resProfile = await userService.getPatientDetails(appt.patient_id);
@@ -114,9 +133,23 @@ const DoctorDashboard = () => {
 
     const handleSavePrescription = async (e) => {
         e.preventDefault();
+
+        // Ensure at least one medicine has a name filled
+        const validMedicines = (prescriptionForm.medicines || []).filter(m => m.name && m.name.trim() !== '');
+        if (validMedicines.length === 0) {
+            Swal.fire({ icon: 'warning', title: 'Medicine Required', text: 'Please prescribe at least one medicine with a name.' });
+            return;
+        }
+
         setSavingPrescription(true);
         try {
-            await prescriptionService.create({ appointment_id: activeAppointment.appointment_id, ...prescriptionForm });
+            await prescriptionService.create({
+                appointment_id: activeAppointment.appointment_id,
+                diagnosis: prescriptionForm.diagnosis,
+                notes: prescriptionForm.notes,
+                general_instructions: prescriptionForm.general_instructions,
+                medicines: validMedicines
+            });
             Swal.fire({ icon: 'success', title: 'Success!', text: 'Prescription created, Checkup history logged, and Appointment completed successfully!', timer: 3000, showConfirmButton: false });
             setActiveAppointment(null);
             if (selectedWindow) fetchQueue(selectedWindow.window_id);
