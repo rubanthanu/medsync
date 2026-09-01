@@ -227,7 +227,7 @@ const AdminPatients = () => {
 
                     {/* Filter Row */}
                     <div className="row g-2 mb-3">
-                        <div className="col-md-4 col-lg-2">
+                        <div className="col-12 col-sm-6 col-md-4 col-lg-2">
                             <select className="form-select form-select-sm" value={gender} onChange={(e) => setGender(e.target.value)}>
                                 <option value="">All Genders</option>
                                 <option value="Male">Male</option>
@@ -235,7 +235,7 @@ const AdminPatients = () => {
                                 <option value="Other">Other</option>
                             </select>
                         </div>
-                        <div className="col-md-4 col-lg-2">
+                        <div className="col-12 col-sm-6 col-md-4 col-lg-2">
                             <select className="form-select form-select-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
                                 <option value="">All Statuses</option>
                                 <option value="Active">Active</option>
@@ -243,19 +243,19 @@ const AdminPatients = () => {
                                 <option value="Inactive">Inactive</option>
                             </select>
                         </div>
-                        <div className="col-md-4 col-lg-2">
+                        <div className="col-12 col-sm-6 col-md-4 col-lg-2">
                             <select className="form-select form-select-sm" value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)}>
                                 <option value="">All Blood Groups</option>
                                 {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
                             </select>
                         </div>
-                        <div className="col-md-4 col-lg-2">
+                        <div className="col-12 col-sm-6 col-md-4 col-lg-2">
                             <input type="date" className="form-control form-control-sm" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} placeholder="From date" title="Registration date from" />
                         </div>
-                        <div className="col-md-4 col-lg-2">
+                        <div className="col-12 col-sm-6 col-md-4 col-lg-2">
                             <input type="date" className="form-control form-control-sm" value={dateTo} onChange={(e) => setDateTo(e.target.value)} placeholder="To date" title="Registration date to" />
                         </div>
-                        <div className="col-md-4 col-lg-2 d-flex gap-2">
+                        <div className="col-12 col-sm-6 col-md-4 col-lg-2 d-flex gap-2">
                             <button className="btn btn-primary btn-sm flex-fill" onClick={handleApplyFilters}>
                                 <i className="bi bi-funnel me-1"></i> Apply
                             </button>
@@ -287,34 +287,34 @@ const AdminPatients = () => {
                         </div>
                     ) : patients.length === 0 ? (
                         <div className="text-center py-5">
-                            <i className="bi bi-person-x display-4 text-muted"></i>
-                            <p className="text-muted mt-2 mb-1 fw-semibold">No patients found</p>
-                            <p className="text-muted small mb-0">Try changing your search or filter criteria.</p>
+                            <i className="bi bi-people display-4 text-muted"></i>
+                            <p className="text-muted mt-3 mb-0">No patients found matching your criteria.</p>
+                            {(search || gender || status || bloodGroup || dateFrom || dateTo) && (
+                                <button className="btn btn-outline-primary btn-sm rounded-pill px-4 mt-3" onClick={handleClearFilters}>
+                                    <i className="bi bi-x-circle me-1"></i> Clear Filters
+                                </button>
+                            )}
                         </div>
                     ) : (
                         <>
                             <div className="table-responsive">
                                 <table className="table table-hover align-middle mb-0">
-                                    <thead className="table-light text-secondary">
+                                    <thead className="table-light">
                                         <tr>
-                                            <th className="ps-4" role="button" onClick={() => handleSort('full_name')} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                                                Patient <SortIcon field="full_name" />
-                                            </th>
+                                            <th>Patient</th>
                                             <th>Email</th>
                                             <th>Phone</th>
                                             <th>Gender</th>
                                             <th>Blood Group</th>
                                             <th>Status</th>
-                                            <th role="button" onClick={() => handleSort('created_at')} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                                                Registered <SortIcon field="created_at" />
-                                            </th>
+                                            <th>Registered</th>
                                             <th className="text-center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {patients.map(p => (
-                                            <tr key={p.patient_id || p.user_id}>
-                                                <td className="ps-4">
+                                            <tr key={p.patient_id}>
+                                                <td>
                                                     <div className="d-flex align-items-center gap-2">
                                                         {p.profile_image ? (
                                                             <img src={p.profile_image} alt="" className="rounded-circle" width="36" height="36" style={{ objectFit: 'cover' }} />
@@ -349,8 +349,8 @@ const AdminPatients = () => {
                             </div>
 
                             {/* Pagination Footer */}
-                            <div className="d-flex justify-content-between align-items-center px-4 py-3 border-top">
-                                <p className="text-muted small mb-0">
+                            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 px-4 py-3 border-top">
+                                <p className="text-muted small mb-0 text-center text-sm-start">
                                     Showing <strong>{showFrom}–{showTo}</strong> of <strong>{total}</strong> patients
                                 </p>
                                 {renderPagination()}
@@ -381,7 +381,7 @@ const AdminPatients = () => {
                             ) : selectedPatient ? (
                                 <>
                                     {/* Profile Header */}
-                                    <div className="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded-4">
+                                    <div className="d-flex flex-wrap align-items-center gap-3 mb-4 p-3 bg-light rounded-4">
                                         {selectedPatient.profile_image ? (
                                             <img src={selectedPatient.profile_image} alt="" className="rounded-circle" width="56" height="56" style={{ objectFit: 'cover' }} />
                                         ) : (
@@ -401,27 +401,27 @@ const AdminPatients = () => {
                                         <div className="card-body p-3">
                                             <h6 className="fw-bold text-primary mb-3"><i className="bi bi-person me-2"></i>Personal Information</h6>
                                             <div className="row g-3">
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Full Name</div>
                                                     <div className="fw-semibold">{selectedPatient.full_name || 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Email</div>
                                                     <div className="fw-semibold">{selectedPatient.email || 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Phone</div>
                                                     <div className="fw-semibold">{selectedPatient.phone || 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Gender</div>
                                                     <div className="fw-semibold">{selectedPatient.gender || 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Date of Birth</div>
                                                     <div className="fw-semibold">{selectedPatient.date_of_birth ? new Date(selectedPatient.date_of_birth).toLocaleDateString() : 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Address</div>
                                                     <div className="fw-semibold">{selectedPatient.address || 'Not provided'}</div>
                                                 </div>
@@ -434,23 +434,23 @@ const AdminPatients = () => {
                                         <div className="card-body p-3">
                                             <h6 className="fw-bold text-success mb-3"><i className="bi bi-heart-pulse me-2"></i>Medical Information</h6>
                                             <div className="row g-3">
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Blood Group</div>
                                                     <div className="fw-semibold">{selectedPatient.blood_group || 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Allergies</div>
                                                     <div className="fw-semibold">{selectedPatient.allergies || 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-12">
+                                                <div className="col-12">
                                                     <div className="small text-muted">Medical Conditions</div>
                                                     <div className="fw-semibold">{selectedPatient.medical_conditions || 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Emergency Contact Name</div>
                                                     <div className="fw-semibold">{selectedPatient.emergency_contact_name || 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                <div className="col-12 col-sm-6">
                                                     <div className="small text-muted">Emergency Contact Phone</div>
                                                     <div className="fw-semibold">{selectedPatient.emergency_contact_phone || 'Not provided'}</div>
                                                 </div>
@@ -463,15 +463,15 @@ const AdminPatients = () => {
                                         <div className="card-body p-3">
                                             <h6 className="fw-bold text-warning mb-3"><i className="bi bi-shield-check me-2"></i>Account Information</h6>
                                             <div className="row g-3">
-                                                <div className="col-md-4">
+                                                <div className="col-12 col-sm-4">
                                                     <div className="small text-muted">Status</div>
                                                     <div><span className={`badge ${getStatusBadge(selectedPatient.account_status)} rounded-pill`}>{selectedPatient.account_status}</span></div>
                                                 </div>
-                                                <div className="col-md-4">
+                                                <div className="col-12 col-sm-4">
                                                     <div className="small text-muted">Registered Date</div>
                                                     <div className="fw-semibold">{selectedPatient.created_at ? new Date(selectedPatient.created_at).toLocaleString() : 'Not provided'}</div>
                                                 </div>
-                                                <div className="col-md-4">
+                                                <div className="col-12 col-sm-4">
                                                     <div className="small text-muted">Last Updated</div>
                                                     <div className="fw-semibold">{selectedPatient.updated_at ? new Date(selectedPatient.updated_at).toLocaleString() : 'Not provided'}</div>
                                                 </div>

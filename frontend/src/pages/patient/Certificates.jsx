@@ -68,14 +68,14 @@ const Certificates = () => {
             <h2 className="fw-bold mb-4">Certificates & Prescriptions</h2>
 
             {/* Navigation Tabs */}
-            <ul className="nav nav-pills mb-4 gap-2 bg-light p-2 rounded-4 d-inline-flex border-0 shadow-sm">
-                <li className="nav-item">
-                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'request' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('request')}>
+            <ul className="nav nav-pills mb-4 gap-2 bg-light p-2 rounded-4 d-flex flex-wrap border-0 shadow-sm">
+                <li className="nav-item flex-fill flex-sm-grow-0">
+                    <button className={`nav-link w-100 rounded-pill px-4 fw-semibold border-0 ${activeTab === 'request' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('request')}>
                         <i className="bi bi-file-earmark-plus me-2"></i> Request Medical Certificate
                     </button>
                 </li>
-                <li className="nav-item">
-                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'documents' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('documents')}>
+                <li className="nav-item flex-fill flex-sm-grow-0">
+                    <button className={`nav-link w-100 rounded-pill px-4 fw-semibold border-0 ${activeTab === 'documents' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('documents')}>
                         <i className="bi bi-folder2-open me-2"></i> My Documents
                     </button>
                 </li>
@@ -84,7 +84,7 @@ const Certificates = () => {
             {/* Request Certificate Tab */}
             {activeTab === 'request' && (
                 <div className="row">
-                    <div className="col-lg-8">
+                    <div className="col-12 col-lg-8">
                         <div className="card p-4 p-md-5 border-0 shadow-sm rounded-4 bg-white">
                             <h4 className="fw-bold text-dark mb-4 border-bottom pb-2">New Certificate Request</h4>
                             {message.text && (
@@ -96,7 +96,7 @@ const Certificates = () => {
                             )}
                             <form onSubmit={handleSubmit}>
                                 <div className="row mb-3">
-                                    <div className="col-md-6">
+                                    <div className="col-12 col-sm-6 mb-3 mb-sm-0">
                                         <label className="form-label fw-semibold text-secondary small">START DATE</label>
                                         <input 
                                             type="date" 
@@ -114,7 +114,7 @@ const Certificates = () => {
                                             required 
                                         />
                                     </div>
-                                    <div className="col-md-6">
+                                    <div className="col-12 col-sm-6">
                                         <label className="form-label fw-semibold text-secondary small">END DATE</label>
                                         <input 
                                             type="date" 
@@ -135,7 +135,7 @@ const Certificates = () => {
                                     <input type="file" className="form-control rounded-pill px-3" accept=".pdf,image/*" onChange={e => setProofFile(e.target.files[0])} required />
                                     <div className="form-text text-muted small px-2">Please upload a valid scan/photo of your clinical prescription or report.</div>
                                 </div>
-                                <button type="submit" className="btn btn-primary rounded-pill px-5 py-2 shadow-sm fw-bold hover-grow" disabled={loading}>
+                                <button type="submit" className="btn btn-primary rounded-pill px-5 py-2 w-100 w-sm-auto shadow-sm fw-bold hover-grow" disabled={loading}>
                                     {loading ? (
                                         <>
                                             <span className="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -155,7 +155,7 @@ const Certificates = () => {
             {activeTab === 'documents' && (
                 <div className="row g-4">
                     {/* Medical Certificates List */}
-                    <div className="col-lg-6">
+                    <div className="col-12 col-lg-6">
                         <div className="card p-4 rounded-4 border-0 shadow-sm bg-white h-100">
                             <h4 className="fw-bold text-dark mb-4 border-bottom pb-2">
                                 <i className="bi bi-file-earmark-medical text-primary me-2"></i> Approved Certificates
@@ -198,7 +198,7 @@ const Certificates = () => {
                     </div>
 
                     {/* e-Prescriptions List */}
-                    <div className="col-lg-6">
+                    <div className="col-12 col-lg-6">
                         <div className="card p-4 rounded-4 border-0 shadow-sm bg-white h-100">
                             <h4 className="fw-bold text-dark mb-4 border-bottom pb-2">
                                 <i className="bi bi-prescription text-success me-2"></i> My e-Prescriptions
