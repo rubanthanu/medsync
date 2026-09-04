@@ -95,11 +95,11 @@ const PrescriptionModal = ({ activeAppointment, patientProfile, patientHistory, 
                             <div className="row mb-3">
                                 <div className="col-md-6">
                                     <label className="form-label fw-semibold text-secondary small">DOSAGE (E.G. 1-0-1, 1-1-1)</label>
-                                    <input type="text" className="form-control rounded-pill px-3" placeholder="e.g. Twice daily after meals" value={prescriptionForm.dosage} onChange={e => setPrescriptionForm({ ...prescriptionForm, dosage: e.target.value })} />
+                                    <input type="text" className="form-control rounded-pill px-3" placeholder="e.g. Twice daily after meals" value={prescriptionForm.dosage} onChange={e => setPrescriptionForm({ ...prescriptionForm, dosage: e.target.value })} required/>
                                 </div>
                                 <div className="col-md-6">
                                     <label className="form-label fw-semibold text-secondary small">DURATION / INSTRUCTIONS</label>
-                                    <input type="text" className="form-control rounded-pill px-3" placeholder="e.g. Take for 5 days" value={prescriptionForm.instructions} onChange={e => setPrescriptionForm({ ...prescriptionForm, instructions: e.target.value })} />
+                                    <input type="text" className="form-control rounded-pill px-3" placeholder="e.g. Take for 5 days" value={prescriptionForm.instructions} onChange={e => setPrescriptionForm({ ...prescriptionForm, instructions: e.target.value })} required/>
                                 </div>
                             </div>
                         </div>

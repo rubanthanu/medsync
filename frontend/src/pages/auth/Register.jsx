@@ -50,7 +50,8 @@ const Register = () => {
                                 className="form-control" 
                                 value={formData.full_name}
                                 onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                                required
+                                required 
+                                autoFocus
                             />
                         </div>
                         <div className="mb-3">
