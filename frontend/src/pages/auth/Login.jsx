@@ -29,47 +29,49 @@ const Login = () => {
     };
 
     return (
-        <div className="row justify-content-center animate-fade-in mt-5">
-            <div className="col-md-5">
-                <div className="card p-3 p-sm-5">
-                    <div className="text-center mb-4">
-                        <img src={logo} alt="UWU MedSync Logo" height="80" className="mb-3" />
-                        <h2 className="fw-bold text-primary">Welcome Back</h2>
-                        <p className="text-muted">Login to your UWU MedSync account</p>
-                    </div>
-                    {error && <div className="alert alert-danger">{error}</div>}
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label className="form-label fw-semibold">Email address</label>
-                            <input 
-                                type="email" 
-                                className="form-control" 
-                                value={formData.email}
-                                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                required
-                            />
+        <div className="container py-4">
+            <div className="row justify-content-center animate-fade-in my-3 my-md-5">
+                <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+                    <div className="card p-3 p-sm-5">
+                        <div className="text-center mb-4">
+                            <img src={logo} alt="UWU MedSync Logo" height="80" className="mb-3" />
+                            <h2 className="fw-bold text-primary">Welcome Back</h2>
+                            <p className="text-muted">Login to your UWU MedSync account</p>
                         </div>
-                        <div className="mb-4">
-                            <div className="d-flex justify-content-between mb-1">
-                                <label className="form-label fw-semibold mb-0">Password</label>
-                                <Link to="/forgot-password" size="sm" className="text-primary text-decoration-none small">Forgot password?</Link>
+                        {error && <div className="alert alert-danger">{error}</div>}
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-3">
+                                <label className="form-label fw-semibold">Email address</label>
+                                <input 
+                                    type="email" 
+                                    className="form-control" 
+                                    value={formData.email} 
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    required
+                                />
                             </div>
-                            <input 
-                                type="password" 
-                                className="form-control" 
-                                value={formData.password}
-                                onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill mb-3" disabled={loading}>
-                            {loading ? 'Logging in...' : 'Login'}
-                        </button>
-                        <div className="text-center">
-                            <span className="text-muted">Don't have an account? </span>
-                            <Link to="/register" className="text-primary text-decoration-none fw-semibold">Register here</Link>
-                        </div>
-                    </form>
+                            <div className="mb-4">
+                                <div className="d-flex justify-content-between mb-1">
+                                    <label className="form-label fw-semibold mb-0">Password</label>
+                                    <Link to="/forgot-password" size="sm" className="text-primary text-decoration-none small">Forgot password?</Link>
+                                </div>
+                                <input 
+                                    type="password" 
+                                    className="form-control" 
+                                    value={formData.password} 
+                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill mb-3" disabled={loading}>
+                                {loading ? 'Logging in...' : 'Login'}
+                            </button>
+                            <div className="text-center">
+                                <span className="text-muted">Don't have an account? </span>
+                                <Link to="/register" className="text-primary text-decoration-none fw-semibold">Register here</Link>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

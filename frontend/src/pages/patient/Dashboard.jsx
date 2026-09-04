@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as notificationService from '../../services/notificationService';
 import * as appointmentService from '../../services/appointmentService';
+import * as feedbackService from '../../services/feedbackService';
 import Swal from 'sweetalert2';
 import useFetch from '../../hooks/useFetch';
 import useToast from '../../hooks/useToast';
@@ -10,7 +11,8 @@ const PatientDashboard = () => {
     const { toast, showToast, hideToast } = useToast();
     const { data: notifications, refetch: fetchNotifications } = useFetch(notificationService.getAll);
     const { data: appointments, loaded: appointmentsLoaded, refetch: refreshAppointments } = useFetch(appointmentService.getPatientAppointments);
-
+    const [feedbackText, setFeedbackText] = useState('');
+    const [feedbackLoading, setFeedbackLoading] = useState(false);
 
     const handleCancelAppointment = async (appointmentId) => {
         const result = await Swal.fire({
@@ -32,6 +34,24 @@ const PatientDashboard = () => {
             await refreshAppointments();
         } catch (err) {
             showToast('danger', err?.response?.data?.message || 'Unable to cancel appointment.');
+        }
+    };
+     const handleFeedbackSubmit = async (e) => {
+        e.preventDefault();
+        if (!feedbackText.trim()) {
+            showToast('danger', 'Please enter feedback before submitting.');
+            return;
+        }
+
+        setFeedbackLoading(true);
+        try {
+            await feedbackService.submit(feedbackText);
+            setFeedbackText('');
+            showToast('success', 'Feedback submitted successfully.');
+        } catch (err) {
+            showToast('danger', err?.response?.data?.message || 'Unable to submit feedback.');
+        } finally {
+            setFeedbackLoading(false);
         }
     };
 
@@ -73,7 +93,7 @@ const PatientDashboard = () => {
             </div>
 
             <div className="row g-4 mb-4">
-                <div className="col-md-6 col-lg-3">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 bg-primary-subtle text-primary text-center rounded-4 hover-grow shadow-sm surface-card">
                         <i className="bi bi-calendar2-check display-4 mb-3"></i>
                         <h5 className="fw-bold">Book Appointment</h5>
@@ -81,7 +101,7 @@ const PatientDashboard = () => {
                         <Link to="/patient/book" className="btn btn-primary rounded-pill mt-auto">Book Now</Link>
                     </div>
                 </div>
-                <div className="col-md-6 col-lg-3">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 bg-success-subtle text-success text-center rounded-4 hover-grow shadow-sm surface-card">
                         <i className="bi bi-person-lines-fill display-4 mb-3"></i>
                         <h5 className="fw-bold">Live Queue</h5>
@@ -89,7 +109,7 @@ const PatientDashboard = () => {
                         <Link to="/patient/queue" className="btn btn-success rounded-pill mt-auto">View Queue</Link>
                     </div>
                 </div>
-                <div className="col-md-6 col-lg-3">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 bg-warning-subtle text-warning-emphasis text-center rounded-4 hover-grow shadow-sm surface-card">
                         <i className="bi bi-file-earmark-medical display-4 mb-3"></i>
                         <h5 className="fw-bold">Certificates & Prescriptions</h5>
@@ -97,7 +117,7 @@ const PatientDashboard = () => {
                         <Link to="/patient/certificates" className="btn btn-warning text-white rounded-pill mt-auto">View Documents</Link>
                     </div>
                 </div>
-                <div className="col-md-6 col-lg-3">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 bg-info-subtle text-info-emphasis text-center rounded-4 hover-grow shadow-sm surface-card">
                         <i className="bi bi-person-gear display-4 mb-3"></i>
                         <h5 className="fw-bold">My Profile</h5>
@@ -152,7 +172,7 @@ const PatientDashboard = () => {
                                     <div className="mt-3">
                                         <button
                                             type="button"
-                                            className="btn btn-outline-danger rounded-pill px-4"
+                                            className="btn btn-outline-danger rounded-pill px-4 w-100 w-sm-auto"
                                             onClick={() => handleCancelAppointment(appointment.appointment_id)}
                                         >
                                             Cancel Appointment
@@ -181,9 +201,9 @@ const PatientDashboard = () => {
 
                 <div className="list-group notification-list shadow-sm border-0 rounded-4">
                     {notifications.filter(n => n.is_read == 0).length > 0 ? notifications.filter(n => n.is_read == 0).map(notif => (
-                        <div key={notif.notification_id} className="list-group-item p-3 border-0 border-bottom d-flex align-items-center justify-content-between notification-item">
+                        <div key={notif.notification_id} className="list-group-item p-3 border-0 border-bottom d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 notification-item">
                             <div className="d-flex align-items-center">
-                                <div className="bg-light rounded-circle p-2 me-3">
+                                <div className="bg-light rounded-circle p-2 me-3 flex-shrink-0">
                                     <i className="bi bi-bell text-primary"></i>
                                 </div>
                                 <div>
@@ -193,7 +213,7 @@ const PatientDashboard = () => {
                                 </div>
                             </div>
                             <button
-                                className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                className="btn btn-sm btn-outline-primary rounded-pill px-3 align-self-end align-self-sm-center flex-shrink-0"
                                 onClick={() => handleMarkAsRead(notif.notification_id)}
                             >
                                 Mark as read
@@ -206,6 +226,29 @@ const PatientDashboard = () => {
                     )}
                 </div>
             </div>
+             
+             <div className="feedback-panel mt-5">
+                <div className="feedback-copy">
+                    <p className="eyebrow mb-1">Feedback</p>
+                    <h4 className="fw-bold mb-2 text-white">Submit Feedback</h4>
+                    <p className="mb-0 text-muted">Share a quick note about your visit or the platform experience.</p>
+                </div>
+
+                <form className="feedback-form mt-4 card border-0 shadow-sm p-4 rounded-4" onSubmit={handleFeedbackSubmit}>
+                    <textarea
+                        className="form-control feedback-textarea rounded-4 p-3 mb-3"
+                        rows="4"
+                        placeholder="Tell us what went well or what we can improve..."
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                    ></textarea>
+                    <div className="d-flex justify-content-end">
+                        <button type="submit" className="btn btn-primary rounded-pill px-5 w-100 w-sm-auto shadow-sm" disabled={feedbackLoading}>
+                            {feedbackLoading ? 'Submitting...' : 'Submit Feedback'}
+                        </button>
+                    </div>
+                </form>
+            </div> 
 
 
         </div>

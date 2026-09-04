@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import * as appointmentService from '../../services/appointmentService';
 import * as queueService from '../../services/queueService';
+import * as certificateService from '../../services/certificateService';
 import Swal from 'sweetalert2';
+import useFetch from '../../hooks/useFetch';
 import DashboardHeader from './DashboardHeader';
 import QuickBookingForm from './QuickBookingForm';
 import WindowQueueTable from './WindowQueueTable';
 import { getTodayISO } from '../../utils/dateUtils';
-
+import MCRequestsTable from './MCRequestsTable';
 
 const ReceptionistDashboard = () => {
+    const { data: mcRequests } = useFetch(certificateService.getCertificateRequests);
     const [windows, setWindows] = useState([]);
     const [selectedWindow, setSelectedWindow] = useState(null);
     const [queue, setQueue] = useState([]);
@@ -74,7 +77,7 @@ const ReceptionistDashboard = () => {
             
             <div className="row g-4">
                 {/* Left Column: Quick Booking Form */}
-                <div className="col-lg-4">
+                <div className="col-12 col-lg-4">
                  <QuickBookingForm 
                         windows={windows}
                         bookingData={bookingData}
@@ -85,8 +88,8 @@ const ReceptionistDashboard = () => {
                 </div>
                 
                 {/* Right Column: Dynamic Content */}
-                <div className="col-lg-8">
-                    
+                <div className="col-12 col-lg-8">
+                    {activeTab === 'queue' ? (
                         <WindowQueueTable 
                             windows={windows}
                             selectedWindow={selectedWindow}
@@ -94,8 +97,9 @@ const ReceptionistDashboard = () => {
                             queue={queue}
                             onUpdateStatus={updateStatus}
                         />
-                
-                
+                    ) : (
+                        <MCRequestsTable mcRequests={mcRequests} />
+                    )} 
                 </div>
             </div>
         </div>

@@ -102,7 +102,6 @@ const Profile = () => {
 
             // Role specific fields custom handling if missing
             if (user.role === 'Patient') {
-                formData.append('university_id', profile.university_id || '');
                 formData.append('blood_group', profile.blood_group || '');
                 formData.append('allergies', profile.allergies || '');
                 formData.append('medical_conditions', profile.medical_conditions || '');
@@ -242,31 +241,31 @@ const Profile = () => {
                 <div className="card border-0 shadow-sm bg-white p-4 rounded-4 mb-4">
                     <h5 className="fw-bold text-dark mb-4 border-bottom pb-2">Personal Information</h5>
                     <div className="row g-3">
-                        <div className="col-md-6">
+                        <div className="col-12 col-md-6">
                             <label className="form-label fw-semibold text-secondary small">FULL NAME</label>
                             <input type="text" className="form-control rounded-pill px-3" value={profile?.full_name || ''} onChange={e => setProfile({ ...profile, full_name: e.target.value })} required />
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-12 col-md-6">
                             <label className="form-label fw-semibold text-secondary small">EMAIL (READ-ONLY)</label>
                             <input type="email" className="form-control rounded-pill px-3 bg-light" value={profile?.email || ''} readOnly />
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-12 col-md-6">
                             <label className="form-label fw-semibold text-secondary small">PHONE (10 digits)</label>
                             <input
                                 type="tel"
                                 className="form-control rounded-pill px-3"
                                 value={profile?.phone || ''}
                                 onChange={e => setProfile({ ...profile, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10) })}
-                                placeholder="7712345678"
+                                placeholder="0771234567"
                                 maxLength="10"
                             />
                             {profile?.phone && profile.phone.length < 10 && <small className="text-danger d-block mt-1">Phone must be 10 digits</small>}
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-12 col-md-6">
                             <label className="form-label fw-semibold text-secondary small">DATE OF BIRTH</label>
                             <input type="date" className="form-control rounded-pill px-3" value={profile?.date_of_birth || ''} onChange={e => setProfile({ ...profile, date_of_birth: e.target.value })} />
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-12 col-md-6">
                             <label className="form-label fw-semibold text-secondary small">GENDER</label>
                             <select className="form-select rounded-pill px-3" value={profile?.gender || ''} onChange={e => setProfile({ ...profile, gender: e.target.value })}>
                                 <option value="">Select Gender</option>
@@ -287,11 +286,7 @@ const Profile = () => {
                     <div className="card border-0 shadow-sm bg-white p-4 rounded-4 mb-4">
                         <h5 className="fw-bold text-dark mb-4 border-bottom pb-2">Medical Information</h5>
                         <div className="row g-3">
-                            <div className="col-md-6">
-                                <label className="form-label fw-semibold text-secondary small">UNIVERSITY ID</label>
-                                <input type="text" className="form-control rounded-pill px-3" value={profile?.university_id || ''} onChange={e => setProfile({ ...profile, university_id: e.target.value })} placeholder="UWU/STD/21/001" required />
-                            </div>
-                            <div className="col-md-6">
+                            <div className="col-12 col-md-6">
                                 <label className="form-label fw-semibold text-secondary small">BLOOD GROUP</label>
                                 <select className="form-select rounded-pill px-3" value={profile?.blood_group || ''} onChange={e => setProfile({ ...profile, blood_group: e.target.value })}>
                                     <option value="">Select Blood Group</option>
@@ -305,28 +300,28 @@ const Profile = () => {
                                     <option value="O-">O-</option>
                                 </select>
                             </div>
-                            <div className="col-md-6">
+                            <div className="col-12 col-md-6">
                                 <label className="form-label fw-semibold text-secondary small">EMERGENCY CONTACT NAME</label>
                                 <input type="text" className="form-control rounded-pill px-3" value={profile?.emergency_contact_name || ''} onChange={e => setProfile({ ...profile, emergency_contact_name: e.target.value })} required />
                             </div>
-                            <div className="col-md-6">
+                            <div className="col-12 col-md-6">
                                 <label className="form-label fw-semibold text-secondary small">EMERGENCY CONTACT PHONE (10 digits)</label>
                                 <input
                                     type="tel"
                                     className="form-control rounded-pill px-3"
                                     value={profile?.emergency_contact_phone || ''}
                                     onChange={e => setProfile({ ...profile, emergency_contact_phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10) })}
-                                    placeholder="7712345678"
+                                    placeholder="0771234567"
                                     maxLength="10"
                                     required
                                 />
                                 {profile?.emergency_contact_phone && profile.emergency_contact_phone.length < 10 && <small className="text-danger d-block mt-1">Phone must be 10 digits</small>}
                             </div>
-                            <div className="col-md-6">
+                            <div className="col-12 col-md-6">
                                 <label className="form-label fw-semibold text-secondary small">ALLERGIES</label>
                                 <textarea className="form-control rounded-4 p-3" rows="2" value={profile?.allergies || ''} onChange={e => setProfile({ ...profile, allergies: e.target.value })} placeholder="e.g. Penicillin, Pollen, Peanuts (or 'None')"></textarea>
                             </div>
-                            <div className="col-md-6">
+                            <div className="col-12 col-md-6">
                                 <label className="form-label fw-semibold text-secondary small">MEDICAL CONDITIONS</label>
                                 <textarea className="form-control rounded-4 p-3" rows="2" value={profile?.medical_conditions || ''} onChange={e => setProfile({ ...profile, medical_conditions: e.target.value })} placeholder="e.g. Asthma, Hypertension (or 'None')"></textarea>
                             </div>
@@ -339,13 +334,13 @@ const Profile = () => {
                     <div className="card border-0 shadow-sm bg-white p-4 rounded-4 mb-4">
                         <h5 className="fw-bold text-dark mb-4 border-bottom pb-2">Professional Information</h5>
                         <div className="row g-3">
-                            <div className="col-md-6">
+                            <div className="col-12 col-md-6">
                                 <label className="form-label fw-semibold text-secondary small">SPECIALIZATION</label>
                                 <input type="text" className="form-control rounded-pill px-3" value={profile?.specialization || ''} onChange={e => setProfile({ ...profile, specialization: e.target.value })} placeholder="e.g. General Physician, Cardiologist" required />
                             </div>
-                            <div className="col-md-6">
+                            <div className="col-12 col-md-6">
                                 <label className="form-label fw-semibold text-secondary small">DIGITAL SIGNATURE</label>
-                                <div className="d-flex align-items-center gap-3">
+                                <div className="d-flex flex-wrap align-items-center gap-3">
                                     {sigPreview && (
                                         <img src={sigPreview} alt="Signature Preview" className="border rounded bg-light p-1" style={{ height: '50px', maxWidth: '150px', objectFit: 'contain' }} />
                                     )}
@@ -360,8 +355,8 @@ const Profile = () => {
                 )}
 
                 {/* Submit button */}
-                <div className="text-end mb-5">
-                    <button type="submit" className="btn btn-primary btn-lg rounded-pill px-5 shadow-sm" disabled={saving}>
+                <div className="text-center text-sm-end mb-5">
+                    <button type="submit" className="btn btn-primary btn-lg rounded-pill px-5 w-100 w-sm-auto shadow-sm" disabled={saving}>
                         {saving ? (
                             <>
                                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -396,7 +391,7 @@ const Profile = () => {
 
                 <form onSubmit={handleChangePassword}>
                     <div className="row g-3">
-                        <div className="col-md-4">
+                        <div className="col-12 col-md-4">
                             <label className="form-label fw-semibold text-secondary small">CURRENT PASSWORD</label>
                             <input
                                 type="password"
@@ -406,7 +401,7 @@ const Profile = () => {
                                 required
                             />
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-12 col-md-4">
                             <label className="form-label fw-semibold text-secondary small">NEW PASSWORD</label>
                             <input
                                 type="password"
@@ -416,7 +411,7 @@ const Profile = () => {
                                 required
                             />
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-12 col-md-4">
                             <label className="form-label fw-semibold text-secondary small">CONFIRM NEW PASSWORD</label>
                             <input
                                 type="password"
@@ -427,8 +422,8 @@ const Profile = () => {
                             />
                         </div>
                     </div>
-                    <div className="text-end mt-4">
-                        <button type="submit" className="btn btn-outline-primary btn-md rounded-pill px-4" disabled={changingPassword}>
+                    <div className="text-center text-sm-end mt-4">
+                        <button type="submit" className="btn btn-outline-primary btn-md rounded-pill px-4 w-100 w-sm-auto" disabled={changingPassword}>
                             {changingPassword ? 'Updating...' : 'Update Password'}
                         </button>
                     </div>

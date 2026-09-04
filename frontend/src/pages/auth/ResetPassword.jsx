@@ -54,68 +54,70 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className="row justify-content-center animate-fade-in mt-5">
-            <div className="col-md-5">
-                <div className="card p-3 p-sm-5">
-                    <div className="text-center mb-4">
-                        <div className="bg-primary-subtle rounded-circle d-inline-flex p-3 mb-3">
-                            <i className={`bi ${step === 1 ? 'bi-envelope-check' : 'bi-lock'} text-primary fs-2`}></i>
+        <div className="container py-4">
+            <div className="row justify-content-center animate-fade-in my-3 my-md-5">
+                <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+                    <div className="card p-3 p-sm-5">
+                        <div className="text-center mb-4">
+                            <div className="bg-primary-subtle rounded-circle d-inline-flex p-3 mb-3">
+                                <i className={`bi ${step === 1 ? 'bi-envelope-check' : 'bi-lock'} text-primary fs-2`}></i>
+                            </div>
+                            <h2 className="fw-bold text-dark">{step === 1 ? 'Verify OTP' : 'New Password'}</h2>
+                            <p className="text-muted">
+                                {step === 1 
+                                    ? `Enter the 6-digit code sent to ${email}`
+                                    : 'Choose a strong password for your account'}
+                            </p>
                         </div>
-                        <h2 className="fw-bold text-dark">{step === 1 ? 'Verify OTP' : 'New Password'}</h2>
-                        <p className="text-muted">
-                            {step === 1 
-                                ? `Enter the 6-digit code sent to ${email}`
-                                : 'Choose a strong password for your account'}
-                        </p>
+
+                        {error && <div className="alert alert-danger">{error}</div>}
+                        {success && <div className="alert alert-success">{success}</div>}
+
+                        {step === 1 ? (
+                            <form onSubmit={handleVerifyOtp}>
+                                <div className="mb-4">
+                                    <input 
+                                        type="text" 
+                                        className="form-control form-control-lg text-center fw-bold" 
+                                        placeholder="Enter OTP"
+                                        value={otp}
+                                        maxLength="6"
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill" disabled={loading}>
+                                    {loading ? 'Verifying...' : 'Verify OTP'}
+                                </button>
+                            </form>
+                        ) : (
+                            <form onSubmit={handleResetPassword}>
+                                <div className="mb-3">
+                                    <label className="form-label fw-semibold">New Password</label>
+                                    <input 
+                                        type="password" 
+                                        className="form-control" 
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="form-label fw-semibold">Confirm Password</label>
+                                    <input 
+                                        type="password" 
+                                        className="form-control" 
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill" disabled={loading}>
+                                    {loading ? 'Resetting...' : 'Reset Password'}
+                                </button>
+                            </form>
+                        )}
                     </div>
-
-                    {error && <div className="alert alert-danger">{error}</div>}
-                    {success && <div className="alert alert-success">{success}</div>}
-
-                    {step === 1 ? (
-                        <form onSubmit={handleVerifyOtp}>
-                            <div className="mb-4">
-                                <input 
-                                    type="text" 
-                                    className="form-control form-control-lg text-center fw-bold" 
-                                    placeholder="Enter OTP"
-                                    value={otp}
-                                    maxLength="6"
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill" disabled={loading}>
-                                {loading ? 'Verifying...' : 'Verify OTP'}
-                            </button>
-                        </form>
-                    ) : (
-                        <form onSubmit={handleResetPassword}>
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">New Password</label>
-                                <input 
-                                    type="password" 
-                                    className="form-control" 
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="form-label fw-semibold">Confirm Password</label>
-                                <input 
-                                    type="password" 
-                                    className="form-control" 
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill" disabled={loading}>
-                                {loading ? 'Resetting...' : 'Reset Password'}
-                            </button>
-                        </form>
-                    )}
                 </div>
             </div>
         </div>

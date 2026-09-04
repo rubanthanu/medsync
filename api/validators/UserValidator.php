@@ -3,7 +3,7 @@ require_once __DIR__ . '/../exceptions/ValidationException.php';
 
 class UserValidator {
     public static function validateCompleteProfile($data) {
-        if (empty($data->university_id) || empty($data->phone) || empty($data->gender) || 
+        if (empty($data->phone) || empty($data->gender) || 
            empty($data->date_of_birth) || empty($data->address) || empty($data->blood_group) || 
            empty($data->emergency_contact_name) || empty($data->emergency_contact_phone)) {
             throw new ValidationException("Please fill in all required fields.");

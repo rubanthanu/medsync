@@ -1,6 +1,8 @@
+import { getTodayISO, getMaxDateISO } from '../../utils/dateUtils';
+
 const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, bookingMsg }) => {
     return (
-        <div className="card border-0 shadow-sm rounded-4 sticky-top" style={{ top: '20px' }}>
+        <div className="card border-0 shadow-sm rounded-4 " style={{ top: '20px' }}>
             <div className="card-header bg-white border-bottom-0 pt-4 px-4 pb-2">
                 <h5 className="fw-bold mb-0">Quick Booking</h5>
                 <small className="text-muted">Register walk-in or manual booking</small>
@@ -46,6 +48,8 @@ const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, book
                             type="date" 
                             className="form-control border-0 bg-light"
                             value={bookingData.appointment_date}
+                            min={getTodayISO()}
+                            max={getMaxDateISO(2)}
                             onChange={e => setBookingData({...bookingData, appointment_date: e.target.value})}
                             required
                         />

@@ -8,7 +8,6 @@ const CompleteProfile = () => {
     const navigate = useNavigate();
     
     const [formData, setFormData] = useState({
-        university_id: '',
         blood_group: '',
         allergies: '',
         medical_conditions: '',
@@ -49,100 +48,98 @@ const CompleteProfile = () => {
     };
 
     return (
-        <div className="row justify-content-center animate-fade-in mt-4 mb-5">
-            <div className="col-md-8">
-                <div className="card p-3 p-sm-5 border-0 shadow-sm">
-                    <div className="mb-4 text-center">
-                        <h2 className="fw-bold text-primary">Complete Your Profile</h2>
-                        <p className="text-muted">Please provide your medical information to continue using UWU MedSync.</p>
+        <div className="container py-4">
+            <div className="row justify-content-center animate-fade-in my-3 my-md-4">
+                <div className="col-12 col-md-10 col-lg-8">
+                    <div className="card p-3 p-sm-5 border-0 shadow-sm">
+                        <div className="mb-4 text-center">
+                            <h2 className="fw-bold text-primary">Complete Your Profile</h2>
+                            <p className="text-muted">Please provide your medical information to continue using UWU MedSync.</p>
+                        </div>
+                        {error && <div className="alert alert-danger">{error}</div>}
+                        <form onSubmit={handleSubmit}>
+                            <h5 className="text-secondary mb-3 border-bottom pb-2">Personal Information</h5>
+                            <div className="row mb-4">
+                                <div className="col-12 col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Phone Number (10 digits)</label>
+                                    <input 
+                                        type="tel" 
+                                        className="form-control" 
+                                        value={formData.phone} 
+                                        onChange={e => setFormData({...formData, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10)})} 
+                                        placeholder="0771234567"
+                                        maxLength="10"
+                                        required 
+                                    />
+                                    {formData.phone && formData.phone.length < 10 && <small className="text-danger">Phone must be 10 digits</small>}
+                                </div>
+                                <div className="col-12 col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Gender</label>
+                                    <select className="form-select form-control" value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div className="col-12 col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Date of Birth</label>
+                                    <input type="date" className="form-control" value={formData.date_of_birth} onChange={e => setFormData({...formData, date_of_birth: e.target.value})} required />
+                                </div>
+                                <div className="col-12 mb-3">
+                                    <label className="form-label fw-semibold">Address</label>
+                                    <textarea className="form-control" rows="2" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} required></textarea>
+                                </div>
+                            </div>
+
+                            <h5 className="text-secondary mb-3 border-bottom pb-2">Medical Information</h5>
+                            <div className="row mb-4">
+                                <div className="col-12 col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Blood Group</label>
+                                    <select className="form-select form-control" value={formData.blood_group} onChange={e => setFormData({...formData, blood_group: e.target.value})} required>
+                                        <option value="">Select Blood Group</option>
+                                        <option value="A+">A+</option><option value="A-">A-</option>
+                                        <option value="B+">B+</option><option value="B-">B-</option>
+                                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                        <option value="O+">O+</option><option value="O-">O-</option>
+                                    </select>
+                                </div>
+                                <div className="col-12 mb-3">
+                                    <label className="form-label fw-semibold">Allergies (if any)</label>
+                                    <textarea className="form-control" rows="2" value={formData.allergies} onChange={e => setFormData({...formData, allergies: e.target.value})}></textarea>
+                                </div>
+                                <div className="col-12 mb-3">
+                                    <label className="form-label fw-semibold">Medical Conditions</label>
+                                    <textarea className="form-control" rows="2" value={formData.medical_conditions} onChange={e => setFormData({...formData, medical_conditions: e.target.value})}></textarea>
+                                </div>
+                            </div>
+
+                            <h5 className="text-secondary mb-3 border-bottom pb-2">Emergency Contact</h5>
+                            <div className="row mb-4">
+                                <div className="col-12 col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Contact Name</label>
+                                    <input type="text" className="form-control" value={formData.emergency_contact_name} onChange={e => setFormData({...formData, emergency_contact_name: e.target.value})} required />
+                                </div>
+                                <div className="col-12 col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Contact Phone (10 digits)</label>
+                                    <input 
+                                        type="tel" 
+                                        className="form-control" 
+                                        value={formData.emergency_contact_phone} 
+                                        onChange={e => setFormData({...formData, emergency_contact_phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10)})} 
+                                        placeholder="0771234567"
+                                        maxLength="10"
+                                        required 
+                                    />
+                                    {formData.emergency_contact_phone && formData.emergency_contact_phone.length < 10 && <small className="text-danger">Phone must be 10 digits</small>}
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary w-100 py-3 rounded-pill fw-bold" disabled={loading}>
+                                {loading ? 'Saving Profile...' : 'Complete Profile'}
+                            </button>
+                        </form>
                     </div>
-                    {error && <div className="alert alert-danger">{error}</div>}
-                    <form onSubmit={handleSubmit}>
-                        <h5 className="text-secondary mb-3 border-bottom pb-2">Personal Information</h5>
-                        <div className="row mb-4">
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label fw-semibold">University ID</label>
-                                <input type="text" className="form-control" value={formData.university_id} onChange={e => setFormData({...formData, university_id: e.target.value})} required />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label fw-semibold">Phone Number (10 digits)</label>
-                                <input 
-                                    type="tel" 
-                                    className="form-control" 
-                                    value={formData.phone} 
-                                    onChange={e => setFormData({...formData, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10)})} 
-                                    placeholder="7712345678"
-                                    maxLength="10"
-                                    required 
-                                />
-                                {formData.phone && formData.phone.length < 10 && <small className="text-danger">Phone must be 10 digits</small>}
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label fw-semibold">Gender</label>
-                                <select className="form-select form-control" value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} required>
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label fw-semibold">Date of Birth</label>
-                                <input type="date" className="form-control" value={formData.date_of_birth} onChange={e => setFormData({...formData, date_of_birth: e.target.value})} required />
-                            </div>
-                            <div className="col-12 mb-3">
-                                <label className="form-label fw-semibold">Address</label>
-                                <textarea className="form-control" rows="2" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} required></textarea>
-                            </div>
-                        </div>
-
-                        <h5 className="text-secondary mb-3 border-bottom pb-2">Medical Information</h5>
-                        <div className="row mb-4">
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label fw-semibold">Blood Group</label>
-                                <select className="form-select form-control" value={formData.blood_group} onChange={e => setFormData({...formData, blood_group: e.target.value})} required>
-                                    <option value="">Select Blood Group</option>
-                                    <option value="A+">A+</option><option value="A-">A-</option>
-                                    <option value="B+">B+</option><option value="B-">B-</option>
-                                    <option value="AB+">AB+</option><option value="AB-">AB-</option>
-                                    <option value="O+">O+</option><option value="O-">O-</option>
-                                </select>
-                            </div>
-                            <div className="col-12 mb-3">
-                                <label className="form-label fw-semibold">Allergies (if any)</label>
-                                <textarea className="form-control" rows="2" value={formData.allergies} onChange={e => setFormData({...formData, allergies: e.target.value})}></textarea>
-                            </div>
-                            <div className="col-12 mb-3">
-                                <label className="form-label fw-semibold">Medical Conditions</label>
-                                <textarea className="form-control" rows="2" value={formData.medical_conditions} onChange={e => setFormData({...formData, medical_conditions: e.target.value})}></textarea>
-                            </div>
-                        </div>
-
-                        <h5 className="text-secondary mb-3 border-bottom pb-2">Emergency Contact</h5>
-                        <div className="row mb-4">
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label fw-semibold">Contact Name</label>
-                                <input type="text" className="form-control" value={formData.emergency_contact_name} onChange={e => setFormData({...formData, emergency_contact_name: e.target.value})} required />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label fw-semibold">Contact Phone (10 digits)</label>
-                                <input 
-                                    type="tel" 
-                                    className="form-control" 
-                                    value={formData.emergency_contact_phone} 
-                                    onChange={e => setFormData({...formData, emergency_contact_phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 10)})} 
-                                    placeholder="7712345678"
-                                    maxLength="10"
-                                    required 
-                                />
-                                {formData.emergency_contact_phone && formData.emergency_contact_phone.length < 10 && <small className="text-danger">Phone must be 10 digits</small>}
-                            </div>
-                        </div>
-
-                        <button type="submit" className="btn btn-primary w-100 py-3 rounded-pill fw-bold" disabled={loading}>
-                            {loading ? 'Saving Profile...' : 'Complete Profile'}
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>

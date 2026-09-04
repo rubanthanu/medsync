@@ -1,12 +1,14 @@
 import Swal from 'sweetalert2';
 
 const QueueTab = ({ windows, selectedWindow, queue, onSelectWindow, onStartWindow, onStopWindow, onNextPatient, onOpenPrescription }) => {
+    const hasActiveWindow = windows.some(w => w.is_active > 0);
+
     return (
         <div>
             {/* Today's Windows List */}
             <div className="row g-4 mb-5">
                 {windows.map(win => (
-                    <div className="col-md-6 col-lg-3" key={win.window_id} onClick={() => onSelectWindow(win)} role="button" tabIndex={0}>
+                    <div className="col-12 col-sm-6 col-lg-3" key={win.window_id} onClick={() => onSelectWindow(win)} role="button" tabIndex={0}>
                         <div className={`card h-100 border-0 shadow-sm rounded-4 ${win.is_active ? 'bg-primary text-white shadow' : 'bg-white'} ${selectedWindow?.window_id === win.window_id ? 'border border-2 border-primary' : ''}`}>
                             <div className="card-body p-4 text-center">
                                 <h5 className="fw-bold">{win.window_name}</h5>
@@ -14,9 +16,21 @@ const QueueTab = ({ windows, selectedWindow, queue, onSelectWindow, onStartWindo
                                     {win.start_time} - {win.end_time}
                                 </p>
                                 {!win.is_active && (
-                                    <button className="btn btn-outline-primary btn-sm rounded-pill mt-3 w-100" onClick={(e) => { e.stopPropagation(); onStartWindow(win.window_id); }}>
-                                        Start Window
-                                    </button>
+                                    <>
+                                        <button
+                                            className="btn btn-outline-primary btn-sm rounded-pill mt-3 w-100"
+                                            onClick={(e) => { e.stopPropagation(); onStartWindow(win.window_id); }}
+                                            disabled={hasActiveWindow}
+                                            title={hasActiveWindow ? "Please finish the current active window before starting another window." : ""}
+                                        >
+                                            Start Window
+                                        </button>
+                                        {hasActiveWindow && (
+                                            <small className="text-muted d-block mt-1" style={{ fontSize: '0.75rem' }}>
+                                                <i className="bi bi-info-circle me-1"></i>Another window is active
+                                            </small>
+                                        )}
+                                    </>
                                 )}
                                 {win.is_active > 0 && (
                                     <>
@@ -38,10 +52,10 @@ const QueueTab = ({ windows, selectedWindow, queue, onSelectWindow, onStartWindo
             {/* Active Queue Details */}
             {selectedWindow ? (
                 <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-                    <div className="card-header bg-white border-bottom-0 p-4 d-flex justify-content-between align-items-center">
+                    <div className="card-header bg-white border-bottom-0 p-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
                         <h4 className="fw-bold mb-0 text-dark">Patient List - {selectedWindow.window_name}</h4>
                         {selectedWindow.is_active > 0 ? (
-                            <button className="btn btn-success rounded-pill fw-bold px-4 hover-grow shadow-sm" onClick={onNextPatient}>
+                            <button className="btn btn-success rounded-pill fw-bold px-4 hover-grow shadow-sm w-100 w-sm-auto" onClick={onNextPatient}>
                                 <i className="bi bi-person-check-fill me-2"></i> Next Patient
                             </button>
                         ) : (

@@ -31,7 +31,6 @@ const WindowQueueTable = ({ windows, selectedWindow, onSelectWindow, queue, onUp
                                     <td className="ps-4 fw-bold text-primary fs-5">#{q.queue_number}</td>
                                     <td>
                                         <div className="fw-bold">{q.patient_name}</div>
-                                        <div className="text-muted small">{q.university_id || 'Student/Staff'}</div>
                                     </td>
                                     <td>
                                         <span className={`badge px-3 py-2 rounded-pill font-monospace ${
@@ -44,7 +43,7 @@ const WindowQueueTable = ({ windows, selectedWindow, onSelectWindow, queue, onUp
                                     </td>
                                     <td className="text-end pe-4">
                                         {q.appointment_status === 'Booked' && (
-                                            <div className="btn-group gap-2">
+                                            <div className="d-flex justify-content-end gap-2">
                                                 <button className="btn btn-sm btn-success rounded-pill px-3 shadow-sm" onClick={() => onUpdateStatus(q.appointment_id, 'Walk-In')}>
                                                     <i className="bi bi-person-check-fill me-1"></i> Walk-In
                                                 </button>
