@@ -65,9 +65,9 @@ const Landing = () => {
                     <p className="lead text-muted mb-4 fs-5">
                         Book appointments, track live queues, access e-prescriptions, and manage your university healthcare digitally—all in one integrated, university-wide healthcare system
                     </p>
-                    <div className="d-flex gap-3">
-                        <Link to="/register" className="btn btn-primary btn-lg px-4 rounded-pill shadow-sm hover-grow">Get Started</Link>
-                        <Link to="/login" className="btn btn-outline-secondary btn-lg px-4 rounded-pill hover-grow">Login to Portal</Link>
+                    <div className="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+                        <Link to="/register" className="btn btn-primary btn-lg px-4 rounded-pill shadow-sm hover-grow text-center">Get Started</Link>
+                        <Link to="/login" className="btn btn-outline-secondary btn-lg px-4 rounded-pill hover-grow text-center">Login to Portal</Link>
                     </div>
                 </div>
                 <div className="col-lg-6 mt-5 mt-lg-0 text-center position-relative">
@@ -78,7 +78,7 @@ const Landing = () => {
 
             {/* Services Quick Grid */}
             <div className="row g-4 py-5 text-center" id="services">
-                <div className="col-lg-3 col-md-6">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 shadow-sm bg-white rounded-4 hover-grow">
                         <div className="icon-box bg-primary-subtle text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{ width: '60px', height: '60px' }}>
                             <i className="bi bi-calendar-event fs-4"></i>
@@ -87,7 +87,7 @@ const Landing = () => {
                         <p className="text-muted small">Book your convenient time slot without standing in long queues at the medical center.</p>
                     </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 shadow-sm bg-white rounded-4 hover-grow">
                         <div className="icon-box bg-success-subtle text-success rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{ width: '60px', height: '60px' }}>
                             <i className="bi bi-hourglass-split fs-4"></i>
@@ -96,7 +96,7 @@ const Landing = () => {
                         <p className="text-muted small">Track your exact position in the queue in real-time from anywhere at the university.</p>
                     </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 shadow-sm bg-white rounded-4 hover-grow">
                         <div className="icon-box bg-warning-subtle text-warning rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{ width: '60px', height: '60px' }}>
                             <i className="bi bi-file-earmark-medical fs-4"></i>
@@ -105,7 +105,7 @@ const Landing = () => {
                         <p className="text-muted small">Access your digital prescriptions and treatment records instantly as secure PDFs.</p>
                     </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
+                <div className="col-12 col-sm-6 col-lg-3">
                     <div className="card h-100 p-4 border-0 shadow-sm bg-white rounded-4 hover-grow">
                         <div className="icon-box bg-danger-subtle text-danger rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style={{ width: '60px', height: '60px' }}>
                             <i className="bi bi-patch-check fs-4"></i>
@@ -118,10 +118,10 @@ const Landing = () => {
 
             {/* About Us Section */}
             <div className="row align-items-center py-5 my-5 border-top border-bottom" id="about">
-                <div className="col-lg-6 mb-4 mb-lg-0">
+                <div className="col-12 col-lg-6 mb-4 mb-lg-0">
                     <img src={aboutMedsyncImage} alt="About MedSync" className="img-fluid rounded-4 shadow" style={{ maxHeight: '350px', width: '100%', objectFit: 'cover' }} />
                 </div>
-                <div className="col-lg-6 ps-lg-5">
+                <div className="col-12 col-lg-6 ps-lg-5">
                     <span className="badge bg-secondary-subtle text-secondary mb-3 px-3 py-2 rounded-pill fw-semibold">About UWU Medical</span>
                     <h2 className="fw-bold text-dark mb-3">Dedicated to Student Wellbeing</h2>
                     <p className="text-muted mb-4">
@@ -148,7 +148,7 @@ const Landing = () => {
                 {posts.length > 0 ? (
                     <div className="row g-4">
                         {posts.map(post => (
-                            <div className="col-lg-4 col-md-6" key={post.post_id}>
+                            <div className="col-12 col-md-6 col-lg-4" key={post.post_id}>
                                 <div className="card h-100 border-0 shadow-sm bg-white rounded-4 overflow-hidden hover-grow">
                                     <div className="position-relative" style={{ height: '200px', overflow: 'hidden' }}>
                                         <img src={getCategoryImage(post)} alt={post.title} className="w-100 h-100 object-fit-cover transition-transform" />

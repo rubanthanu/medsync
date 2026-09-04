@@ -57,12 +57,12 @@ const CertificateTab = ({ certificates, selectedCert, rejectionReason, setSelect
             {/* Review Medical Certificate Modal */}
             {selectedCert && (
                 <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3 animate-fade-in" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1050 }}>
-                    <div className="card border-0 shadow-lg rounded-4 bg-white w-100" style={{ maxWidth: '650px' }}>
+                    <div className="card border-0 shadow-lg rounded-4 bg-white w-100 overflow-hidden" style={{ maxWidth: '650px', maxHeight: '90vh' }}>
                         <div className="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
                             <h4 className="fw-bold mb-0 text-dark">Review Medical Certificate</h4>
                             <button type="button" className="btn-close" onClick={() => { setSelectedCert(null); setRejectionReason(''); }}></button>
                         </div>
-                        <div className="card-body p-4">
+                        <div className="card-body p-4 overflow-y-auto">
                             <div className="mb-4 bg-light p-3 rounded-4 small">
                                 <p className="mb-1"><strong>Patient:</strong> {selectedCert.patient_name}</p>
                                 <p className="mb-1"><strong>Requested Leave Period:</strong> {selectedCert.start_date} to {selectedCert.end_date}</p>
@@ -92,12 +92,12 @@ const CertificateTab = ({ certificates, selectedCert, rejectionReason, setSelect
                                 />
                             </div>
 
-                            <div className="d-flex justify-content-end gap-2 border-top pt-3">
-                                <button type="button" className="btn btn-outline-secondary rounded-pill px-4" onClick={() => { setSelectedCert(null); setRejectionReason(''); }}>Cancel</button>
-                                <button type="button" className="btn btn-danger rounded-pill px-4 shadow-sm" onClick={() => onReview('Rejected')} disabled={reviewing}>
+                            <div className="d-flex flex-column flex-sm-row justify-content-end gap-2 border-top pt-3">
+                                <button type="button" className="btn btn-outline-secondary rounded-pill px-4 w-100 w-sm-auto" onClick={() => { setSelectedCert(null); setRejectionReason(''); }}>Cancel</button>
+                                <button type="button" className="btn btn-danger rounded-pill px-4 shadow-sm w-100 w-sm-auto" onClick={() => onReview('Rejected')} disabled={reviewing}>
                                     Reject Request
                                 </button>
-                                <button type="button" className="btn btn-success rounded-pill px-4 shadow-sm" onClick={() => onReview('Approved')} disabled={reviewing}>
+                                <button type="button" className="btn btn-success rounded-pill px-4 shadow-sm w-100 w-sm-auto" onClick={() => onReview('Approved')} disabled={reviewing}>
                                     Approve Request
                                 </button>
                             </div>

@@ -1,9 +1,9 @@
 const UserManagement = ({ users, showAddUser, setShowAddUser, newUser, setNewUser, onAddUser, onToggleStatus }) => {
     return (
         <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-            <div className="card-header bg-white border-bottom-0 p-4 d-flex justify-content-between align-items-center">
+            <div className="card-header bg-white border-bottom-0 p-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
                 <h4 className="fw-bold mb-0 text-dark">User Management</h4>
-                <button className="btn btn-primary rounded-pill px-4 shadow-sm" onClick={() => setShowAddUser(!showAddUser)}>
+                <button className="btn btn-primary rounded-pill px-4 shadow-sm w-100 w-sm-auto" onClick={() => setShowAddUser(!showAddUser)}>
                     <i className={`bi ${showAddUser ? 'bi-dash' : 'bi-plus-lg'} me-2`}></i> {showAddUser ? 'Close Form' : 'Add New User'}
                 </button>
             </div>
@@ -11,19 +11,19 @@ const UserManagement = ({ users, showAddUser, setShowAddUser, newUser, setNewUse
             {showAddUser && (
                 <div className="card-body bg-light border-bottom p-4">
                     <form onSubmit={onAddUser} className="row g-3">
-                        <div className="col-md-3">
+                        <div className="col-12 col-sm-6 col-lg-3">
                             <label className="form-label small fw-bold">FULL NAME</label>
                             <input type="text" className="form-control rounded-pill px-3" value={newUser.full_name} onChange={e => setNewUser({ ...newUser, full_name: e.target.value })} required />
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-12 col-sm-6 col-lg-3">
                             <label className="form-label small fw-bold">EMAIL</label>
                             <input type="email" className="form-control rounded-pill px-3" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} required />
                         </div>
-                        <div className="col-md-2">
+                        <div className="col-12 col-sm-6 col-lg-2">
                             <label className="form-label small fw-bold">PASSWORD</label>
                             <input type="password" className="form-control rounded-pill px-3" value={newUser.password} onChange={e => setNewUser({ ...newUser, password: e.target.value })} required />
                         </div>
-                        <div className="col-md-2">
+                        <div className="col-12 col-sm-6 col-lg-2">
                             <label className="form-label small fw-bold">ROLE</label>
                             <select className="form-select rounded-pill px-3" value={newUser.role_id} onChange={e => setNewUser({ ...newUser, role_id: e.target.value })}>
                                 <option value="4">Patient</option>
@@ -32,7 +32,7 @@ const UserManagement = ({ users, showAddUser, setShowAddUser, newUser, setNewUse
                                 <option value="1">Admin</option>
                             </select>
                         </div>
-                        <div className="col-md-2 d-flex align-items-end">
+                        <div className="col-12 col-lg-2 d-flex align-items-end">
                             <button type="submit" className="btn btn-success rounded-pill px-4 w-100">Create</button>
                         </div>
                     </form>

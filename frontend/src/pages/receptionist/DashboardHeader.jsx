@@ -5,15 +5,15 @@ const DashboardHeader = ({ activeTab, onTabChange }) => {
                 <h2 className="fw-bold mb-0">Receptionist Dashboard</h2>
                 <p className="text-muted mb-0">Manage daily queue and monitor clinic activities</p>
             </div>
-            <div className="d-flex gap-2">
+            <div className="d-flex flex-wrap gap-2 w-100 w-md-auto">
                 <button 
-                    className={`btn rounded-pill px-4 ${activeTab === 'queue' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    className={`btn rounded-pill px-4 flex-fill flex-sm-grow-0 ${activeTab === 'queue' ? 'btn-primary' : 'btn-outline-primary'}`}
                     onClick={() => onTabChange('queue')}
                 >
                     <i className="bi bi-people-fill me-2"></i> Queue
                 </button>
                 <button 
-                    className={`btn rounded-pill px-4 ${activeTab === 'mc' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    className={`btn rounded-pill px-4 flex-fill flex-sm-grow-0 ${activeTab === 'mc' ? 'btn-primary' : 'btn-outline-primary'}`}
                     onClick={() => onTabChange('mc')}
                 >
                     <i className="bi bi-file-earmark-medical me-2"></i> MC Requests

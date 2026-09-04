@@ -77,7 +77,7 @@ const ReceptionistDashboard = () => {
             
             <div className="row g-4">
                 {/* Left Column: Quick Booking Form */}
-                <div className="col-lg-4">
+                <div className="col-12 col-lg-4">
                  <QuickBookingForm 
                         windows={windows}
                         bookingData={bookingData}
@@ -88,7 +88,7 @@ const ReceptionistDashboard = () => {
                 </div>
                 
                 {/* Right Column: Dynamic Content */}
-                <div className="col-lg-8">
+                <div className="col-12 col-lg-8">
                     {activeTab === 'queue' ? (
                         <WindowQueueTable 
                             windows={windows}

@@ -17,7 +17,7 @@ const Footer = () => {
             <div className="container">
                 <div className="row g-4 mb-4">
                     {/* Brand Info */}
-                    <div className="col-lg-4 col-md-6">
+                    <div className="col-12 col-md-6 col-lg-4">
                         <h4 className="fw-bold text-primary mb-3">UWU MedSync</h4>
                         <p className="text-white-50 mb-4">A University based Medical Centre Management System.</p>
                         <div className="d-flex gap-3 fs-5">
@@ -29,7 +29,7 @@ const Footer = () => {
                     </div>
 
                     {/* Quick Links */}
-                    <div className="col-lg-2 col-md-6 col-6">
+                    <div className="col-6 col-sm-6 col-md-6 col-lg-2">
                         <h6 className="text-uppercase fw-bold mb-3 text-white">Quick Links</h6>
                         <ul className="list-unstyled d-flex flex-column gap-2 text-white-50">
                             <li><button className="btn btn-link p-0 text-white-50 text-decoration-none hover-primary align-start text-start" onClick={() => handleNavClick('home')}>Home</button></li>
@@ -40,7 +40,7 @@ const Footer = () => {
                     </div>
 
                     {/* Services */}
-                    <div className="col-lg-3 col-md-6 col-6">
+                    <div className="col-6 col-sm-6 col-md-6 col-lg-3">
                         <h6 className="text-uppercase fw-bold mb-3 text-white">Services</h6>
                         <ul className="list-unstyled d-flex flex-column gap-2 text-white-50">
                             <li><span className="text-white-50">Appointments</span></li>
@@ -52,7 +52,7 @@ const Footer = () => {
                     </div>
 
                     {/* Contact Info & Emergency */}
-                    <div className="col-lg-3 col-md-6">
+                    <div className="col-12 col-md-6 col-lg-3">
                         <h6 className="text-uppercase fw-bold mb-3 text-white">Emergency</h6>
                         <ul className="list-unstyled d-flex flex-column gap-2 text-white-50 mb-4">
                             <li><i className="bi bi-geo-alt me-2 text-danger"></i> Medical Center, Uva Wellassa University</li>

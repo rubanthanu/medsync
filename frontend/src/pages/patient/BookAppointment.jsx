@@ -48,7 +48,7 @@ const BookAppointment = () => {
 
             <div className="card border-0 shadow-sm p-4 mb-4">
                 <div className="row align-items-center">
-                    <div className="col-md-4">
+                    <div className="col-12 col-sm-8 col-md-6 col-lg-4">
                         <label className="form-label fw-bold">Select Date</label>
                         <input 
                             type="date" 
@@ -63,10 +63,10 @@ const BookAppointment = () => {
             </div>
 
             <div className="row g-4">
-                {loading ? <div className="text-center py-5"><div className="spinner-border text-primary"></div></div> : 
+                {loading ? <div className="col-12 text-center py-5"><div className="spinner-border text-primary"></div></div> : 
                  windows.length > 0 ? (
                     windows.map(win => (
-                        <div className="col-md-6" key={win.window_id}>
+                        <div className="col-12 col-md-6" key={win.window_id}>
                             <div className={`card h-100 border-0 shadow-sm ${win.status === 'Full' ? 'bg-light opacity-75' : ''}`}>
                                 <div className="card-body p-4 d-flex flex-column">
                                     <div className="d-flex justify-content-between align-items-center mb-3">

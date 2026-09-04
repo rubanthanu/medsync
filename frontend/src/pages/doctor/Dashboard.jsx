@@ -41,11 +41,25 @@ const DoctorDashboard = () => {
     const [leaveReason, setLeaveReason] = useState('Medical Leave');
     const [markingLeave, setMarkingLeave] = useState(false);
 
+    // Helper for default medicine item
+    const createDefaultMedicine = () => ({
+        name: '',
+        dosage: '1-0-1',
+        timing: 'After meals',
+        duration: '3 days',
+        instruction: ''
+    });
+
     // Prescription modal states
     const [activeAppointment, setActiveAppointment] = useState(null);
     const [patientHistory, setPatientHistory] = useState([]);
     const [patientProfile, setPatientProfile] = useState(null);
-    const [prescriptionForm, setPrescriptionForm] = useState({ diagnosis: '', notes: '', medicines: '', dosage: '', instructions: '' });
+    const [prescriptionForm, setPrescriptionForm] = useState({
+        diagnosis: '',
+        notes: '',
+        general_instructions: '',
+        medicines: [createDefaultMedicine()]
+    });
     const [loadingHistory, setLoadingHistory] = useState(false);
     const [savingPrescription, setSavingPrescription] = useState(false);
 
@@ -102,7 +116,12 @@ const DoctorDashboard = () => {
 
     const handleOpenPrescription = async (appt) => {
         setActiveAppointment(appt);
-        setPrescriptionForm({ diagnosis: '', notes: '', medicines: '', dosage: '', instructions: '' });
+        setPrescriptionForm({
+            diagnosis: '',
+            notes: '',
+            general_instructions: '',
+            medicines: [createDefaultMedicine()]
+        });
         setLoadingHistory(true);
         try {
             const resProfile = await userService.getPatientDetails(appt.patient_id);
@@ -114,9 +133,23 @@ const DoctorDashboard = () => {
 
     const handleSavePrescription = async (e) => {
         e.preventDefault();
+
+        // Ensure at least one medicine has a name filled
+        const validMedicines = (prescriptionForm.medicines || []).filter(m => m.name && m.name.trim() !== '');
+        if (validMedicines.length === 0) {
+            Swal.fire({ icon: 'warning', title: 'Medicine Required', text: 'Please prescribe at least one medicine with a name.' });
+            return;
+        }
+
         setSavingPrescription(true);
         try {
-            await prescriptionService.create({ appointment_id: activeAppointment.appointment_id, ...prescriptionForm });
+            await prescriptionService.create({
+                appointment_id: activeAppointment.appointment_id,
+                diagnosis: prescriptionForm.diagnosis,
+                notes: prescriptionForm.notes,
+                general_instructions: prescriptionForm.general_instructions,
+                medicines: validMedicines
+            });
             Swal.fire({ icon: 'success', title: 'Success!', text: 'Prescription created, Checkup history logged, and Appointment completed successfully!', timer: 3000, showConfirmButton: false });
             setActiveAppointment(null);
             if (selectedWindow) fetchQueue(selectedWindow.window_id);
@@ -151,37 +184,37 @@ const DoctorDashboard = () => {
     return (
         <div className="container py-4 animate-fade-in">
             {/* Dashboard Header */}
-            <div className="dashboard-hero d-flex justify-content-between align-items-center mb-4">
+            <div className="dashboard-hero d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
                 <h2 className="fw-bold mb-0">Doctor Dashboard</h2>
-                <Link to="/profile" className="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+                <Link to="/profile" className="btn btn-outline-primary rounded-pill px-4 shadow-sm w-100 w-sm-auto text-center">
                     <i className="bi bi-person-gear me-2"></i> Edit Profile
                 </Link>
             </div>
 
             {/* Dashboard Navigation Tabs */}
-            <ul className="nav nav-pills mb-4 gap-2 bg-light p-2 rounded-4 d-flex flex-nowrap overflow-x-auto border-0 w-100 scrollbar-hide">
+            <ul className="nav nav-pills mb-4 gap-2 bg-light p-2 rounded-4 d-flex flex-nowrap overflow-x-auto border-0 w-100 scrollbar-hide py-1">
                 <li className="nav-item">
-                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'queue' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('queue')}>
+                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 text-nowrap ${activeTab === 'queue' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('queue')}>
                         <i className="bi bi-calendar2-check me-2"></i> Active Queue
                     </button>
                 </li>
                 <li className="nav-item">
-                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'certificates' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('certificates')}>
+                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 text-nowrap ${activeTab === 'certificates' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('certificates')}>
                         <i className="bi bi-file-earmark-medical me-2"></i> Certificate Requests {certificates.filter(c => c.status === 'Pending').length > 0 && <span className="badge bg-danger ms-2">{certificates.filter(c => c.status === 'Pending').length}</span>}
                     </button>
                 </li>
                 <li className="nav-item">
-                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'posts' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('posts')}>
+                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 text-nowrap ${activeTab === 'posts' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('posts')}>
                         <i className="bi bi-journal-medical me-2"></i> Health Posts
                     </button>
                 </li>
                 <li className="nav-item">
-                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'feedbacks' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('feedbacks')}>
+                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 text-nowrap ${activeTab === 'feedbacks' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('feedbacks')}>
                         <i className="bi bi-chat-left-heart me-2"></i> Patient Feedback
                     </button>
                 </li>
                 <li className="nav-item">
-                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 ${activeTab === 'leaves' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('leaves')}>
+                    <button className={`nav-link rounded-pill px-4 fw-semibold border-0 text-nowrap ${activeTab === 'leaves' ? 'active bg-primary text-white shadow-sm' : 'text-secondary'}`} onClick={() => setActiveTab('leaves')}>
                         <i className="bi bi-calendar-x me-2"></i> Leave Management
                     </button>
                 </li>
