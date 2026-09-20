@@ -39,13 +39,30 @@ class AdminService {
         return $this->userRepo->getAllUsersWithRoles();
     }
 
-    public function updateUserStatus($userId, $status) {
+    public function updateUserStatus($userId, $status, $currentUserId) {
+        // Prevent admin from deactivating themselves
+        if ((int)$userId === (int)$currentUserId) {
+            throw new ValidationException("You cannot change your own account status.");
+        }
+
+        // Validate status is an allowed value
+        $allowedStatuses = ['Active', 'Suspended'];
+        if (!in_array($status, $allowedStatuses, true)) {
+            throw new ValidationException("Invalid status value.");
+        }
+
         $this->userRepo->updateStatus($userId, $status);
     }
 
     public function createUser($data) {
         if (empty($data->full_name) || empty($data->email) || empty($data->password) || empty($data->role_id)) {
             throw new ValidationException("All fields are required.");
+        }
+
+        // Validate role_id is an allowed value (no admin creation via this endpoint)
+        $allowedRoles = [2, 3, 4]; // Doctor, Receptionist, Patient
+        if (!in_array((int)$data->role_id, $allowedRoles, true)) {
+            throw new ValidationException("Invalid role selected.");
         }
 
         return $this->authService->createUser($data);

@@ -19,6 +19,10 @@ class QueueService {
         return $this->appointmentRepo->getQueueForWindow($windowId, $date);
     }
 
+    public function getPatientQueuePosition($userId, $windowId, $date) {
+        return $this->appointmentRepo->getPatientQueuePosition($userId, $windowId, $date);
+    }
+
     public function updateStatus($appointmentId, $status) {
         $this->appointmentRepo->updateStatus($appointmentId, $status);
     }
@@ -63,6 +67,13 @@ class QueueService {
     public function nextPatient($userId, $windowId) {
         $date = date('Y-m-d');
 
+        // Verify this doctor owns the active window
+        $doctor = $this->doctorRepo->findByUserId($userId);
+        $active = $this->appointmentRepo->getActiveWindow($doctor['doctor_id'], $windowId, $date);
+        if (!$active) {
+            throw new PermissionException("You can only manage patients in your own active window.");
+        }
+
         $this->conn->beginTransaction();
         try {
             // Find Current patient and mark Completed
@@ -88,8 +99,16 @@ class QueueService {
         }
     }
 
-    public function stopWindow($windowId) {
+    public function stopWindow($userId, $windowId) {
         $date = date('Y-m-d');
+
+        // Verify this doctor owns the active window
+        $doctor = $this->doctorRepo->findByUserId($userId);
+        $active = $this->appointmentRepo->getActiveWindow($doctor['doctor_id'], $windowId, $date);
+        if (!$active) {
+            throw new PermissionException("You can only stop windows that you started.");
+        }
+
         $this->appointmentRepo->stopWindow($windowId, $date);
     }
 }
