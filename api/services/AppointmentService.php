@@ -168,9 +168,16 @@ class AppointmentService {
                          <p>Queue Number: <strong>{$queue_number}</strong></p>
                          <p>Estimated Time: <strong>{$formatted_time}</strong></p>";
             }
-            EmailHelper::sendEmail($notifyEmail, $subject, $body);
 
+            // Commit transaction first so DB locks are released immediately
             $this->conn->commit();
+
+            // Send email after successful commit without blocking or rolling back DB
+            try {
+                EmailHelper::sendEmail($notifyEmail, $subject, $body);
+            } catch (\Throwable $e) {
+                error_log("Failed to send booking email: " . $e->getMessage());
+            }
 
             return [
                 'queue_number' => $queue_number,

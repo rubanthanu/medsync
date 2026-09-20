@@ -1,4 +1,10 @@
+import PasswordInput from '../../components/PasswordInput';
+import PasswordStrengthIndicator from '../../components/PasswordStrengthIndicator';
+import { isPasswordValid } from '../../utils/passwordValidator';
+
 const UserManagement = ({ users, showAddUser, setShowAddUser, newUser, setNewUser, onAddUser, onToggleStatus }) => {
+    const passwordValid = isPasswordValid(newUser.password);
+
     return (
         <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
             <div className="card-header bg-white border-bottom-0 p-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
@@ -19,9 +25,18 @@ const UserManagement = ({ users, showAddUser, setShowAddUser, newUser, setNewUse
                             <label className="form-label small fw-bold">EMAIL</label>
                             <input type="email" className="form-control rounded-pill px-3" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} required />
                         </div>
-                        <div className="col-12 col-sm-6 col-lg-2">
-                            <label className="form-label small fw-bold">PASSWORD</label>
-                            <input type="password" className="form-control rounded-pill px-3" value={newUser.password} onChange={e => setNewUser({ ...newUser, password: e.target.value })} required />
+                        <div className="col-12 col-sm-6 col-lg-3">
+                            <PasswordInput
+                                label="PASSWORD"
+                                id="admin-new-user-password"
+                                name="password"
+                                value={newUser.password}
+                                onChange={e => setNewUser({ ...newUser, password: e.target.value })}
+                                placeholder="Min 8 chars, A-Z, a-z, 0-9, @$!%*?&"
+                                required
+                                autoComplete="new-password"
+                                className="mb-0"
+                            />
                         </div>
                         <div className="col-12 col-sm-6 col-lg-2">
                             <label className="form-label small fw-bold">ROLE</label>
@@ -29,12 +44,16 @@ const UserManagement = ({ users, showAddUser, setShowAddUser, newUser, setNewUse
                                 <option value="4">Patient</option>
                                 <option value="2">Doctor</option>
                                 <option value="3">Receptionist</option>
-                                <option value="1">Admin</option>
                             </select>
                         </div>
-                        <div className="col-12 col-lg-2 d-flex align-items-end">
-                            <button type="submit" className="btn btn-success rounded-pill px-4 w-100">Create</button>
+                        <div className="col-12 col-lg-1 d-flex align-items-end">
+                            <button type="submit" className="btn btn-success rounded-pill px-3 w-100" disabled={!passwordValid}>Create</button>
                         </div>
+                        {newUser.password && (
+                            <div className="col-12 mt-2">
+                                <PasswordStrengthIndicator password={newUser.password} />
+                            </div>
+                        )}
                     </form>
                 </div>
             )}

@@ -7,6 +7,7 @@ require_once __DIR__ . '/../helpers/EmailHelper.php';
 require_once __DIR__ . '/../exceptions/AuthException.php';
 require_once __DIR__ . '/../exceptions/NotFoundException.php';
 require_once __DIR__ . '/../exceptions/ValidationException.php';
+require_once __DIR__ . '/../validators/AuthValidator.php';
 
 class AuthService {
     private $conn;
@@ -145,11 +146,11 @@ class AuthService {
         $user = $this->userRepo->findByEmail($email);
 
         if (!$user) {
-            throw new AuthException("Invalid credentials.");
+            throw new AuthException("Invalid username or password.");
         }
 
         if (!password_verify($password, $user['password'])) {
-            throw new AuthException("Invalid credentials.");
+            throw new AuthException("Invalid username or password.");
         }
 
         if ($user['account_status'] != 'Active') {
@@ -302,6 +303,8 @@ class AuthService {
         if ($existing) {
             throw new ValidationException("Email already registered.");
         }
+
+        AuthValidator::validatePasswordComplexity($data->password);
 
         $password_hash = password_hash($data->password, PASSWORD_BCRYPT);
 

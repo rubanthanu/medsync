@@ -18,6 +18,7 @@ const ReceptionistDashboard = () => {
     const [activeTab, setActiveTab] = useState('queue');
     const [bookingData, setBookingData] = useState({ email: '', window_id: '', appointment_date: getTodayISO() });
     const [bookingMsg, setBookingMsg] = useState({ text: '', type: '' });
+    const [isSubmitting, setIsSubmitting] = useState(false);
     
     useEffect(() => {
         fetchWindows();
@@ -58,6 +59,7 @@ const ReceptionistDashboard = () => {
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         setBookingMsg({ text: 'Processing...', type: 'info' });
         try {
             await appointmentService.staffBook(bookingData);
@@ -68,6 +70,8 @@ const ReceptionistDashboard = () => {
             }
         } catch (err) {
             setBookingMsg({ text: err.response?.data?.message || 'Error booking appointment', type: 'danger' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -84,6 +88,7 @@ const ReceptionistDashboard = () => {
                         setBookingData={setBookingData}
                         onSubmit={handleBookingSubmit}
                         bookingMsg={bookingMsg}
+                        isSubmitting={isSubmitting}
                     />
                 </div>
                 

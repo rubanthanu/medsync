@@ -3,6 +3,9 @@ import { AuthContext } from '../../context/AuthContext';
 import * as userService from '../../services/userService';
 import * as authService from '../../services/authService';
 import { getApiFileUrl } from '../../utils/fileUtils';
+import PasswordInput from '../../components/PasswordInput';
+import PasswordStrengthIndicator from '../../components/PasswordStrengthIndicator';
+import { isPasswordValid } from '../../utils/passwordValidator';
 
 const Profile = () => {
     const { user, setUser } = useContext(AuthContext); // Use setUser to update current user state
@@ -142,10 +145,24 @@ const Profile = () => {
         }
     };
 
+    const newPasswordValid = isPasswordValid(passwordData.new_password);
+    const newConfirmMatch = passwordData.confirm_password.length > 0 && passwordData.new_password === passwordData.confirm_password;
+    const newConfirmMismatch = passwordData.confirm_password.length > 0 && passwordData.new_password !== passwordData.confirm_password;
+
     const handleChangePassword = async (e) => {
         e.preventDefault();
         setPasswordSuccess('');
         setPasswordError('');
+
+        if (!passwordData.current_password) {
+            setPasswordError('Current password is required.');
+            return;
+        }
+
+        if (!newPasswordValid) {
+            setPasswordError('New password does not meet the security requirements.');
+            return;
+        }
 
         if (passwordData.new_password !== passwordData.confirm_password) {
             setPasswordError('New passwords do not match');
@@ -154,7 +171,11 @@ const Profile = () => {
 
         setChangingPassword(true);
         try {
-            const res = await authService.changePassword(passwordData.current_password, passwordData.new_password);
+            const res = await authService.changePassword(
+                passwordData.current_password, 
+                passwordData.new_password, 
+                passwordData.confirm_password
+            );
             setPasswordSuccess(res.data.message);
             setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
         } catch (err) {
@@ -392,39 +413,65 @@ const Profile = () => {
                 <form onSubmit={handleChangePassword}>
                     <div className="row g-3">
                         <div className="col-12 col-md-4">
-                            <label className="form-label fw-semibold text-secondary small">CURRENT PASSWORD</label>
-                            <input
-                                type="password"
-                                className="form-control rounded-pill px-3"
+                            <PasswordInput
+                                label="CURRENT PASSWORD"
+                                id="profile-current-password"
+                                name="current_password"
                                 value={passwordData.current_password}
                                 onChange={e => setPasswordData({ ...passwordData, current_password: e.target.value })}
+                                placeholder="Enter current password"
                                 required
+                                autoComplete="current-password"
                             />
                         </div>
                         <div className="col-12 col-md-4">
-                            <label className="form-label fw-semibold text-secondary small">NEW PASSWORD</label>
-                            <input
-                                type="password"
-                                className="form-control rounded-pill px-3"
+                            <PasswordInput
+                                label="NEW PASSWORD"
+                                id="profile-new-password"
+                                name="new_password"
                                 value={passwordData.new_password}
                                 onChange={e => setPasswordData({ ...passwordData, new_password: e.target.value })}
+                                placeholder="Enter new strong password"
                                 required
+                                autoComplete="new-password"
                             />
                         </div>
                         <div className="col-12 col-md-4">
-                            <label className="form-label fw-semibold text-secondary small">CONFIRM NEW PASSWORD</label>
-                            <input
-                                type="password"
-                                className="form-control rounded-pill px-3"
+                            <PasswordInput
+                                label="CONFIRM NEW PASSWORD"
+                                id="profile-confirm-password"
+                                name="confirm_password"
                                 value={passwordData.confirm_password}
                                 onChange={e => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+                                placeholder="Re-enter new password"
                                 required
+                                error={newConfirmMismatch ? 'Passwords do not match.' : ''}
+                                helperText={newConfirmMatch ? '✓ Passwords match' : ''}
+                                autoComplete="new-password"
                             />
                         </div>
                     </div>
+
+                    <div className="row mt-2">
+                        <div className="col-12 col-md-8 offset-md-4">
+                            <PasswordStrengthIndicator password={passwordData.new_password} />
+                        </div>
+                    </div>
+
                     <div className="text-center text-sm-end mt-4">
-                        <button type="submit" className="btn btn-outline-primary btn-md rounded-pill px-4 w-100 w-sm-auto" disabled={changingPassword}>
-                            {changingPassword ? 'Updating...' : 'Update Password'}
+                        <button 
+                            type="submit" 
+                            className="btn btn-outline-primary btn-md rounded-pill px-4 w-100 w-sm-auto" 
+                            disabled={changingPassword || !passwordData.current_password || !newPasswordValid || passwordData.new_password !== passwordData.confirm_password}
+                        >
+                            {changingPassword ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Updating Password...
+                                </>
+                            ) : (
+                                'Update Password'
+                            )}
                         </button>
                     </div>
                 </form>

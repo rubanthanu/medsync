@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import logo from '../../assets/logo.png';
+import PasswordInput from '../../components/PasswordInput';
 
 const Login = () => {
     const { login } = useContext(AuthContext);
@@ -21,7 +22,12 @@ const Login = () => {
             if (err.response?.data?.requires_verification) {
                 navigate('/verify-otp', { state: { email: formData.email } });
             } else {
-                setError(err.response?.data?.message || 'Login failed');
+                const msg = err.response?.data?.message;
+                if (msg === 'Invalid credentials.' || msg === 'Invalid credentials') {
+                    setError('Invalid username or password.');
+                } else {
+                    setError(msg || 'Invalid username or password.');
+                }
             }
         } finally {
             setLoading(false);
@@ -50,21 +56,32 @@ const Login = () => {
                                     required
                                 />
                             </div>
-                            <div className="mb-4">
+                            
+                            <div>
                                 <div className="d-flex justify-content-between mb-1">
-                                    <label className="form-label fw-semibold mb-0">Password</label>
-                                    <Link to="/forgot-password" size="sm" className="text-primary text-decoration-none small">Forgot password?</Link>
+                                    <label className="form-label fw-semibold mb-0 text-secondary small">PASSWORD <span className="text-danger">*</span></label>
+                                    <Link to="/forgot-password" className="text-primary text-decoration-none small">Forgot password?</Link>
                                 </div>
-                                <input 
-                                    type="password" 
-                                    className="form-control" 
-                                    value={formData.password} 
+                                <PasswordInput
+                                    id="login-password"
+                                    name="password"
+                                    value={formData.password}
                                     onChange={(e) => setFormData({...formData, password: e.target.value})}
                                     required
+                                    autoComplete="current-password"
+                                    className="mb-4"
                                 />
                             </div>
+
                             <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill mb-3" disabled={loading}>
-                                {loading ? 'Logging in...' : 'Login'}
+                                {loading ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Logging in...
+                                    </>
+                                ) : (
+                                    'Login'
+                                )}
                             </button>
                             <div className="text-center">
                                 <span className="text-muted">Don't have an account? </span>

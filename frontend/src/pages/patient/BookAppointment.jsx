@@ -6,6 +6,7 @@ const BookAppointment = () => {
     const [date, setDate] = useState(getTodayISO());
     const [windows, setWindows] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [bookingWindowId, setBookingWindowId] = useState(null);
     const [message, setMessage] = useState({ type: '', text: '' });
 
     useEffect(() => {
@@ -26,12 +27,15 @@ const BookAppointment = () => {
 
     const handleBook = async (window_id) => {
         setMessage({ type: '', text: '' });
+        setBookingWindowId(window_id);
         try {
             const res = await appointmentService.bookAppointment(window_id, date);
             setMessage({ type: 'success', text: `Success! Your queue number is ${res.data.queue_number}. Estimated time: ${res.data.estimated_time}` });
             fetchWindows(); // Refresh windows
         } catch (err) {
             setMessage({ type: 'danger', text: err.response?.data?.message || 'Booking failed' });
+        } finally {
+            setBookingWindowId(null);
         }
     };
 
@@ -94,10 +98,19 @@ const BookAppointment = () => {
                                     </div>
                                     <button 
                                         className="btn btn-primary w-100 mt-auto rounded-pill" 
-                                        disabled={win.status === 'Full'}
+                                        disabled={win.status === 'Full' || bookingWindowId !== null}
                                         onClick={() => handleBook(win.window_id)}
                                     >
-                                        {win.status === 'Full' ? 'Fully Booked' : 'Book Slot'}
+                                        {bookingWindowId === win.window_id ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                Booking...
+                                            </>
+                                        ) : win.status === 'Full' ? (
+                                            'Fully Booked'
+                                        ) : (
+                                            'Book Slot'
+                                        )}
                                     </button>
                                 </div>
                             </div>
