@@ -56,7 +56,7 @@ class AdminController extends BaseController {
                 throw new ValidationException("User ID and status are required.");
             }
 
-            $this->adminService->updateUserStatus($data->user_id, $data->status);
+            $this->adminService->updateUserStatus($data->user_id, $data->status, $auth->id);
 
             http_response_code(200);
             echo json_encode(["message" => "User status updated successfully."]);
