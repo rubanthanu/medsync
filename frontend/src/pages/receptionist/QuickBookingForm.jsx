@@ -1,6 +1,6 @@
 import { getTodayISO, getMaxDateISO } from '../../utils/dateUtils';
 
-const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, bookingMsg }) => {
+const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, bookingMsg, isSubmitting }) => {
     return (
         <div className="card border-0 shadow-sm rounded-4 " style={{ top: '20px' }}>
             <div className="card-header bg-white border-bottom-0 pt-4 px-4 pb-2">
@@ -46,7 +46,7 @@ const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, book
                         <label className="form-label small fw-bold">DATE</label>
                         <input 
                             type="date" 
-                            className="form-control border-0 bg-light"
+                            className="form-control border-0 bg-light" 
                             value={bookingData.appointment_date}
                             min={getTodayISO()}
                             max={getMaxDateISO(2)}
@@ -54,8 +54,19 @@ const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, book
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary w-100 rounded-pill py-2 fw-bold mt-2 shadow-sm">
-                        Book Appointment
+                    <button 
+                        type="submit" 
+                        className="btn btn-primary w-100 rounded-pill py-2 fw-bold mt-2 shadow-sm"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Booking...
+                            </>
+                        ) : (
+                            'Book Appointment'
+                        )}
                     </button>
                 </form>
             </div>
