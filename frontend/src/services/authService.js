@@ -16,6 +16,6 @@ export const forgotPassword = (email) => api.post('/auth/forgot_password', { ema
 
 export const verifyForgotPasswordOtp = (email, otp) => api.post('/auth/verify_forgot_password_otp', { email, otp });
 
-export const resetPassword = (email, otp, new_password) => api.post('/auth/reset_password', { email, otp, new_password });
+export const resetPassword = (email, otp, new_password, confirm_password) => api.post('/auth/reset_password', { email, otp, new_password, confirm_password });
 
-export const changePassword = (current_password, new_password) => api.post('/auth/change_password', { current_password, new_password });
+export const changePassword = (current_password, new_password, confirm_password) => api.post('/auth/change_password', { current_password, new_password, confirm_password });

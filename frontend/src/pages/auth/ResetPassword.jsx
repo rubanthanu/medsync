@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import * as authService from '../../services/authService';
+import PasswordInput from '../../components/PasswordInput';
+import PasswordStrengthIndicator from '../../components/PasswordStrengthIndicator';
+import { isPasswordValid } from '../../utils/passwordValidator';
 
 const ResetPassword = () => {
     const location = useLocation();
@@ -20,6 +23,10 @@ const ResetPassword = () => {
         return null;
     }
 
+    const passwordValid = isPasswordValid(newPassword);
+    const confirmMatch = confirmPassword.length > 0 && newPassword === confirmPassword;
+    const confirmMismatch = confirmPassword.length > 0 && newPassword !== confirmPassword;
+
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
         setError('');
@@ -37,13 +44,19 @@ const ResetPassword = () => {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         setError('');
+        
+        if (!passwordValid) {
+            setError('Password does not meet all security requirements.');
+            return;
+        }
+
         if (newPassword !== confirmPassword) {
             setError('Passwords do not match');
             return;
         }
         setLoading(true);
         try {
-            await authService.resetPassword(email, otp, newPassword);
+            await authService.resetPassword(email, otp, newPassword, confirmPassword);
             setSuccess('Password reset successful! You can now login.');
             setTimeout(() => navigate('/login'), 3000);
         } catch (err) {
@@ -87,33 +100,58 @@ const ResetPassword = () => {
                                     />
                                 </div>
                                 <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill" disabled={loading}>
-                                    {loading ? 'Verifying...' : 'Verify OTP'}
+                                    {loading ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            Verifying...
+                                        </>
+                                    ) : (
+                                        'Verify OTP'
+                                    )}
                                 </button>
                             </form>
                         ) : (
                             <form onSubmit={handleResetPassword}>
-                                <div className="mb-3">
-                                    <label className="form-label fw-semibold">New Password</label>
-                                    <input 
-                                        type="password" 
-                                        className="form-control" 
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="form-label fw-semibold">Confirm Password</label>
-                                    <input 
-                                        type="password" 
-                                        className="form-control" 
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill" disabled={loading}>
-                                    {loading ? 'Resetting...' : 'Reset Password'}
+                                <PasswordInput
+                                    label="New Password"
+                                    id="reset-new-password"
+                                    name="newPassword"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    placeholder="Enter strong new password"
+                                    required
+                                    autoComplete="new-password"
+                                />
+
+                                <PasswordStrengthIndicator password={newPassword} />
+
+                                <PasswordInput
+                                    label="Confirm Password"
+                                    id="reset-confirm-password"
+                                    name="confirmPassword"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    placeholder="Re-enter your new password"
+                                    required
+                                    error={confirmMismatch ? 'Passwords do not match.' : ''}
+                                    helperText={confirmMatch ? '✓ Passwords match' : ''}
+                                    autoComplete="new-password"
+                                    className="mb-4"
+                                />
+
+                                <button 
+                                    type="submit" 
+                                    className="btn btn-primary w-100 py-2 rounded-pill" 
+                                    disabled={loading || !passwordValid || newPassword !== confirmPassword}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            Resetting Password...
+                                        </>
+                                    ) : (
+                                        'Reset Password'
+                                    )}
                                 </button>
                             </form>
                         )}
