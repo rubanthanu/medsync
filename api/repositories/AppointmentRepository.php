@@ -206,6 +206,49 @@ $query ="SELECT aw.*,
         $stmt = $this->conn->query("SELECT COUNT(*) as count FROM appointments");
         return $stmt->fetch(PDO::FETCH_ASSOC)['count'];
     }
+
+    public function getBookedCountForUpdate($windowId, $date) {
+        $query = "SELECT COUNT(*) as current_count FROM appointments 
+                  WHERE window_id = :window_id AND appointment_date = :date 
+                  AND appointment_status IN ('Booked', 'Walk-In', 'Current')
+                  FOR UPDATE";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":window_id", $windowId);
+        $stmt->bindParam(":date", $date);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC)['current_count'];
+    }
+
+    public function getPatientQueuePosition($userId, $windowId, $date) {
+        $query = "SELECT a.appointment_id, a.queue_number, a.appointment_status, a.estimated_time,
+                         (SELECT COUNT(*) FROM appointments 
+                          WHERE window_id = :wid2 AND appointment_date = :date2 
+                          AND appointment_status IN ('Booked','Walk-In','Current')) as total_in_queue
+                  FROM appointments a
+                  JOIN patients p ON a.patient_id = p.patient_id
+                  WHERE p.user_id = :user_id AND a.window_id = :wid AND a.appointment_date = :date
+                  AND a.appointment_status IN ('Booked','Walk-In','Current')";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":user_id", $userId);
+        $stmt->bindParam(":wid", $windowId);
+        $stmt->bindParam(":wid2", $windowId);
+        $stmt->bindParam(":date", $date);
+        $stmt->bindParam(":date2", $date);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function getActiveWindow($doctorId, $windowId, $date) {
+        $query = "SELECT active_id FROM active_windows 
+                  WHERE doctor_id = :doctor_id AND window_id = :window_id 
+                  AND appointment_date = :date AND status = 'Ongoing'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":doctor_id", $doctorId);
+        $stmt->bindParam(":window_id", $windowId);
+        $stmt->bindParam(":date", $date);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
    
 ?>

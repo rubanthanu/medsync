@@ -22,7 +22,16 @@ class QueueController extends BaseController {
                 throw new ValidationException("Window ID is required.");
             }
 
-            $queue = $this->queueService->getQueue($window_id, $date);
+            // Role-based response
+            if ($auth->role_id == 1 || $auth->role_id == 2 || $auth->role_id == 3) {
+                // Admin, Doctor, Receptionist — full queue
+                $queue = $this->queueService->getQueue($window_id, $date);
+            } else if ($auth->role_id == 4) {
+                // Patient — only their own position
+                $queue = $this->queueService->getPatientQueuePosition($auth->id, $window_id, $date);
+            } else {
+                throw new PermissionException("Unauthorized access.");
+            }
 
             http_response_code(200);
             echo json_encode($queue);
@@ -100,7 +109,7 @@ class QueueController extends BaseController {
                 throw new ValidationException("Window ID is required.");
             }
 
-            $this->queueService->stopWindow($data->window_id);
+            $this->queueService->stopWindow($auth->id, $data->window_id);
 
             http_response_code(200);
             echo json_encode(["message" => "Window stopped successfully."]);

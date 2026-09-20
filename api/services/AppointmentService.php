@@ -108,71 +108,81 @@ class AppointmentService {
     }
 
     private function processBooking($patientId, $doctorId, $windowId, $appointmentDate, $createdBy, $notifyUserId, $notifyEmail, $isSelfBooking) {
-        // Get window details
-        $window = $this->appointmentRepo->getWindowById($windowId);
-        if (!$window) {
-            throw new NotFoundException("Window not found.");
+        $this->conn->beginTransaction();
+        try {
+            // Get window details
+            $window = $this->appointmentRepo->getWindowById($windowId);
+            if (!$window) {
+                throw new NotFoundException("Window not found.");
+            }
+
+            // Check if window has already passed for today
+            $current_time = date('H:i:s');
+            $today = date('Y-m-d');
+            if ($appointmentDate == $today && $window['start_time'] <= $current_time) {
+                throw new AppointmentException("This appointment window has already passed for today.");
+            }
+
+            // Get next queue number (locked to prevent race condition)
+            $current_count = $this->appointmentRepo->getBookedCountForUpdate($windowId, $appointmentDate);
+            $queue_number = $current_count + 1;
+
+            if ($queue_number > $window['max_slots']) {
+                throw new AppointmentException("This appointment window is full for selected date.");
+            }
+
+            // Calculate estimated time
+            $estimated_time = $this->calculateEstimatedTime($window, $queue_number);
+
+            // Create appointment
+            $this->appointmentRepo->create($patientId, $doctorId, $windowId, $appointmentDate, 'Booked', $createdBy, $queue_number, $estimated_time);
+
+            $formatted_time = date('h:i A', strtotime($estimated_time));
+            $startTime = strtotime($window['start_time']);
+            $endTime = strtotime($window['end_time']);
+            $window_time = date('h:i A', $startTime) . " - " . date('h:i A', $endTime);
+
+            // Notify
+            if ($isSelfBooking) {
+                $msg = "Your appointment is booked for " . $appointmentDate . ". Window: " . $window_time . ". Queue number: " . $queue_number . ". Estimated time: " . $formatted_time;
+            } else {
+                $msg = "A receptionist booked an appointment for you on " . $appointmentDate . ". Window: " . $window_time . ". Queue: " . $queue_number . " at " . $formatted_time;
+            }
+            $this->notificationService->create($notifyUserId, $msg, 'Appointment');
+
+            // Email
+            if ($isSelfBooking) {
+                $subject = "UWU MedSync - Appointment Confirmation";
+                $body = "<h2>Appointment Confirmed!</h2>
+                         <p>Date: <strong>{$appointmentDate}</strong></p>
+                         <p>Time Window: <strong>{$window_time}</strong></p>
+                         <p>Queue Number: <strong>{$queue_number}</strong></p>
+                         <p>Estimated Time: <strong>{$formatted_time}</strong></p>
+                         <p></p>";
+            } else {
+                $subject = "UWU MedSync - Appointment Booked by Clinic";
+                $body = "<h2>Appointment Confirmed!</h2>
+                         <p>A clinic staff member has scheduled an appointment for you.</p>
+                         <p>Date: <strong>{$appointmentDate}</strong></p>
+                         <p>Time Window: <strong>{$window_time}</strong></p>
+                         <p>Queue Number: <strong>{$queue_number}</strong></p>
+                         <p>Estimated Time: <strong>{$formatted_time}</strong></p>";
+            }
+            EmailHelper::sendEmail($notifyEmail, $subject, $body);
+
+            $this->conn->commit();
+
+            return [
+                'queue_number' => $queue_number,
+                'formatted_time' => $formatted_time,
+                'email' => $notifyEmail
+            ];
+        } catch (Exception $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            throw $e;
         }
-
-        // Check if window has already passed for today
-        $current_time = date('H:i:s');
-        $today = date('Y-m-d');
-        if ($appointmentDate == $today && $window['start_time'] <= $current_time) {
-            throw new AppointmentException("This appointment window has already passed for today.");
-        }
-
-        // Get next queue number
-        $current_count = $this->appointmentRepo->getBookedCount($windowId, $appointmentDate);
-        $queue_number = $current_count + 1;
-
-        if ($queue_number > $window['max_slots']) {
-            throw new AppointmentException("This appointment window is full for selected date.");
-        }
-
-        // Calculate estimated time
-        $estimated_time = $this->calculateEstimatedTime($window, $queue_number);
-
-        // Create appointment
-        $this->appointmentRepo->create($patientId, $doctorId, $windowId, $appointmentDate, 'Booked', $createdBy, $queue_number, $estimated_time);
-
-        $formatted_time = date('h:i A', strtotime($estimated_time));
-        $startTime = strtotime($window['start_time']);
-        $endTime = strtotime($window['end_time']);
-        $window_time = date('h:i A', $startTime) . " - " . date('h:i A', $endTime);
-
-        // Notify
-        if ($isSelfBooking) {
-            $msg = "Your appointment is booked for " . $appointmentDate . ". Window: " . $window_time . ". Queue number: " . $queue_number . ". Estimated time: " . $formatted_time;
-        } else {
-            $msg = "A receptionist booked an appointment for you on " . $appointmentDate . ". Window: " . $window_time . ". Queue: " . $queue_number . " at " . $formatted_time;
-        }
-        $this->notificationService->create($notifyUserId, $msg, 'Appointment');
-
-        // Email
-        if ($isSelfBooking) {
-            $subject = "UWU MedSync - Appointment Confirmation";
-            $body = "<h2>Appointment Confirmed!</h2>
-                     <p>Date: <strong>{$appointmentDate}</strong></p>
-                     <p>Time Window: <strong>{$window_time}</strong></p>
-                     <p>Queue Number: <strong>{$queue_number}</strong></p>
-                     <p>Estimated Time: <strong>{$formatted_time}</strong></p>
-                     <p></p>";
-        } else {
-            $subject = "UWU MedSync - Appointment Booked by Clinic";
-            $body = "<h2>Appointment Confirmed!</h2>
-                     <p>A clinic staff member has scheduled an appointment for you.</p>
-                     <p>Date: <strong>{$appointmentDate}</strong></p>
-                     <p>Time Window: <strong>{$window_time}</strong></p>
-                     <p>Queue Number: <strong>{$queue_number}</strong></p>
-                     <p>Estimated Time: <strong>{$formatted_time}</strong></p>";
-        }
-        EmailHelper::sendEmail($notifyEmail, $subject, $body);
-
-        return [
-            'queue_number' => $queue_number,
-            'formatted_time' => $formatted_time,
-            'email' => $notifyEmail
-        ];
     }
 
     private function calculateEstimatedTime($window, $queueNumber) {
@@ -183,6 +193,7 @@ class AppointmentService {
         $timePerPatient = $maxAllowed > 0 ? $totalMinutes / $maxAllowed : 0;
         $bufferMinutes = $timePerPatient / 2;
         $offsetMinutes = round(($queueNumber - 1) * $timePerPatient - $bufferMinutes);
+        $offsetMinutes = max(0, $offsetMinutes); // Prevent negative estimated times
         return date('H:i:s', $startTime + ($offsetMinutes * 60));
     }
 

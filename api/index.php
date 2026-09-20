@@ -54,8 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 $request = isset($_GET['request']) ? $_GET['request'] : '';
 $uri = explode('/', rtrim($request, '/'));
 
-$controllerName = isset($uri[0]) && $uri[0] != '' ? ucfirst($uri[0]) . 'Controller' : null;
+// Route whitelist — only these methods can be called via URL
+$allowedRoutes = [
+    'auth'         => ['csrf_token','register','verify_otp','resend_otp','login','me','logout','forgot_password','verify_forgot_password_otp','reset_password','change_password'],
+    'appointment'  => ['get_windows','book','staff_book','get_patient_appointments','cancel'],
+    'queue'        => ['get_queue','update_status','start_window','next_patient','stop_window'],
+    'admin'        => ['get_stats','get_users','update_user_status','create_user','get_appointment_windows','update_window_slots','get_patients','get_patient_details'],
+    'doctor'       => ['mark_leave','get_leaves','delete_leave'],
+    'certificate'  => ['request','review','get_requests','get_patient_certificates'],
+    'prescription' => ['create','get_history','get_patient_prescriptions'],
+    'user'         => ['complete_profile','get_profile','update_profile','get_patient_details'],
+    'feedback'     => ['submit','get_all','delete'],
+    'healthpost'   => ['get_all','create','delete'],
+    'notification' => ['get_all','mark_read'],
+];
+
+$controllerKey = strtolower($uri[0] ?? '');
 $methodName = isset($uri[1]) ? $uri[1] : null;
+$controllerName = isset($uri[0]) && $uri[0] != '' ? ucfirst($uri[0]) . 'Controller' : null;
+
+// Block if controller or method not in whitelist
+if (!isset($allowedRoutes[$controllerKey]) || !in_array($methodName, $allowedRoutes[$controllerKey], true)) {
+    http_response_code(404);
+    echo json_encode(["message" => "Endpoint not found."]);
+    exit();
+}
 
 $csrfExemptRoutes = [
     'auth/login',
@@ -78,14 +101,9 @@ if ($controllerName && file_exists(__DIR__ . '/controllers/' . $controllerName .
     require_once __DIR__ . '/controllers/' . $controllerName . '.php';
     $controller = new $controllerName();
     
-    if ($methodName && method_exists($controller, $methodName)) {
-        // Pass the remaining URI parts as arguments
-        $args = array_slice($uri, 2);
-        call_user_func_array([$controller, $methodName], $args);
-    } else {
-        http_response_code(404);
-        echo json_encode(["message" => "Endpoint not found."]);
-    }
+    // Pass the remaining URI parts as arguments
+    $args = array_slice($uri, 2);
+    call_user_func_array([$controller, $methodName], $args);
 } else {
     http_response_code(404);
     echo json_encode(["message" => "Controller not found."]);
