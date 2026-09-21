@@ -18,6 +18,9 @@ const ResetPassword = () => {
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const [resendLoading, setResendLoading] = useState(false);
+    const [resendCooldown, setResendCooldown] = useState(0);
+
     if (!email) {
         navigate('/login');
         return null;
@@ -26,6 +29,30 @@ const ResetPassword = () => {
     const passwordValid = isPasswordValid(newPassword);
     const confirmMatch = confirmPassword.length > 0 && newPassword === confirmPassword;
     const confirmMismatch = confirmPassword.length > 0 && newPassword !== confirmPassword;
+
+    const handleResendOtp = async () => {
+        setError('');
+        setSuccess('');
+        setResendLoading(true);
+        try {
+            await authService.resendOtp(email, 'Forgot Password');
+            setSuccess('A new OTP has been sent to your email.');
+            setResendCooldown(60);
+            const timer = setInterval(() => {
+                setResendCooldown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to resend OTP');
+        } finally {
+            setResendLoading(false);
+        }
+    };
 
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
@@ -109,6 +136,29 @@ const ResetPassword = () => {
                                         'Verify OTP'
                                     )}
                                 </button>
+                                <div className="text-center mt-3">
+                                    <p className="text-muted mb-1" style={{fontSize: '0.9rem'}}>Didn't receive the code?</p>
+                                    <button
+                                        type="button"
+                                        className="btn btn-link text-primary fw-semibold p-0 text-decoration-none"
+                                        onClick={handleResendOtp}
+                                        disabled={resendLoading || resendCooldown > 0}
+                                    >
+                                        {resendLoading ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                                Sending...
+                                            </>
+                                        ) : resendCooldown > 0 ? (
+                                            `Resend OTP in ${resendCooldown}s`
+                                        ) : (
+                                            <>
+                                                <i className="bi bi-arrow-clockwise me-1"></i>
+                                                Resend OTP
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
                             </form>
                         ) : (
                             <form onSubmit={handleResetPassword}>
