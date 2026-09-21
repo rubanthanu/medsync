@@ -7,12 +7,17 @@ import Swal from 'sweetalert2';
 import useFetch from '../../hooks/useFetch';
 import useToast from '../../hooks/useToast';
 
+const APPOINTMENTS_PER_PAGE = 4;
+const NOTIFICATIONS_PER_PAGE = 5;
+
 const PatientDashboard = () => {
     const { toast, showToast, hideToast } = useToast();
     const { data: notifications, refetch: fetchNotifications } = useFetch(notificationService.getAll);
     const { data: appointments, loaded: appointmentsLoaded, refetch: refreshAppointments } = useFetch(appointmentService.getPatientAppointments);
     const [feedbackText, setFeedbackText] = useState('');
     const [feedbackLoading, setFeedbackLoading] = useState(false);
+    const [visibleAppointments, setVisibleAppointments] = useState(APPOINTMENTS_PER_PAGE);
+    const [visibleNotifications, setVisibleNotifications] = useState(NOTIFICATIONS_PER_PAGE);
 
     const handleCancelAppointment = async (appointmentId) => {
         const result = await Swal.fire({
@@ -139,7 +144,9 @@ const PatientDashboard = () => {
                 <div className="row g-3">
                     {!appointmentsLoaded ? (
                         <div className="col-12 text-center py-4 text-muted">Loading appointments...</div>
-                    ) : appointments.length > 0 ? appointments.map((appointment) => (
+                    ) : appointments.length > 0 ? (
+                        <>
+                            {appointments.slice(0, visibleAppointments).map((appointment) => (
                         <div key={appointment.appointment_id} className="col-12 col-lg-6">
                             <div className="appointment-card h-100">
                                 <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
@@ -181,7 +188,26 @@ const PatientDashboard = () => {
                                 )}
                             </div>
                         </div>
-                    )) : (
+                            ))}
+                            {appointments.length > APPOINTMENTS_PER_PAGE && (
+                                <div className="col-12 text-center mt-2">
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary rounded-pill px-4"
+                                        onClick={() => setVisibleAppointments(prev =>
+                                            prev >= appointments.length ? APPOINTMENTS_PER_PAGE : prev + APPOINTMENTS_PER_PAGE
+                                        )}
+                                    >
+                                        {visibleAppointments >= appointments.length ? (
+                                            <><i className="bi bi-chevron-up me-2"></i>Show Less</>
+                                        ) : (
+                                            <><i className="bi bi-chevron-down me-2"></i>Show More ({appointments.length - visibleAppointments} remaining)</>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    ) : (
                         <div className="col-12">
                             <div className="empty-state text-center py-5 text-muted">
                                 No booked appointments found.
@@ -200,7 +226,12 @@ const PatientDashboard = () => {
                 </div>
 
                 <div className="list-group notification-list shadow-sm border-0 rounded-4">
-                    {notifications.filter(n => n.is_read == 0).length > 0 ? notifications.filter(n => n.is_read == 0).map(notif => (
+                    {(() => {
+                        const unreadNotifications = notifications.filter(n => n.is_read == 0);
+                        if (unreadNotifications.length > 0) {
+                            return (
+                                <>
+                                    {unreadNotifications.slice(0, visibleNotifications).map(notif => (
                         <div key={notif.notification_id} className="list-group-item p-3 border-0 border-bottom d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 notification-item">
                             <div className="d-flex align-items-center">
                                 <div className="bg-light rounded-circle p-2 me-3 flex-shrink-0">
@@ -219,11 +250,33 @@ const PatientDashboard = () => {
                                 Mark as read
                             </button>
                         </div>
-                    )) : (
+                                    ))}
+                                    {unreadNotifications.length > NOTIFICATIONS_PER_PAGE && (
+                                        <div className="list-group-item p-3 border-0 text-center">
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-secondary rounded-pill px-4"
+                                                onClick={() => setVisibleNotifications(prev =>
+                                                    prev >= unreadNotifications.length ? NOTIFICATIONS_PER_PAGE : prev + NOTIFICATIONS_PER_PAGE
+                                                )}
+                                            >
+                                                {visibleNotifications >= unreadNotifications.length ? (
+                                                    <><i className="bi bi-chevron-up me-2"></i>Show Less</>
+                                                ) : (
+                                                    <><i className="bi bi-chevron-down me-2"></i>Show More ({unreadNotifications.length - visibleNotifications} remaining)</>
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            );
+                        }
+                        return (
                         <div className="list-group-item p-4 text-center text-muted">
                             No unread notifications.
                         </div>
-                    )}
+                        );
+                    })()}
                 </div>
             </div>
              

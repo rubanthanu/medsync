@@ -23,7 +23,7 @@ class AppointmentService {
         $this->notificationService = new NotificationService($conn);
     }
 
-    public function getWindows($date, $roleId) {
+    public function getWindows($date, $roleId, $forBooking = false) {
         // Validate date range (today + 2 days only)
         $today = date('Y-m-d');
         $max_date = date('Y-m-d', strtotime('+2 days'));
@@ -46,9 +46,12 @@ class AppointmentService {
             $window['status'] = $window['available_slots'] <= 0 ? 'Full' : 'Available';
 
             // Patients should not see windows that have already started today.
-            // unless the window is currently active (ongoing) for live queue tracking.
+            // When booking, never show windows that have already started.
+            // For live queue tracking, allow ongoing active windows.
             if ($roleId == 4 && $date == $today && $window['start_time'] <= $current_time) {
-                if ($window['is_active'] > 0) {
+                if ($forBooking) {
+                    continue;
+                } else if ($window['is_active'] > 0) {
                     $window['status'] = 'Full';
                 } else {
                     continue;

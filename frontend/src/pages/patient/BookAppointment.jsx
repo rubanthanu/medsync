@@ -16,8 +16,19 @@ const BookAppointment = () => {
     const fetchWindows = async () => {
         setLoading(true);
         try {
-            const res = await appointmentService.getWindows(date);
-            setWindows(res.data);
+            const res = await appointmentService.getWindows(date, true);
+            const now = new Date();
+            const currentTime = now.toTimeString().split(' ')[0]; // HH:mm:ss
+            const todayStr = getTodayISO();
+
+            // When booking, never show windows that have already started today
+            const availableWindows = (res.data || []).filter(win => {
+                if (date === todayStr && win.start_time <= currentTime) {
+                    return false;
+                }
+                return true;
+            });
+            setWindows(availableWindows);
         } catch (err) {
             console.error(err);
         }

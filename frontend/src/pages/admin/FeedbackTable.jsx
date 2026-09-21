@@ -1,4 +1,10 @@
+import { useState } from 'react';
+
+const FEEDBACKS_PER_PAGE = 5;
+
 const FeedbackTable = ({ feedbacks, onDelete }) => {
+    const [visibleCount, setVisibleCount] = useState(FEEDBACKS_PER_PAGE);
+
     return (
         <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div className="card-header bg-white border-bottom-0 p-4">
@@ -6,38 +12,57 @@ const FeedbackTable = ({ feedbacks, onDelete }) => {
             </div>
             <div className="card-body p-0">
                 {feedbacks.length > 0 ? (
-                    <div className="table-responsive">
-                        <table className="table table-hover align-middle mb-0">
-                            <thead className="table-light text-secondary">
-                                <tr>
-                                    <th className="ps-4">Patient</th>
-                                    <th>Email</th>
-                                    <th>Feedback Message</th>
-                                    <th>Submitted At</th>
-                                    <th className="text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Array.isArray(feedbacks) && feedbacks.map(f => (
-                                    <tr key={f.feedback_id}>
-                                        <td className="ps-4 fw-semibold text-dark">{f.patient_name}</td>
-                                        <td className="text-muted">{f.patient_email}</td>
-                                        <td className="text-dark py-3">{f.feedback_text}</td>
-                                        <td className="text-muted small">{f.submitted_at ? new Date(f.submitted_at).toLocaleString() : 'N/A'}</td>
-                                        <td className="text-center">
-                                            <button
-                                                className="btn btn-outline-danger btn-sm rounded-pill px-3"
-                                                onClick={() => onDelete(f.feedback_id)}
-                                                title="Delete feedback"
-                                            >
-                                                <i className="bi bi-trash me-1"></i> Delete
-                                            </button>
-                                        </td>
+                    <>
+                        <div className="table-responsive">
+                            <table className="table table-hover align-middle mb-0">
+                                <thead className="table-light text-secondary">
+                                    <tr>
+                                        <th className="ps-4">Patient</th>
+                                        <th>Email</th>
+                                        <th>Feedback Message</th>
+                                        <th>Submitted At</th>
+                                        <th className="text-center">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {Array.isArray(feedbacks) && feedbacks.slice(0, visibleCount).map(f => (
+                                        <tr key={f.feedback_id}>
+                                            <td className="ps-4 fw-semibold text-dark">{f.patient_name}</td>
+                                            <td className="text-muted">{f.patient_email}</td>
+                                            <td className="text-dark py-3">{f.feedback_text}</td>
+                                            <td className="text-muted small">{f.submitted_at ? new Date(f.submitted_at).toLocaleString() : 'N/A'}</td>
+                                            <td className="text-center">
+                                                <button
+                                                    className="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                                    onClick={() => onDelete(f.feedback_id)}
+                                                    title="Delete feedback"
+                                                >
+                                                    <i className="bi bi-trash me-1"></i> Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {feedbacks.length > FEEDBACKS_PER_PAGE && (
+                            <div className="text-center py-3">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary rounded-pill px-4"
+                                    onClick={() => setVisibleCount(prev =>
+                                        prev >= feedbacks.length ? FEEDBACKS_PER_PAGE : prev + FEEDBACKS_PER_PAGE
+                                    )}
+                                >
+                                    {visibleCount >= feedbacks.length ? (
+                                        <><i className="bi bi-chevron-up me-2"></i>Show Less</>
+                                    ) : (
+                                        <><i className="bi bi-chevron-down me-2"></i>Show More ({feedbacks.length - visibleCount} remaining)</>
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="text-center py-5 text-muted">
                         <i className="bi bi-chat-left-dots display-6"></i>

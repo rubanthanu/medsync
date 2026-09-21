@@ -151,7 +151,7 @@ const Landing = () => {
                             <div className="col-12 col-md-6 col-lg-4" key={post.post_id}>
                                 <div className="card h-100 border-0 shadow-sm bg-white rounded-4 overflow-hidden hover-grow">
                                     <div className="position-relative" style={{ height: '200px', overflow: 'hidden' }}>
-                                        <img src={getCategoryImage(post)} alt={post.title} className="w-100 h-100 object-fit-cover transition-transform" />
+                                        <img src={getCategoryImage(post)} alt={post.title} className="w-100 h-100 object-fit-cover transition-transform" onError={(e) => { e.target.onerror = null; const cat = post.category?.toLowerCase(); if (cat === 'wellness') e.target.src = wellnessImage; else if (cat === 'mental health') e.target.src = mentalHealthImage; else if (cat === 'nutrition') e.target.src = nutritionImage; else e.target.src = defaultPostImage; }} />
                                         <span className={`position-absolute top-0 start-0 m-3 badge rounded-pill px-3 py-2 shadow-sm fw-semibold ${getCategoryBadgeClass(post.category)}`}>
                                             {post.category || 'Wellness'}
                                         </span>

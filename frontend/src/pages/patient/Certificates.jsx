@@ -3,6 +3,9 @@ import * as certificateService from '../../services/certificateService';
 import * as prescriptionService from '../../services/prescriptionService';
 import { getCertificatePdfUrl, getPrescriptionPdfUrl } from '../../utils/fileUtils';
 
+const CERTS_PER_PAGE = 4;
+const PRESCRIPTIONS_PER_PAGE = 4;
+
 const Certificates = () => {
     const [formData, setFormData] = useState({ start_date: '', end_date: '', reason: '' });
     const [proofFile, setProofFile] = useState(null);
@@ -12,6 +15,8 @@ const Certificates = () => {
     // Documents list states
     const [certificates, setCertificates] = useState([]);
     const [prescriptions, setPrescriptions] = useState([]);
+    const [visibleCerts, setVisibleCerts] = useState(CERTS_PER_PAGE);
+    const [visiblePrescriptions, setVisiblePrescriptions] = useState(PRESCRIPTIONS_PER_PAGE);
     const [activeTab, setActiveTab] = useState('request'); // 'request', 'documents'
 
     useEffect(() => {
@@ -161,33 +166,52 @@ const Certificates = () => {
                                 <i className="bi bi-file-earmark-medical text-primary me-2"></i> Approved Certificates
                             </h4>
                             {certificates.length > 0 ? (
-                                <div className="d-flex flex-column gap-3">
-                                    {certificates.map(cert => (
-                                        <div key={cert.certificate_id} className="card border-0 bg-light p-3 rounded-4 shadow-sm small hover-grow">
-                                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <span className={`badge rounded-pill px-3 py-1 fw-semibold ${cert.status === 'Approved' ? 'bg-success-subtle text-success' : (cert.status === 'Pending' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger')}`}>
-                                                    {cert.status}
-                                                </span>
-                                                <span className="text-muted small">{new Date(cert.requested_at).toLocaleDateString()}</span>
-                                            </div>
-                                            <p className="mb-1"><strong>Period:</strong> {cert.start_date} to {cert.end_date}</p>
-                                            <p className="mb-1 text-muted"><strong>Reason:</strong> {cert.reason}</p>
-                                            {cert.doctor_name && <p className="mb-1 text-muted"><strong>Reviewed By:</strong> Dr. {cert.doctor_name}</p>}
-                                            {cert.rejection_reason && <p className="mb-1 text-danger"><strong>Rejection Reason:</strong> {cert.rejection_reason}</p>}
+                                <>
+                                    <div className="d-flex flex-column gap-3">
+                                        {certificates.slice(0, visibleCerts).map(cert => (
+                                            <div key={cert.certificate_id} className="card border-0 bg-light p-3 rounded-4 shadow-sm small hover-grow">
+                                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                                    <span className={`badge rounded-pill px-3 py-1 fw-semibold ${cert.status === 'Approved' ? 'bg-success-subtle text-success' : (cert.status === 'Pending' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger')}`}>
+                                                        {cert.status}
+                                                    </span>
+                                                    <span className="text-muted small">{new Date(cert.requested_at).toLocaleDateString()}</span>
+                                                </div>
+                                                <p className="mb-1"><strong>Period:</strong> {cert.start_date} to {cert.end_date}</p>
+                                                <p className="mb-1 text-muted"><strong>Reason:</strong> {cert.reason}</p>
+                                                {cert.doctor_name && <p className="mb-1 text-muted"><strong>Reviewed By:</strong> Dr. {cert.doctor_name}</p>}
+                                                {cert.rejection_reason && <p className="mb-1 text-danger"><strong>Rejection Reason:</strong> {cert.rejection_reason}</p>}
 
-                                            {cert.status === 'Approved' && cert.certificate_pdf && (
-                                                <a
-                                                    href={getCertificatePdfUrl(cert.certificate_pdf)}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="btn btn-outline-primary btn-sm rounded-pill mt-3 shadow-sm text-decoration-none text-center"
-                                                >
-                                                    <i className="bi bi-download me-1"></i> Download Certificate PDF
-                                                </a>
-                                            )}
+                                                {cert.status === 'Approved' && cert.certificate_pdf && (
+                                                    <a
+                                                        href={getCertificatePdfUrl(cert.certificate_pdf)}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="btn btn-outline-primary btn-sm rounded-pill mt-3 shadow-sm text-decoration-none text-center"
+                                                    >
+                                                        <i className="bi bi-download me-1"></i> Download Certificate PDF
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {certificates.length > CERTS_PER_PAGE && (
+                                        <div className="text-center mt-3">
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-secondary rounded-pill px-4"
+                                                onClick={() => setVisibleCerts(prev =>
+                                                    prev >= certificates.length ? CERTS_PER_PAGE : prev + CERTS_PER_PAGE
+                                                )}
+                                            >
+                                                {visibleCerts >= certificates.length ? (
+                                                    <><i className="bi bi-chevron-up me-2"></i>Show Less</>
+                                                ) : (
+                                                    <><i className="bi bi-chevron-down me-2"></i>Show More ({certificates.length - visibleCerts} remaining)</>
+                                                )}
+                                            </button>
                                         </div>
-                                    ))}
-                                </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="text-center py-5 text-muted">
                                     <i className="bi bi-folder-x display-6"></i>
@@ -204,34 +228,53 @@ const Certificates = () => {
                                 <i className="bi bi-prescription text-success me-2"></i> My e-Prescriptions
                             </h4>
                             {prescriptions.length > 0 ? (
-                                <div className="d-flex flex-column gap-3">
-                                    {prescriptions.map(presc => (
-                                        <div key={presc.prescription_id} className="card border-0 bg-light p-3 rounded-4 shadow-sm small hover-grow">
-                                            <div className="d-flex justify-content-between mb-2">
-                                                <span className="fw-bold text-success">Prescription #{presc.prescription_id}</span>
-                                                <span className="text-muted small">{new Date(presc.created_at).toLocaleDateString()}</span>
-                                            </div>
-                                            <p className="mb-1"><strong>Doctor:</strong> Dr. {presc.doctor_name}</p>
-                                            <div className="bg-white p-2 rounded-3 my-2 small border-start border-success border-3">
-                                                <strong>Medicines:</strong>
-                                                <div className="text-secondary whitespace-pre">{presc.medicines}</div>
-                                                {presc.dosage && <div className="text-muted text-xs">Dosage: {presc.dosage}</div>}
-                                                {presc.instructions && <div className="text-muted text-xs">Instructions: {presc.instructions}</div>}
-                                            </div>
+                                <>
+                                    <div className="d-flex flex-column gap-3">
+                                        {prescriptions.slice(0, visiblePrescriptions).map(presc => (
+                                            <div key={presc.prescription_id} className="card border-0 bg-light p-3 rounded-4 shadow-sm small hover-grow">
+                                                <div className="d-flex justify-content-between mb-2">
+                                                    <span className="fw-bold text-success">Prescription #{presc.prescription_id}</span>
+                                                    <span className="text-muted small">{new Date(presc.created_at).toLocaleDateString()}</span>
+                                                </div>
+                                                <p className="mb-1"><strong>Doctor:</strong> Dr. {presc.doctor_name}</p>
+                                                <div className="bg-white p-2 rounded-3 my-2 small border-start border-success border-3">
+                                                    <strong>Medicines:</strong>
+                                                    <div className="text-secondary whitespace-pre">{presc.medicines}</div>
+                                                    {presc.dosage && <div className="text-muted text-xs">Dosage: {presc.dosage}</div>}
+                                                    {presc.instructions && <div className="text-muted text-xs">Instructions: {presc.instructions}</div>}
+                                                </div>
 
-                                            {presc.prescription_pdf && (
-                                                <a
-                                                    href={getPrescriptionPdfUrl(presc.prescription_pdf)}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="btn btn-outline-success btn-sm rounded-pill mt-2 shadow-sm text-decoration-none text-center"
-                                                >
-                                                    <i className="bi bi-download me-1"></i> Download Prescription PDF
-                                                </a>
-                                            )}
+                                                {presc.prescription_pdf && (
+                                                    <a
+                                                        href={getPrescriptionPdfUrl(presc.prescription_pdf)}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="btn btn-outline-success btn-sm rounded-pill mt-2 shadow-sm text-decoration-none text-center"
+                                                    >
+                                                        <i className="bi bi-download me-1"></i> Download Prescription PDF
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {prescriptions.length > PRESCRIPTIONS_PER_PAGE && (
+                                        <div className="text-center mt-3">
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-secondary rounded-pill px-4"
+                                                onClick={() => setVisiblePrescriptions(prev =>
+                                                    prev >= prescriptions.length ? PRESCRIPTIONS_PER_PAGE : prev + PRESCRIPTIONS_PER_PAGE
+                                                )}
+                                            >
+                                                {visiblePrescriptions >= prescriptions.length ? (
+                                                    <><i className="bi bi-chevron-up me-2"></i>Show Less</>
+                                                ) : (
+                                                    <><i className="bi bi-chevron-down me-2"></i>Show More ({prescriptions.length - visiblePrescriptions} remaining)</>
+                                                )}
+                                            </button>
                                         </div>
-                                    ))}
-                                </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="text-center py-5 text-muted">
                                     <i className="bi bi-folder-x display-6"></i>
