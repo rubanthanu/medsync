@@ -17,8 +17,9 @@ class AppointmentController extends BaseController {
         try {
             $auth = AuthMiddleware::authenticate();
             $date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+            $forBooking = isset($_GET['for_booking']) && ($_GET['for_booking'] === '1' || $_GET['for_booking'] === 'true');
 
-            $windows = $this->appointmentService->getWindows($date, $auth->role_id);
+            $windows = $this->appointmentService->getWindows($date, $auth->role_id, $forBooking);
 
             http_response_code(200);
             echo json_encode($windows);
