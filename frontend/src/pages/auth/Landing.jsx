@@ -10,10 +10,10 @@ import medicalCenterImage from '../../assets/images/banners/medical-center.jpg';
 import aboutMedsyncImage from '../../assets/images/banners/about-medsync.jpg';
 
 const Landing = () => {
-    const [posts, setPosts] = useState([]); 
+    const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-       const fetchPosts = async () => {
+        const fetchPosts = async () => {
             try {
                 const res = await healthPostService.getAll();
                 setPosts(res.data);
@@ -35,13 +35,13 @@ const Landing = () => {
         }
     }, []);
 
-     const getCategoryImage = (post) => {
+    const getCategoryImage = (post) => {
         if (post.image_url) return post.image_url;
         const cat = post.category?.toLowerCase();
-        if (cat === 'wellness') return 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&q=80';
-        if (cat === 'mental health') return 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=600&q=80';
-        if (cat === 'nutrition') return 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=600&q=80';
-        return 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80';
+        if (cat === 'wellness') return wellnessImage;
+        if (cat === 'mental health') return mentalHealthImage;
+        if (cat === 'nutrition') return nutritionImage;
+        return defaultPostImage;
     };
 
     const getCategoryBadgeClass = (category) => {
@@ -51,7 +51,7 @@ const Landing = () => {
         if (cat === 'nutrition') return 'bg-warning-subtle text-warning';
         return 'bg-secondary-subtle text-secondary';
     };
-    
+
     return (
         <div className="container py-3 animate-fade-in" id="home">
             {/* Hero Section */}
@@ -71,7 +71,7 @@ const Landing = () => {
                     </div>
                 </div>
                 <div className="col-lg-6 mt-5 mt-lg-0 text-center position-relative">
-                    
+
                     <img src={medicalCenterImage} alt="Medical Center" className="img-fluid rounded-4 shadow-lg border border-light" style={{ maxHeight: '420px', width: '100%', objectFit: 'cover' }} />
                 </div>
             </div>
@@ -136,7 +136,7 @@ const Landing = () => {
                     </div>
                 </div>
             </div>
-            
+
             {/* Health Posts Section */}
             <div className="py-5" id="health-posts">
                 <div className="text-center mb-5">
@@ -161,7 +161,7 @@ const Landing = () => {
                                         <p className="text-muted small mb-4 flex-grow-1 line-clamp-3">{post.content}</p>
                                         <div className="mt-auto border-top pt-3 text-secondary small d-flex justify-content-between align-items-center">
                                             <span className="d-flex align-items-center gap-1">
-                                                <i className="bi bi-person text-primary"></i> 
+                                                <i className="bi bi-person text-primary"></i>
                                                 <span className="fw-semibold">{post.author_name}</span>
                                             </span>
                                             <span><i className="bi bi-calendar3 me-1"></i> {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
@@ -178,7 +178,7 @@ const Landing = () => {
                     </div>
                 )}
             </div>
-         </div>
+        </div>
     );
 };
 

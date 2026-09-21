@@ -11,12 +11,12 @@ class EmailHelper {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'rubanthanu66@gmail.com';
-            $mail->Password   = 'zqhz pwck xyyh snqp';
+            $mail->Username   = 'medsyncuwu@gmail.com';
+            $mail->Password   = 'xyhj xuli ymnm dqme';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
 
-            $mail->setFrom('rubanthanu66@gmail.com', 'UWU MedSync');
+            $mail->setFrom('medsyncuwu@gmail.com', 'UWU MedSync');
             $mail->addAddress($to);
 
             $mail->isHTML(true);

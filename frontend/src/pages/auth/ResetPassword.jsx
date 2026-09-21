@@ -44,7 +44,7 @@ const ResetPassword = () => {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         setError('');
-        
+
         if (!passwordValid) {
             setError('Password does not meet all security requirements.');
             return;
@@ -77,7 +77,7 @@ const ResetPassword = () => {
                             </div>
                             <h2 className="fw-bold text-dark">{step === 1 ? 'Verify OTP' : 'New Password'}</h2>
                             <p className="text-muted">
-                                {step === 1 
+                                {step === 1
                                     ? `Enter the 6-digit code sent to ${email}`
                                     : 'Choose a strong password for your account'}
                             </p>
@@ -89,9 +89,9 @@ const ResetPassword = () => {
                         {step === 1 ? (
                             <form onSubmit={handleVerifyOtp}>
                                 <div className="mb-4">
-                                    <input 
-                                        type="text" 
-                                        className="form-control form-control-lg text-center fw-bold" 
+                                    <input
+                                        type="text"
+                                        className="form-control form-control-lg text-center fw-bold"
                                         placeholder="Enter OTP"
                                         value={otp}
                                         maxLength="6"
@@ -139,9 +139,9 @@ const ResetPassword = () => {
                                     className="mb-4"
                                 />
 
-                                <button 
-                                    type="submit" 
-                                    className="btn btn-primary w-100 py-2 rounded-pill" 
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary w-100 py-2 rounded-pill"
                                     disabled={loading || !passwordValid || newPassword !== confirmPassword}
                                 >
                                     {loading ? (
