@@ -27,7 +27,15 @@ const LiveQueue = () => {
         setLoading(true);
         try {
             const res = await queueService.getQueue(window_id);
-            setQueue(res.data);
+            // Backend returns an array for doctors but a single object for patients
+            const data = res.data;
+            if (Array.isArray(data)) {
+                setQueue(data);
+            } else if (data) {
+                setQueue([data]);
+            } else {
+                setQueue([]);
+            }
         } catch (err) {
             console.error(err);
         }

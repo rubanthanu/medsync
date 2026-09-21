@@ -22,16 +22,8 @@ class QueueController extends BaseController {
                 throw new ValidationException("Window ID is required.");
             }
 
-            // Role-based response
-            if ($auth->role_id == 1 || $auth->role_id == 2 || $auth->role_id == 3) {
-                // Admin, Doctor, Receptionist — full queue
-                $queue = $this->queueService->getQueue($window_id, $date);
-            } else if ($auth->role_id == 4) {
-                // Patient — only their own position
-                $queue = $this->queueService->getPatientQueuePosition($auth->id, $window_id, $date);
-            } else {
-                throw new PermissionException("Unauthorized access.");
-            }
+            // All roles can view the full queue for the live queue display
+            $queue = $this->queueService->getQueue($window_id, $date);
 
             http_response_code(200);
             echo json_encode($queue);
