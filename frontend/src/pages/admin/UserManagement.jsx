@@ -197,7 +197,7 @@ const UserManagement = ({ users, showAddUser, setShowAddUser, newUser, setNewUse
                                                 <div className="d-flex gap-2 justify-content-end">
                                                     <button
                                                         className={`btn btn-sm ${u.account_status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'} rounded-pill px-3`}
-                                                        onClick={() => onToggleStatus(u.user_id, u.account_status)}
+                                                        onClick={() => onToggleStatus(u.user_id, u.account_status, u.full_name)}
                                                     >
                                                         {u.account_status === 'Active' ? 'Deactivate' : 'Activate'}
                                                     </button>

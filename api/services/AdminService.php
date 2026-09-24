@@ -4,8 +4,11 @@ require_once __DIR__ . '/../repositories/AppointmentRepository.php';
 require_once __DIR__ . '/../repositories/PrescriptionRepository.php';
 require_once __DIR__ . '/../repositories/CertificateRepository.php';
 require_once __DIR__ . '/../repositories/PatientRepository.php';
+require_once __DIR__ . '/../repositories/NotificationRepository.php';
 require_once __DIR__ . '/../services/AuthService.php';
+require_once __DIR__ . '/../helpers/EmailHelper.php';
 require_once __DIR__ . '/../exceptions/ValidationException.php';
+require_once __DIR__ . '/../exceptions/NotFoundException.php';
 
 class AdminService {
     private $conn;
@@ -14,6 +17,7 @@ class AdminService {
     private $prescriptionRepo;
     private $certificateRepo;
     private $patientRepo;
+    private $notificationRepo;
     private $authService;
 
     public function __construct($conn) {
@@ -23,6 +27,7 @@ class AdminService {
         $this->prescriptionRepo = new PrescriptionRepository($conn);
         $this->certificateRepo = new CertificateRepository($conn);
         $this->patientRepo = new PatientRepository($conn);
+        $this->notificationRepo = new NotificationRepository($conn);
         $this->authService = new AuthService($conn);
     }
 
@@ -51,7 +56,66 @@ class AdminService {
             throw new ValidationException("Invalid status value.");
         }
 
+        $user = $this->userRepo->findById($userId);
+        if (!$user) {
+            throw new NotFoundException("User not found.");
+        }
+
         $this->userRepo->updateStatus($userId, $status);
+
+        // If account is being deactivated, inform user via email
+        if ($status !== 'Active' && $user['account_status'] !== $status) {
+            $this->sendDeactivationEmail($user);
+        }
+    }
+
+    private function sendDeactivationEmail($user) {
+        if (empty($user['email'])) {
+            return;
+        }
+
+        $recipientEmail = $user['email'];
+        $userName = !empty($user['full_name']) ? htmlspecialchars($user['full_name']) : 'User';
+        $subject = "UWU MedSync - Account Deactivation Notice";
+
+        $body = "
+        <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;\">
+            <div style=\"text-align: center; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0;\">
+                <h2 style=\"color: #0d6efd; margin: 0;\">UWU MedSync</h2>
+                <p style=\"color: #6c757d; font-size: 14px; margin: 5px 0 0 0;\">Medical Center Management System</p>
+            </div>
+            <div style=\"padding: 25px 0;\">
+                <h3 style=\"color: #dc3545; margin-top: 0;\">Account Deactivated</h3>
+                <p style=\"color: #333333; font-size: 15px; line-height: 1.6;\">Dear <strong>{$userName}</strong>,</p>
+                <p style=\"color: #555555; font-size: 14px; line-height: 1.6;\">
+                    This is an official notice to inform you that your UWU MedSync account associated with <strong>" . htmlspecialchars($recipientEmail) . "</strong> has been deactivated by an administrator.
+                </p>
+                <div style=\"background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 15px; margin: 20px 0; border-radius: 4px;\">
+                    <p style=\"margin: 0; color: #856404; font-size: 14px;\">
+                        <strong>Notice:</strong> While your account is deactivated, you will not be able to log in to access your appointments, medical records, or other MedSync services.
+                    </p>
+                </div>
+                <p style=\"color: #555555; font-size: 14px; line-height: 1.6;\">
+                    If you believe this was done in error or require further assistance, please contact the UWU Medical Center administration.
+                </p>
+            </div>
+            <div style=\"border-top: 1px solid #f0f0f0; padding-top: 15px; text-align: center; color: #888888; font-size: 12px;\">
+                <p style=\"margin: 0;\">&copy; " . date('Y') . " UWU MedSync. All rights reserved.</p>
+                <p style=\"margin: 4px 0 0 0;\">Uva Wellassa University Medical Center</p>
+            </div>
+        </div>";
+
+        try {
+            EmailHelper::sendEmail($recipientEmail, $subject, $body);
+            $this->userRepo->createEmailLog($user['user_id'], $recipientEmail, $subject, $body);
+            $this->notificationRepo->create(
+                $user['user_id'],
+                "Your account has been deactivated by an administrator.",
+                "Account"
+            );
+        } catch (\Throwable $e) {
+            error_log("Failed to send deactivation email to {$recipientEmail}: " . $e->getMessage());
+        }
     }
 
     public function createUser($data) {
