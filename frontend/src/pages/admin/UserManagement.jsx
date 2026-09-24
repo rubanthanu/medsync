@@ -146,6 +146,7 @@ const UserManagement = ({ users, showAddUser, setShowAddUser, newUser, setNewUse
                         >
                             <option value="all">All Statuses</option>
                             <option value="Active">Active</option>
+                            <option value="Blocked">Blocked</option>
                             <option value="Inactive">Inactive</option>
                         </select>
                     </div>

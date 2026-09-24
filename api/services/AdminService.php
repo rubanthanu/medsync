@@ -46,7 +46,7 @@ class AdminService {
         }
 
         // Validate status is an allowed value
-        $allowedStatuses = ['Active', 'Suspended'];
+        $allowedStatuses = ['Active', 'Blocked', 'Inactive', 'Suspended'];
         if (!in_array($status, $allowedStatuses, true)) {
             throw new ValidationException("Invalid status value.");
         }
