@@ -39,3 +39,12 @@ export const getMaxDateISO = (daysAhead) => {
     const day = String(localDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
+
+export const getPastDateISO = (daysAgo) => {
+    const localDate = new Date();
+    localDate.setDate(localDate.getDate() - daysAgo);
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};

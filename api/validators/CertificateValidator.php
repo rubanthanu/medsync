@@ -10,6 +10,17 @@ class CertificateValidator {
         if (strtotime($startDate) > strtotime($endDate)) {
             throw new ValidationException("Start date cannot be greater than end date.");
         }
+
+        $minDate = date('Y-m-d', strtotime('-14 days'));
+        $today = date('Y-m-d');
+
+        if ($startDate < $minDate) {
+            throw new ValidationException("Start date cannot be more than 2 weeks before today.");
+        }
+
+        if ($startDate > $today) {
+            throw new ValidationException("Start date cannot be in the future.");
+        }
     }
 
     public static function validateReview($data) {

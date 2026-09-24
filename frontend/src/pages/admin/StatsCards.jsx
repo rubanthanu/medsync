@@ -25,6 +25,7 @@ const StatsCards = ({ stats }) => {
                     <h2 className="display-5 fw-bold mb-0">{stats.total_prescriptions}</h2>
                 </div>
             </div>
+           
         </div>
     );
 };

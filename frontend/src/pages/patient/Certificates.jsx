@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import * as certificateService from '../../services/certificateService';
 import * as prescriptionService from '../../services/prescriptionService';
 import { getCertificatePdfUrl, getPrescriptionPdfUrl } from '../../utils/fileUtils';
+import { getTodayISO, getPastDateISO } from '../../utils/dateUtils';
 
 const CERTS_PER_PAGE = 4;
 const PRESCRIPTIONS_PER_PAGE = 4;
@@ -19,11 +20,8 @@ const Certificates = () => {
     const [visiblePrescriptions, setVisiblePrescriptions] = useState(PRESCRIPTIONS_PER_PAGE);
     const [activeTab, setActiveTab] = useState('request'); // 'request', 'documents'
 
-    useEffect(() => {
-        if (activeTab === 'documents') {
-            fetchDocuments();
-        }
-    }, [activeTab]);
+    const todayISO = getTodayISO();
+    const minStartDate = getPastDateISO(14); // 2 weeks before today
 
     const fetchDocuments = async () => {
         try {
@@ -39,9 +37,26 @@ const Certificates = () => {
         }
     };
 
+    useEffect(() => {
+        if (activeTab === 'documents') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            fetchDocuments();
+        }
+    }, [activeTab]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage({ type: '', text: '' });
+
+        if (formData.start_date < minStartDate) {
+            setMessage({ type: 'danger', text: 'Start date cannot be more than 2 weeks before today.' });
+            return;
+        }
+
+        if (formData.start_date > todayISO) {
+            setMessage({ type: 'danger', text: 'Start date cannot be in the future.' });
+            return;
+        }
 
         if (formData.start_date && formData.end_date && formData.start_date > formData.end_date) {
             setMessage({ type: 'danger', text: 'Start date cannot be after end date.' });
@@ -107,7 +122,8 @@ const Certificates = () => {
                                             type="date" 
                                             className="form-control rounded-pill px-3" 
                                             value={formData.start_date} 
-                                            max={formData.end_date || undefined}
+                                            min={minStartDate}
+                                            max={formData.end_date && formData.end_date < todayISO ? formData.end_date : todayISO}
                                             onChange={e => {
                                                 const newStart = e.target.value;
                                                 setFormData(prev => ({
@@ -118,6 +134,7 @@ const Certificates = () => {
                                             }} 
                                             required 
                                         />
+                                      
                                     </div>
                                     <div className="col-12 col-sm-6">
                                         <label className="form-label fw-semibold text-secondary small">END DATE</label>
@@ -125,7 +142,7 @@ const Certificates = () => {
                                             type="date" 
                                             className="form-control rounded-pill px-3" 
                                             value={formData.end_date} 
-                                            min={formData.start_date || undefined}
+                                            min={formData.start_date || minStartDate}
                                             onChange={e => setFormData({ ...formData, end_date: e.target.value })} 
                                             required 
                                         />
