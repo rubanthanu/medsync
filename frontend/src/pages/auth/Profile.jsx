@@ -6,9 +6,11 @@ import { getApiFileUrl } from '../../utils/fileUtils';
 import PasswordInput from '../../components/PasswordInput';
 import PasswordStrengthIndicator from '../../components/PasswordStrengthIndicator';
 import { isPasswordValid } from '../../utils/passwordValidator';
+import { getMaxBirthDateISO } from '../../utils/dateUtils';
 
 const Profile = () => {
     const { user, setUser } = useContext(AuthContext); // Use setUser to update current user state
+    const maxBirthDate = getMaxBirthDateISO(18);
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -93,6 +95,12 @@ const Profile = () => {
         setSaving(true);
         setSuccessMsg('');
         setErrorMsg('');
+
+        if (profile?.date_of_birth && profile.date_of_birth > maxBirthDate) {
+            setErrorMsg('You must be at least 18 years old.');
+            setSaving(false);
+            return;
+        }
 
         try {
             const formData = new FormData();
@@ -284,7 +292,16 @@ const Profile = () => {
                         </div>
                         <div className="col-12 col-md-6">
                             <label className="form-label fw-semibold text-secondary small">DATE OF BIRTH</label>
-                            <input type="date" className="form-control rounded-pill px-3" value={profile?.date_of_birth || ''} onChange={e => setProfile({ ...profile, date_of_birth: e.target.value })} />
+                            <input 
+                                type="date" 
+                                className="form-control rounded-pill px-3" 
+                                value={profile?.date_of_birth || ''} 
+                                max={maxBirthDate}
+                                onChange={e => setProfile({ ...profile, date_of_birth: e.target.value })} 
+                            />
+                            {profile?.date_of_birth && profile.date_of_birth > maxBirthDate && (
+                                <small className="text-danger d-block mt-1">Must be at least 18 years old</small>
+                            )}
                         </div>
                         <div className="col-12 col-md-6">
                             <label className="form-label fw-semibold text-secondary small">GENDER</label>
