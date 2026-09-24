@@ -49,14 +49,13 @@ try {
         $notif_stmt->execute();
 
         // 2. Email Notification
-        $email_body = "<h3>Appointment Reminder</h3>
-                       <p>Hello {$row['full_name']},</p>
-                       <p>This is a reminder that you have an appointment scheduled for today:</p>
-                       <ul>
-                           <li><strong>Window:</strong> {$window_name}</li>
-                           <li><strong>Starts at:</strong> {$start_time}</li>
-                       </ul>
-                       <p>Please arrive on time. Thank you!</p>";
+        $mainText = "<p>This is a reminder that you have an appointment scheduled for today at the UWU Medical Center:</p>";
+        $box = EmailHelper::createInfoTableBox([
+            'Time Window' => htmlspecialchars($window_name),
+            'Starts At' => htmlspecialchars($start_time)
+        ], '#0d6efd', '#f0f7ff');
+        $secText = "<p>Please arrive on time to ensure prompt consultation. Thank you for using UWU MedSync!</p>";
+        $email_body = EmailHelper::wrapCard("Appointment Reminder", $row['full_name'], $mainText, $box, $secText, "#0d6efd");
         
         EmailHelper::sendEmail($email, "Appointment Reminder - UWU MedSync", $email_body);
         

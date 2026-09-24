@@ -154,22 +154,26 @@ class AppointmentService {
             $this->notificationService->create($notifyUserId, $msg, 'Appointment');
 
             // Email
+            $patientRecord = $this->patientRepo->findById($patientId);
+            $patientName = !empty($patientRecord['full_name']) ? $patientRecord['full_name'] : 'Patient';
+
+            $box = EmailHelper::createInfoTableBox([
+                'Appointment Date' => htmlspecialchars($appointmentDate),
+                'Time Window' => htmlspecialchars($window_time),
+                'Queue Number' => "<span style='color: #198754; font-size: 16px;'>#{$queue_number}</span>",
+                'Estimated Time' => htmlspecialchars($formatted_time)
+            ], '#198754', '#f0fdf4');
+
             if ($isSelfBooking) {
                 $subject = "UWU MedSync - Appointment Confirmation";
-                $body = "<h2>Appointment Confirmed!</h2>
-                         <p>Date: <strong>{$appointmentDate}</strong></p>
-                         <p>Time Window: <strong>{$window_time}</strong></p>
-                         <p>Queue Number: <strong>{$queue_number}</strong></p>
-                         <p>Estimated Time: <strong>{$formatted_time}</strong></p>
-                         <p></p>";
+                $mainText = "<p>Your appointment has been successfully booked at the UWU Medical Center. Below are your confirmed appointment details:</p>";
+                $secText = "<p>Please arrive at the medical center a few minutes before your estimated time. You can monitor your live queue position anytime on your MedSync dashboard.</p>";
+                $body = EmailHelper::wrapCard("Appointment Confirmed!", $patientName, $mainText, $box, $secText, "#198754");
             } else {
                 $subject = "UWU MedSync - Appointment Booked by Clinic";
-                $body = "<h2>Appointment Confirmed!</h2>
-                         <p>A clinic staff member has scheduled an appointment for you.</p>
-                         <p>Date: <strong>{$appointmentDate}</strong></p>
-                         <p>Time Window: <strong>{$window_time}</strong></p>
-                         <p>Queue Number: <strong>{$queue_number}</strong></p>
-                         <p>Estimated Time: <strong>{$formatted_time}</strong></p>";
+                $mainText = "<p>A clinic staff member has scheduled an appointment for you at the UWU Medical Center. Below are your appointment details:</p>";
+                $secText = "<p>Please arrive on time. If you need to reschedule or have questions, please contact the clinic or check your MedSync portal.</p>";
+                $body = EmailHelper::wrapCard("Appointment Confirmed!", $patientName, $mainText, $box, $secText, "#198754");
             }
 
             // Commit transaction first so DB locks are released immediately
@@ -245,10 +249,14 @@ class AppointmentService {
 
             // Send email
             $subject = "UWU MedSync - Appointment Cancellation Notice";
-            $body = "<h2>Appointment Cancelled</h2><p>Dear {$apt['full_name']},</p>
-                     <p>We regret to inform you that your appointment on <strong>{$leaveDate}</strong> has been cancelled due to doctor leave.</p>
-                     <p>We suggest you rebook your appointment for another available date.</p>
-                     <p>Sorry for the inconvenience.</p>";
+            $mainText = "<p>We regret to inform you that your appointment scheduled for <strong>" . htmlspecialchars($leaveDate) . "</strong> has been cancelled due to the doctor being on leave.</p>";
+            $box = EmailHelper::createNoticeBox(
+                "Please log in to your UWU MedSync dashboard to rebook your appointment for another available date.",
+                "Action Required:"
+            );
+            $secText = "<p>We sincerely apologize for any inconvenience caused. For urgent medical concerns, please contact the clinic reception directly.</p>";
+            $body = EmailHelper::wrapCard("Appointment Cancelled", $apt['full_name'] ?? 'Patient', $mainText, $box, $secText, "#dc3545");
+
             EmailHelper::sendEmail($apt['email'], $subject, $body);
 
             // Create Notification

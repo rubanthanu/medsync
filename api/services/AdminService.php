@@ -75,35 +75,17 @@ class AdminService {
         }
 
         $recipientEmail = $user['email'];
-        $userName = !empty($user['full_name']) ? htmlspecialchars($user['full_name']) : 'User';
+        $userName = !empty($user['full_name']) ? $user['full_name'] : 'User';
         $subject = "UWU MedSync - Account Deactivation Notice";
 
-        $body = "
-        <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;\">
-            <div style=\"text-align: center; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0;\">
-                <h2 style=\"color: #0d6efd; margin: 0;\">UWU MedSync</h2>
-                <p style=\"color: #6c757d; font-size: 14px; margin: 5px 0 0 0;\">Medical Center Management System</p>
-            </div>
-            <div style=\"padding: 25px 0;\">
-                <h3 style=\"color: #dc3545; margin-top: 0;\">Account Deactivated</h3>
-                <p style=\"color: #333333; font-size: 15px; line-height: 1.6;\">Dear <strong>{$userName}</strong>,</p>
-                <p style=\"color: #555555; font-size: 14px; line-height: 1.6;\">
-                    This is an official notice to inform you that your UWU MedSync account associated with <strong>" . htmlspecialchars($recipientEmail) . "</strong> has been deactivated by an administrator.
-                </p>
-                <div style=\"background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 15px; margin: 20px 0; border-radius: 4px;\">
-                    <p style=\"margin: 0; color: #856404; font-size: 14px;\">
-                        <strong>Notice:</strong> While your account is deactivated, you will not be able to log in to access your appointments, medical records, or other MedSync services.
-                    </p>
-                </div>
-                <p style=\"color: #555555; font-size: 14px; line-height: 1.6;\">
-                    If you believe this was done in error or require further assistance, please contact the UWU Medical Center administration.
-                </p>
-            </div>
-            <div style=\"border-top: 1px solid #f0f0f0; padding-top: 15px; text-align: center; color: #888888; font-size: 12px;\">
-                <p style=\"margin: 0;\">&copy; " . date('Y') . " UWU MedSync. All rights reserved.</p>
-                <p style=\"margin: 4px 0 0 0;\">Uva Wellassa University Medical Center</p>
-            </div>
-        </div>";
+        $mainText = "<p>This is an official notice to inform you that your UWU MedSync account associated with <strong>" . htmlspecialchars($recipientEmail) . "</strong> has been deactivated by an administrator.</p>";
+        $box = EmailHelper::createNoticeBox(
+            "While your account is deactivated, you will not be able to log in to access your appointments, medical records, or other MedSync services.",
+            "Notice:"
+        );
+        $secText = "<p>If you believe this was done in error or require further assistance, please contact the UWU Medical Center administration.</p>";
+
+        $body = EmailHelper::wrapCard("Account Deactivated", $userName, $mainText, $box, $secText, "#dc3545");
 
         try {
             EmailHelper::sendEmail($recipientEmail, $subject, $body);
