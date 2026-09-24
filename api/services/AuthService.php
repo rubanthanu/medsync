@@ -47,7 +47,10 @@ class AuthService {
 
             // Send Email
             $subject = "UWU MedSync - Email Verification OTP";
-            $body = "<h2>Welcome to UWU MedSync!</h2><p>Your OTP for registration is: <strong>$otp</strong></p><p>This OTP will expire in 15 minutes.</p>";
+            $mainText = "<p>Thank you for signing up with UWU MedSync. Please use the following One-Time Password (OTP) to verify your email address and activate your account:</p>";
+            $box = EmailHelper::createOtpBox($otp, 15);
+            $secText = "<p>If you did not create an account with UWU MedSync, please disregard this email.</p>";
+            $body = EmailHelper::wrapCard("Email Verification", $data->full_name, $mainText, $box, $secText, "#0d6efd");
             EmailHelper::sendEmail($data->email, $subject, $body);
 
             // Log Email
@@ -122,13 +125,15 @@ class AuthService {
             $this->userRepo->createOtp($user['user_id'], $otp, $type);
 
             // Send Email
-            $subject = "UWU MedSync - Your OTP Code";
-            if ($type == 'Registration') {
-                $subject = "UWU MedSync - Email Verification OTP";
-                $body = "<h2>Verify your email</h2><p>Hi " . $user['full_name'] . ",</p><p>Your new OTP for registration is: <strong>$otp</strong></p><p>This OTP will expire in 15 minutes.</p>";
-            } else {
-                $body = "<h2>OTP Request</h2><p>Your OTP is: <strong>$otp</strong></p><p>This OTP will expire in 15 minutes.</p>";
-            }
+            $isReg = ($type === 'Registration');
+            $subject = $isReg ? "UWU MedSync - Email Verification OTP" : "UWU MedSync - Your OTP Code";
+            $heading = $isReg ? "Email Verification" : "One-Time Password (OTP)";
+            $mainText = $isReg 
+                ? "<p>Your new One-Time Password (OTP) for account registration is ready. Please use this code to verify your email address:</p>"
+                : "<p>A new One-Time Password (OTP) has been generated for your UWU MedSync account:</p>";
+            $box = EmailHelper::createOtpBox($otp, 15);
+            $secText = "<p>Please do not share this code with anyone. If you did not request this, please secure your account immediately.</p>";
+            $body = EmailHelper::wrapCard($heading, $user['full_name'], $mainText, $box, $secText, "#0d6efd");
 
             EmailHelper::sendEmail($email, $subject, $body);
 
@@ -224,7 +229,12 @@ class AuthService {
 
             // Send Email
             $subject = "UWU MedSync - Password Reset OTP";
-            $body = "<h2>Password Reset Request</h2><p>Your OTP for password reset is: <strong>$otp</strong></p><p>This OTP will expire in 15 minutes.</p>";
+            $recipientName = $user['full_name'] ?? 'User';
+            $mainText = "<p>We received a request to reset the password for your UWU MedSync account associated with <strong>" . htmlspecialchars($email) . "</strong>. Use the One-Time Password (OTP) below to reset your password:</p>";
+            $box = EmailHelper::createOtpBox($otp, 15);
+            $secText = "<p>If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>";
+            $body = EmailHelper::wrapCard("Password Reset Request", $recipientName, $mainText, $box, $secText, "#0d6efd");
+
             EmailHelper::sendEmail($email, $subject, $body);
 
             // Log Email

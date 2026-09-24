@@ -2,10 +2,12 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import * as userService from '../../services/userService';
+import { getMaxBirthDateISO } from '../../utils/dateUtils';
 
 const CompleteProfile = () => {
     const { user, setUser } = useContext(AuthContext);
     const navigate = useNavigate();
+    const maxBirthDate = getMaxBirthDateISO(18);
     
     const [formData, setFormData] = useState({
         blood_group: '',
@@ -24,6 +26,10 @@ const CompleteProfile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        if (formData.date_of_birth && formData.date_of_birth > maxBirthDate) {
+            setError('You must be at least 18 years old.');
+            return;
+        }
         if (formData.phone.length !== 10) {
             setError('Phone number must be 10 digits');
             return;
@@ -84,7 +90,17 @@ const CompleteProfile = () => {
                                 </div>
                                 <div className="col-12 col-md-6 mb-3">
                                     <label className="form-label fw-semibold">Date of Birth</label>
-                                    <input type="date" className="form-control" value={formData.date_of_birth} onChange={e => setFormData({...formData, date_of_birth: e.target.value})} required />
+                                    <input 
+                                        type="date" 
+                                        className="form-control" 
+                                        value={formData.date_of_birth} 
+                                        max={maxBirthDate}
+                                        onChange={e => setFormData({...formData, date_of_birth: e.target.value})} 
+                                        required 
+                                    />
+                                    {formData.date_of_birth && formData.date_of_birth > maxBirthDate && (
+                                        <small className="text-danger d-block mt-1">Must be at least 18 years old</small>
+                                    )}
                                 </div>
                                 <div className="col-12 mb-3">
                                     <label className="form-label fw-semibold">Address</label>

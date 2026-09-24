@@ -48,3 +48,12 @@ export const getPastDateISO = (daysAgo) => {
     const day = String(localDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
+
+export const getMaxBirthDateISO = (minAge = 18) => {
+    const localDate = new Date();
+    localDate.setFullYear(localDate.getFullYear() - minAge);
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
