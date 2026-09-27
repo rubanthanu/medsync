@@ -1,52 +1,89 @@
 import Swal from 'sweetalert2';
 
 const QueueTab = ({ windows, selectedWindow, queue, onSelectWindow, onStartWindow, onStopWindow, onNextPatient, onOpenPrescription }) => {
-    const hasActiveWindow = windows.some(w => w.is_active > 0);
+    const hasActiveWindow = windows.some(w => Number(w.is_active) > 0);
 
     return (
         <div>
             {/* Today's Windows List */}
             <div className="row g-4 mb-5">
-                {windows.map(win => (
-                    <div className="col-12 col-sm-6 col-lg-3" key={win.window_id} onClick={() => onSelectWindow(win)} role="button" tabIndex={0}>
-                        <div className={`card h-100 border-0 shadow-sm rounded-4 ${win.is_active ? 'bg-primary text-white shadow' : 'bg-white'} ${selectedWindow?.window_id === win.window_id ? 'border border-2 border-primary' : ''}`}>
-                            <div className="card-body p-4 text-center">
-                                <h5 className="fw-bold">{win.window_name}</h5>
-                                <p className={`small ${win.is_active ? 'text-white-50' : 'text-muted'}`}>
-                                    {win.start_time} - {win.end_time}
-                                </p>
-                                {!win.is_active && (
-                                    <>
-                                        <button
-                                            className="btn btn-outline-primary btn-sm rounded-pill mt-3 w-100"
-                                            onClick={(e) => { e.stopPropagation(); onStartWindow(win.window_id); }}
-                                            disabled={hasActiveWindow}
-                                            title={hasActiveWindow ? "Please finish the current active window before starting another window." : ""}
-                                        >
-                                            Start Window
-                                        </button>
-                                        {hasActiveWindow && (
-                                            <small className="text-muted d-block mt-1" style={{ fontSize: '0.75rem' }}>
-                                                <i className="bi bi-info-circle me-1"></i>Another window is active
-                                            </small>
+                {windows.map(win => {
+                    const isActive = Number(win.is_active) > 0;
+                    const isFinished = Number(win.is_finished) > 0;
+                    const isSelected = selectedWindow?.window_id === win.window_id;
+
+                    return (
+                        <div className="col-12 col-sm-6 col-lg-3" key={win.window_id} onClick={() => onSelectWindow(win)} role="button" tabIndex={0}>
+                            <div className={`card h-100 border-0 shadow-sm rounded-4 ${
+                                isActive 
+                                    ? 'bg-primary text-white shadow' 
+                                    : isFinished 
+                                        ? 'bg-light border border-secondary-subtle' 
+                                        : 'bg-white'
+                            } ${isSelected ? (isActive ? 'border border-3 border-white' : 'border border-2 border-primary') : ''}`}>
+                                <div className="card-body p-4 text-center d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div className="d-flex justify-content-between align-items-center mb-1">
+                                            <h5 className="fw-bold mb-0">{win.window_name}</h5>
+                                            {isFinished && (
+                                                <span className="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1 small">
+                                                    <i className="bi bi-check-circle-fill me-1"></i>Finished
+                                                </span>
+                                            )}
+                                            {isActive && (
+                                                <span className="badge bg-light text-primary rounded-pill px-2 py-1 small fw-semibold">
+                                                    Ongoing
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className={`small mb-0 ${isActive ? 'text-white-50' : 'text-muted'}`}>
+                                            {win.start_time} - {win.end_time}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        {isFinished ? (
+                                            <div className="mt-3">
+                                                <span className="badge bg-secondary text-white rounded-pill px-3 py-2 w-100 fw-medium d-inline-flex align-items-center justify-content-center gap-1">
+                                                    <i className="bi bi-check2-all"></i> Finished
+                                                </span>
+                                                <small className="text-muted d-block mt-1" style={{ fontSize: '0.75rem' }}>
+                                                    Session completed for today
+                                                </small>
+                                            </div>
+                                        ) : !isActive ? (
+                                            <>
+                                                <button
+                                                    className="btn btn-outline-primary btn-sm rounded-pill mt-3 w-100"
+                                                    onClick={(e) => { e.stopPropagation(); onStartWindow(win.window_id); }}
+                                                    disabled={hasActiveWindow}
+                                                    title={hasActiveWindow ? "Please finish the current active window before starting another window." : ""}
+                                                >
+                                                    Start Window
+                                                </button>
+                                                {hasActiveWindow && (
+                                                    <small className="text-muted d-block mt-1" style={{ fontSize: '0.75rem' }}>
+                                                        <i className="bi bi-info-circle me-1"></i>Another window is active
+                                                    </small>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div><span className="badge bg-light text-primary rounded-pill mt-3 px-3 fw-semibold">Ongoing</span></div>
+                                                <button className="btn btn-outline-danger btn-sm rounded-pill mt-2 w-100" onClick={(e) => { e.stopPropagation(); onStopWindow(win.window_id); }}>
+                                                    Finish Window
+                                                </button>
+                                            </>
                                         )}
-                                    </>
-                                )}
-                                {win.is_active > 0 && (
-                                    <>
-                                        <div><span className="badge bg-light text-primary rounded-pill mt-3 px-3 fw-semibold">Ongoing</span></div>
-                                        <button className="btn btn-outline-danger btn-sm rounded-pill mt-2 w-100" onClick={(e) => { e.stopPropagation(); onStopWindow(win.window_id); }}>
-                                            Finish Window
-                                        </button>
-                                    </>
-                                )}
-                                <div className="mt-3 fs-5 fw-bold">
-                                    {win.booked_count || 0}
+                                        <div className="mt-3 fs-5 fw-bold">
+                                            {win.booked_count || 0}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Active Queue Details */}
@@ -54,10 +91,14 @@ const QueueTab = ({ windows, selectedWindow, queue, onSelectWindow, onStartWindo
                 <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
                     <div className="card-header bg-white border-bottom-0 p-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
                         <h4 className="fw-bold mb-0 text-dark">Patient List - {selectedWindow.window_name}</h4>
-                        {selectedWindow.is_active > 0 ? (
+                        {Number(selectedWindow.is_active) > 0 ? (
                             <button className="btn btn-success rounded-pill fw-bold px-4 hover-grow shadow-sm w-100 w-sm-auto" onClick={onNextPatient}>
                                 <i className="bi bi-person-check-fill me-2"></i> Next Patient
                             </button>
+                        ) : Number(selectedWindow.is_finished) > 0 ? (
+                            <span className="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-2">
+                                <i className="bi bi-check-circle-fill me-1 text-secondary"></i> Window Finished
+                            </span>
                         ) : (
                             <span className="badge bg-secondary rounded-pill px-3 py-2">Start this window for live queue</span>
                         )}
@@ -84,7 +125,7 @@ const QueueTab = ({ windows, selectedWindow, queue, onSelectWindow, onStartWindo
                                                 </span>
                                             </td>
                                             <td className="text-end pe-4">
-                                                {q.appointment_status === 'Current' && selectedWindow.is_active > 0 && (
+                                                {q.appointment_status === 'Current' && Number(selectedWindow.is_active) > 0 && (
                                                     <button className="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm" onClick={() => onOpenPrescription(q)}>
                                                         <i className="bi bi-file-earmark-medical me-1"></i> Write Prescription
                                                     </button>

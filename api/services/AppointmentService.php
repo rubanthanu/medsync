@@ -207,7 +207,6 @@ class AppointmentService {
         $timePerPatient = $maxAllowed > 0 ? $totalMinutes / $maxAllowed : 0;
         $bufferMinutes = $timePerPatient / 2;
         $offsetMinutes = round(($queueNumber - 1) * $timePerPatient - $bufferMinutes);
-        $offsetMinutes = max(0, $offsetMinutes); // Prevent negative estimated times
         return date('H:i:s', $startTime + ($offsetMinutes * 60));
     }
 
