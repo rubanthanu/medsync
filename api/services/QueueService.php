@@ -41,6 +41,12 @@ class QueueService {
                 throw new AppointmentException("This window is already ongoing.");
             }
 
+            // Check if this window was already finished for today
+            if ($this->appointmentRepo->isWindowFinished($windowId, $date)) {
+                $this->conn->rollBack();
+                throw new AppointmentException("This window has already been finished for today.");
+            }
+
             // Check if doctor has ANY other active window (with FOR UPDATE lock for race-condition safety)
             $existingActive = $this->appointmentRepo->hasAnyActiveWindow($doctor['doctor_id'], $date);
             if ($existingActive) {
@@ -54,6 +60,14 @@ class QueueService {
         } catch (AppointmentException $e) {
             if ($this->conn->inTransaction()) {
                 $this->conn->rollBack();
+            }
+            throw $e;
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            if ($e->getCode() == 23000 || (isset($e->errorInfo[1]) && $e->errorInfo[1] == 1062)) {
+                throw new AppointmentException("This window has already been finished for today.");
             }
             throw $e;
         } catch (Exception $e) {
