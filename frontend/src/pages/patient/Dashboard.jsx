@@ -85,7 +85,7 @@ const PatientDashboard = () => {
             {toast && (
                 <div className={`toast-alert toast-alert-${toast.type}`} role="status" aria-live="polite">
                     <span>{toast.message}</span>
-                    <button type="button" className="btn-close btn-close-white ms-3" aria-label="Close" onClick={hideToast}></button>
+                    <button type="button" className={`btn-close ms-3 ${toast.type === 'success' ? '' : 'btn-close-white'}`} aria-label="Close" onClick={hideToast}></button>
                 </div>
             )}
 
