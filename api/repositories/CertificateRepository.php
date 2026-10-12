@@ -51,7 +51,7 @@ class CertificateRepository {
     }
 
     public function getAll() {
-        $query = "SELECT mc.*, u.full_name as patient_name 
+        $query = "SELECT mc.*, u.full_name as patient_name, u.email as patient_email
                   FROM medical_certificates mc 
                   JOIN patients p ON mc.patient_id = p.patient_id 
                   JOIN users u ON p.user_id = u.user_id 
