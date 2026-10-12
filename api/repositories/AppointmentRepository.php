@@ -259,5 +259,18 @@ class AppointmentRepository {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function markExpiredAsAbsent() {
+        $query = "UPDATE appointments a
+                  JOIN appointment_windows aw ON a.window_id = aw.window_id
+                  SET a.appointment_status = 'Absent'
+                  WHERE a.appointment_status IN ('Booked', 'Walk-In')
+                  AND (
+                      a.appointment_date < CURDATE()
+                      OR (a.appointment_date = CURDATE() AND aw.end_time <= CURTIME())
+                  )";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
 }
 ?>

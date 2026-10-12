@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as certificateService from '../../services/certificateService';
 import * as prescriptionService from '../../services/prescriptionService';
 import { getCertificatePdfUrl, getPrescriptionPdfUrl } from '../../utils/fileUtils';
@@ -10,6 +10,7 @@ const PRESCRIPTIONS_PER_PAGE = 4;
 const Certificates = () => {
     const [formData, setFormData] = useState({ start_date: '', end_date: '', reason: '' });
     const [proofFile, setProofFile] = useState(null);
+    const fileInputRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
@@ -76,6 +77,7 @@ const Certificates = () => {
             setMessage({ type: 'success', text: 'Certificate request submitted successfully.' });
             setFormData({ start_date: '', end_date: '', reason: '' });
             setProofFile(null);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (err) {
             setMessage({ type: 'danger', text: err.response?.data?.message || 'Failed to submit request.' });
         } finally {
@@ -154,7 +156,7 @@ const Certificates = () => {
                                 </div>
                                 <div className="mb-4">
                                     <label className="form-label fw-semibold text-secondary small">UPLOAD MEDICAL PROOF (PDF/IMAGE)</label>
-                                    <input type="file" className="form-control rounded-pill px-3" accept=".pdf,image/*" onChange={e => setProofFile(e.target.files[0])} required />
+                                    <input ref={fileInputRef} type="file" className="form-control rounded-pill px-3" accept=".pdf,image/*" onChange={e => setProofFile(e.target.files[0])} required />
                                     <div className="form-text text-muted small px-2">Please upload a valid scan/photo of your clinical prescription or report.</div>
                                 </div>
                                 <button type="submit" className="btn btn-primary rounded-pill px-5 py-2 w-100 w-sm-auto shadow-sm fw-bold hover-grow" disabled={loading}>

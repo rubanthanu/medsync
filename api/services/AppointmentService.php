@@ -211,6 +211,8 @@ class AppointmentService {
     }
 
     public function getPatientAppointments($userId) {
+        // Auto-mark any past Booked/Walk-In appointments as Absent
+        $this->appointmentRepo->markExpiredAsAbsent();
         return $this->appointmentRepo->getPatientAppointments($userId);
     }
 

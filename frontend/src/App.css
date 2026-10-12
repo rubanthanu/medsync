@@ -177,7 +177,9 @@
 }
 
 .toast-alert-success {
-  background: linear-gradient(135deg, #198754, #13a56d);
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
 }
 
 .toast-alert-danger {
