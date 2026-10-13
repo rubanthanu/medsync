@@ -1,4 +1,8 @@
 {
+    "name": "medsync/api",
+    "description": "MedSync Healthcare & Clinic Queue Management REST API",
+    "type": "project",
+    "license": "MIT",
     "require": {
         "phpmailer/phpmailer": "^7.1",
         "dompdf/dompdf": "^3.1"
