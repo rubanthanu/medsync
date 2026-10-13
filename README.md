@@ -24,6 +24,17 @@
 
 > 🚀 **Live Deployment:** MedSync is actively deployed and accessible at **[https://uwumedsync.xo.je](https://uwumedsync.xo.je)**.
 
+### 🔑 Demo Accounts for Live Testing
+
+You can explore the live system as any user role using the following test credentials:
+
+| Role | Email | Password | Access & Features |
+|---|---|---|---|
+| 🛡️ **Administrator** | `admin@uwu.ac.lk` | `password123` | Analytics, doctor schedules, user management, appointment windows |
+| 🩺 **Doctor** | `doctor@uwu.ac.lk` | `password123` | Consultation queue, digital prescriptions & medical certificates |
+| 📋 **Receptionist** | `receptionist@uwu.ac.lk` | `password123` | Walk-in booking, window queue tracking, proof document review |
+| 🧑‍🎓 **Patient** | `patient@std.uwu.ac.lk` | `password123` | Book appointments, live queue tracking, medical requests & prescriptions |
+
 **MedSync** streamlines medical operations for campus clinics, university health centres, and outpatient clinics. It bridges patients, doctors, receptionists, and medical administrators through real-time queue synchronization, verified medical certificates, digital prescription rendering, and health announcements.
 
 ---
