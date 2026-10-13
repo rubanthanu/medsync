@@ -244,17 +244,10 @@ medsync/
 │   ├── 📄 package.json      # Node.js dependencies
 │   └── 📄 vite.config.js    # Vite configuration
 ├── 📄 .gitignore            # Root ignore rules for Git
-├── 📄 CONTRIBUTING.md       # Contribution guide & branching model
 ├── 📄 LICENSE               # MIT License
 ├── 📄 README.md             # Project documentation
 └── 📄 SECURITY.md           # Security disclosure policy
 ```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, conventional commit guidelines, and pull request procedures.
 
 ---
 
