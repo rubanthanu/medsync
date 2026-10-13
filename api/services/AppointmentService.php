@@ -126,11 +126,14 @@ class AppointmentService {
                 throw new AppointmentException("This appointment window has already passed for today.");
             }
 
-            // Get next queue number (locked to prevent race condition)
-            $current_count = $this->appointmentRepo->getBookedCountForUpdate($windowId, $appointmentDate);
-            $queue_number = $current_count + 1;
+            // Get next queue number using MAX (not COUNT) to prevent collision on cancellations.
+            // MAX gives the highest number ever issued; cancelled slots don't lower the baseline.
+            $max_queue = $this->appointmentRepo->getMaxQueueForUpdate($windowId, $appointmentDate);
+            $queue_number = $max_queue + 1;
 
-            if ($queue_number > $window['max_slots']) {
+            // Separately check active count to enforce slot limit
+            $active_count = $this->appointmentRepo->getBookedCountForUpdate($windowId, $appointmentDate);
+            if ($active_count >= $window['max_slots']) {
                 throw new AppointmentException("This appointment window is full for selected date.");
             }
 

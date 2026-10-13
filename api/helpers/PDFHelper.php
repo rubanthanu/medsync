@@ -16,6 +16,11 @@ class PDFHelper {
         }
 
         $dompdf = new Dompdf();
+        // Explicitly block external URLs to prevent SSRF via injected HTML
+        $options = $dompdf->getOptions();
+        $options->setIsRemoteEnabled(false);
+        $options->setIsHtml5ParserEnabled(true);
+        $dompdf->setOptions($options);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
