@@ -3,7 +3,8 @@
 <div align="center">
 
 ![PHP Version](https://img.shields.io/badge/PHP-8.1%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)
-![React Version](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![React Version](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-10.4%2B-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-uwumedsync.xo.je-00C853?style=for-the-badge&logo=googlechrome&logoColor=white)](https://uwumedsync.xo.je)
@@ -30,7 +31,7 @@
 ## 🏛️ Architecture
 
 MedSync implements a modern decoupled architecture:
-- **Client Tier**: Single Page Application built with React 18, Vite, Tailwind/Modern CSS, and Axios.
+- **Client Tier**: Single Page Application built with React 19, Vite, Bootstrap 5.3 (with Bootstrap Icons), SweetAlert2, React Router v7, and Axios.
 - **API Tier**: PHP RESTful service utilizing a Controller-Service-Repository pattern with strict session authentication and CSRF token defense.
 - **Persistence Tier**: MySQL/MariaDB database with ACID transactions, foreign keys, and indexes.
 - **Document & Storage Tier**: Dompdf engine generating tamper-evident PDF certificates and prescriptions, backed by an authenticated file-streaming controller blocking direct HTTP access to PHI.
@@ -38,7 +39,7 @@ MedSync implements a modern decoupled architecture:
 ```mermaid
 flowchart TD
     subgraph Client ["Client Layer (Browser)"]
-        UI["React 18 SPA (Vite)"]
+        UI["React 19 SPA (Bootstrap 5)"]
         AUTH["AuthContext & Route Guards"]
         AXIOS["Axios Instance (Cookies + CSRF)"]
     end
@@ -101,7 +102,7 @@ flowchart TD
 
 | Layer | Technologies |
 |---|---|
-| **Frontend** | React 18, Vite, Modern CSS / Glassmorphism, Axios, Lucide Icons |
+| **Frontend** | React 19, Vite, Bootstrap 5.3, Bootstrap Icons, SweetAlert2, Axios, React Router v7 |
 | **Backend** | PHP 8.1+, RESTful API, Object-Oriented MVC Architecture |
 | **Database** | MySQL 5.7+ / MariaDB 10.4+, PDO with Prepared Statements |
 | **Document Engine** | Dompdf (Secure HTML-to-PDF generation with remote asset blocking) |
