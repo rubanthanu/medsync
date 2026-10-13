@@ -229,6 +229,23 @@ class AppointmentRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC)['current_count'];
     }
 
+    /**
+     * Returns the highest queue_number ever assigned for this window/date.
+     * Uses MAX instead of COUNT to prevent duplicate numbers after cancellations.
+     * Called inside a transaction with FOR UPDATE to prevent race conditions.
+     */
+    public function getMaxQueueForUpdate($windowId, $date) {
+        $query = "SELECT COALESCE(MAX(queue_number), 0) as max_queue 
+                  FROM appointments 
+                  WHERE window_id = :window_id AND appointment_date = :date
+                  FOR UPDATE";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":window_id", $windowId);
+        $stmt->bindParam(":date", $date);
+        $stmt->execute();
+        return (int)$stmt->fetch(PDO::FETCH_ASSOC)['max_queue'];
+    }
+
     public function getPatientQueuePosition($userId, $windowId, $date) {
         $query = "SELECT a.appointment_id, a.queue_number, a.appointment_status, a.estimated_time,
                          (SELECT COUNT(*) FROM appointments 

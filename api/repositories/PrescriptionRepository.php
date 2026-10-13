@@ -73,6 +73,13 @@ class PrescriptionRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function findByPdfFilename($filename) {
+        $stmt = $this->conn->prepare("SELECT patient_id FROM prescriptions WHERE prescription_pdf = :pdf");
+        $stmt->bindParam(":pdf", $filename);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getTotalCount() {
         $stmt = $this->conn->query("SELECT COUNT(*) as count FROM prescriptions");
         return $stmt->fetch(PDO::FETCH_ASSOC)['count'];

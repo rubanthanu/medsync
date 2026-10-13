@@ -51,7 +51,7 @@ class CertificateRepository {
     }
 
     public function getAll() {
-        $query = "SELECT mc.*, u.full_name as patient_name 
+        $query = "SELECT mc.*, u.full_name as patient_name, u.email as patient_email
                   FROM medical_certificates mc 
                   JOIN patients p ON mc.patient_id = p.patient_id 
                   JOIN users u ON p.user_id = u.user_id 
@@ -73,6 +73,20 @@ class CertificateRepository {
         $stmt->bindParam(":user_id", $userId);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findByCertPdf($filename) {
+        $stmt = $this->conn->prepare("SELECT patient_id FROM medical_certificates WHERE certificate_pdf = :pdf");
+        $stmt->bindParam(":pdf", $filename);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function findByProofDocument($filename) {
+        $stmt = $this->conn->prepare("SELECT patient_id FROM medical_certificates WHERE proof_document = :proof");
+        $stmt->bindParam(":proof", $filename);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getTotalCount() {

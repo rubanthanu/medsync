@@ -14,15 +14,15 @@ export const getProfileImageUrl = (path) => {
 };
 
 export const getCertificatePdfUrl = (filename) => {
-    return `${API_URL}/uploads/generated_pdfs/${filename}`;
+    return `${API_URL}/?request=certificate/download_file/cert/${filename}`;
 };
 
 export const getPrescriptionPdfUrl = (filename) => {
-    return `${API_URL}/uploads/generated_pdfs/${filename}`;
+    return `${API_URL}/?request=certificate/download_file/presc/${filename}`;
 };
 
 export const getMedicalProofUrl = (filename) => {
-    return `${API_URL}/uploads/medical_proofs/${filename}`;
+    return `${API_URL}/?request=certificate/download_file/proof/${filename}`;
 };
 
 export const getCategoryImage = (post) => {

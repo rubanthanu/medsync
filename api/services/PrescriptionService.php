@@ -167,6 +167,11 @@ class PrescriptionService {
                 ";
             }
 
+            // ── Sanitize patient-controlled fields before HTML embedding ──
+            $safe_patient_name    = htmlspecialchars($patient['patient_name'] ?? '', ENT_QUOTES, 'UTF-8');
+            $safe_appointment_id  = (int)$data->appointment_id; // integer — inherently safe
+            $safe_doctor_name     = htmlspecialchars($doc_details['doctor_name'] ?? 'Doctor', ENT_QUOTES, 'UTF-8');
+
             // Generate PDF with modern table design
             $html = "
                 <div style='font-family: sans-serif; padding: 25px; border: 1px solid #cbd5e1; background: #ffffff;'>
@@ -178,12 +183,12 @@ class PrescriptionService {
                     
                     <table style='width: 100%; font-size: 13px; margin-bottom: 15px; color: #334155;'>
                         <tr>
-                            <td style='width: 50%;'><strong>Patient Name:</strong> {$patient['patient_name']}</td>
+                            <td style='width: 50%;'><strong>Patient Name:</strong> {$safe_patient_name}</td>
                             <td style='width: 50%; text-align: right;'><strong>Date:</strong> " . date('Y-m-d') . "</td>
                         </tr>
                         <tr>
                             <td style='width: 50%; padding-top: 4px;'><strong>Diagnosis:</strong> " . htmlspecialchars($data->diagnosis ?? 'General Checkup') . "</td>
-                            <td style='width: 50%; text-align: right; padding-top: 4px;'><strong>Appointment ID:</strong> #{$data->appointment_id}</td>
+                            <td style='width: 50%; text-align: right; padding-top: 4px;'><strong>Appointment ID:</strong> #{$safe_appointment_id}</td>
                         </tr>
                     </table>
 
@@ -209,7 +214,7 @@ class PrescriptionService {
                     <br><br>
                     <div style='float: right; text-align: right;'>
                         {$sig_html}
-                        <p style='border-top: 1px solid #cbd5e1; width: 220px; margin: 6px 0 0 auto; font-size: 13px; font-weight: bold; color:#334155;'>Dr. " . ($doc_details['doctor_name'] ?? 'Doctor') . "</p>
+                        <p style='border-top: 1px solid #cbd5e1; width: 220px; margin: 6px 0 0 auto; font-size: 13px; font-weight: bold; color:#334155;'>Dr. {$safe_doctor_name}</p>
                     </div>
                     <div style='clear: both;'></div>
                 </div>
