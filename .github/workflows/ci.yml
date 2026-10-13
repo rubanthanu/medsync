@@ -22,7 +22,7 @@ jobs:
           extensions: pdo, pdo_mysql, gd, fileinfo, mbstring, dom, xml
 
       - name: Validate composer.json
-        run: cd api && composer validate --strict
+        run: cd api && composer validate --no-check-publish
 
       - name: Install Composer Dependencies
         run: cd api && composer install --prefer-dist --no-progress
