@@ -1,0 +1,69 @@
+# ==============================================================================
+# MedSync — Comprehensive .gitignore
+# ==============================================================================
+
+# OS & System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# IDE & Editor Configurations
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs & Temporary Files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+temp/
+tmp/
+
+# ==============================================================================
+# PHP / Backend (api)
+# ==============================================================================
+api/vendor/
+api/.env
+api/.env.local
+api/composer.phar
+
+# Uploaded User Data & PHI (Keep folders via .gitkeep & .htaccess)
+api/uploads/generated_pdfs/*
+!api/uploads/generated_pdfs/.htaccess
+!api/uploads/generated_pdfs/.gitkeep
+
+api/uploads/medical_proofs/*
+!api/uploads/medical_proofs/.htaccess
+!api/uploads/medical_proofs/.gitkeep
+
+api/uploads/profiles/*
+!api/uploads/profiles/.gitkeep
+
+api/uploads/signatures/*
+!api/uploads/signatures/.gitkeep
+
+# ==============================================================================
+# Frontend (React / Vite)
+# ==============================================================================
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/*.local
