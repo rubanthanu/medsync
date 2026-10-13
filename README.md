@@ -6,18 +6,22 @@
 ![React Version](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-10.4%2B-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-uwumedsync.xo.je-00C853?style=for-the-badge&logo=googlechrome&logoColor=white)](https://uwumedsync.xo.je)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge)
 
 **A modern, secure, full-stack digital medical center management platform featuring automated queue allocation, appointment scheduling, digital prescription issuance, and Protected Health Information (PHI) access control.**
 
-[Key Features](#-key-features) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Security](#-security--compliance) • [API Reference](#-api-routing-overview)
+### 🌐 [**Visit Live Application: https://uwumedsync.xo.je**](https://uwumedsync.xo.je)
+
+[Live Demo](https://uwumedsync.xo.je) • [Key Features](#-key-features) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Security](#-security--compliance)
 
 </div>
 
 ---
 
 ## 📖 Overview
+
+> 🚀 **Live Deployment:** MedSync is actively deployed and accessible at **[https://uwumedsync.xo.je](https://uwumedsync.xo.je)**.
 
 **MedSync** streamlines medical operations for campus clinics, university health centres, and outpatient clinics. It bridges patients, doctors, receptionists, and medical administrators through real-time queue synchronization, verified medical certificates, digital prescription rendering, and health announcements.
 
