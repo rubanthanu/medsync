@@ -1,0 +1,4 @@
+# Block direct Apache access to generated PDF files (certificates & prescriptions).
+# Files are served exclusively via the authenticated /certificate/download_file endpoint.
+Order deny,allow
+Deny from all

@@ -21,7 +21,7 @@ const HealthPostsManager = ({ posts, newPost, setNewPost, onCreatePost, onDelete
                         </div>
                         <div className="mb-3">
                             <label className="form-label fw-semibold text-secondary small">IMAGE URL (OPTIONAL)</label>
-                            <input type="text" className="form-control rounded-pill px-3" placeholder="https://unsplash.com/..." value={newPost.image_url} onChange={e => setNewPost({...newPost, image_url: e.target.value})} />
+                            <input type="text" className="form-control rounded-pill px-3" placeholder="https://images.unsplash.com/photo-..." value={newPost.image_url} onChange={e => setNewPost({...newPost, image_url: e.target.value})} />
                             <div className="form-text text-muted small px-2">Leave blank to use category default illustration.</div>
                         </div>
                         <div className="mb-3">

@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../repositories/CertificateRepository.php';
 require_once __DIR__ . '/../repositories/PatientRepository.php';
 require_once __DIR__ . '/../repositories/DoctorRepository.php';
+require_once __DIR__ . '/../repositories/PrescriptionRepository.php';
 require_once __DIR__ . '/../services/NotificationService.php';
 require_once __DIR__ . '/../helpers/PDFHelper.php';
 require_once __DIR__ . '/../helpers/UploadHelper.php';
@@ -14,6 +15,7 @@ class CertificateService {
     private $certificateRepo;
     private $patientRepo;
     private $doctorRepo;
+    private $prescriptionRepo;
     private $notificationService;
 
     public function __construct($conn) {
@@ -21,6 +23,7 @@ class CertificateService {
         $this->certificateRepo = new CertificateRepository($conn);
         $this->patientRepo = new PatientRepository($conn);
         $this->doctorRepo = new DoctorRepository($conn);
+        $this->prescriptionRepo = new PrescriptionRepository($conn);
         $this->notificationService = new NotificationService($conn);
     }
 
@@ -77,6 +80,18 @@ class CertificateService {
             $gender = $cert['gender'] ?? 'N/A';
             $dob_str = $cert['date_of_birth'] ?? 'N/A';
             $issue_date = date('Y-m-d', strtotime($cert['reviewed_at'] ?? 'now'));
+
+            // ── Sanitize all patient-controlled fields before HTML embedding ──
+            $safe_patient_name   = htmlspecialchars($cert['patient_name'] ?? '', ENT_QUOTES, 'UTF-8');
+            $safe_reason         = htmlspecialchars($cert['reason'] ?? '', ENT_QUOTES, 'UTF-8');
+            $safe_start_date     = htmlspecialchars($cert['start_date'] ?? '', ENT_QUOTES, 'UTF-8');
+            $safe_end_date       = htmlspecialchars($cert['end_date'] ?? '', ENT_QUOTES, 'UTF-8');
+            $safe_gender         = htmlspecialchars($gender, ENT_QUOTES, 'UTF-8');
+            $safe_dob            = htmlspecialchars($dob_str, ENT_QUOTES, 'UTF-8');
+            $safe_issue_date     = htmlspecialchars($issue_date, ENT_QUOTES, 'UTF-8');
+            $safe_age            = (int)$age; // integer — inherently safe
+            $safe_doctor_name    = htmlspecialchars($doc_details['doctor_name'] ?? 'Doctor', ENT_QUOTES, 'UTF-8');
+            $safe_specialization = htmlspecialchars($doc_details['specialization'] ?? 'Specialist', ENT_QUOTES, 'UTF-8');
 
             // Generate PDF with the exact same HTML template
             $html = "
@@ -167,24 +182,24 @@ class CertificateService {
                         <div class='certify-intro'>This is to certify that</div>
                         
                         <div class='field-row'>
-                            Mr. / Ms. / Mrs. <div class='field-line' style='min-width: 480px;'>{$cert['patient_name']}</div>
+                            Mr. / Ms. / Mrs. <div class='field-line' style='min-width: 480px;'>{$safe_patient_name}</div>
                         </div>
                         
                         <div class='field-row'>
-                            Age <div class='field-line' style='min-width: 80px;'>{$age} Years</div> 
+                            Age <div class='field-line' style='min-width: 80px;'>{$safe_age} Years</div> 
                             &nbsp;&nbsp;|&nbsp;&nbsp; 
-                            Gender <div class='field-line' style='min-width: 100px;'>{$gender}</div> 
+                            Gender <div class='field-line' style='min-width: 100px;'>{$safe_gender}</div> 
                             &nbsp;&nbsp;|&nbsp;&nbsp; 
-                            Date of Birth <div class='field-line' style='min-width: 130px;'>{$dob_str}</div>
+                            Date of Birth <div class='field-line' style='min-width: 130px;'>{$safe_dob}</div>
                         </div>
                         
                         <div class='main-content'>
-                            has been examined by me on <span class='field-line' style='min-width: 150px;'>{$issue_date}</span> and I certify that he / she is 
-                            suffering from <span class='field-line' style='width: 100%; display: block; margin-top: 10px; min-height: 25px;'>{$cert['reason']}</span>
+                            has been examined by me on <span class='field-line' style='min-width: 150px;'>{$safe_issue_date}</span> and I certify that he / she is 
+                            suffering from <span class='field-line' style='width: 100%; display: block; margin-top: 10px; min-height: 25px;'>{$safe_reason}</span>
                             <br>
                             <div style='margin-top: 15px;'>
                                 <strong>Advice / Remarks:</strong> 
-                                <span class='field-line' style='width: 100%; display: block; margin-top: 10px; min-height: 25px;'>Advised complete rest from {$cert['start_date']} to {$cert['end_date']}.</span>
+                                <span class='field-line' style='width: 100%; display: block; margin-top: 10px; min-height: 25px;'>Advised complete rest from {$safe_start_date} to {$safe_end_date}.</span>
                             </div>
                             
                             <p style='font-size: 15px; margin-top: 40px; color: #555; text-align: center; border-top: 1px dotted #ccc; padding-top: 20px;'>
@@ -206,8 +221,8 @@ class CertificateService {
                             <div class='signature-box'>
                                 {$sig_html}
                                 <div class='signature-line'>
-                                    <p class='dr-name'>Dr. " . ($doc_details['doctor_name'] ?? 'Doctor') . "</p>
-                                    <p class='dr-meta'>MBBS, MD (" . ($doc_details['specialization'] ?? 'Specialist') . ")</p>
+                                    <p class='dr-name'>Dr. {$safe_doctor_name}</p>
+                                    <p class='dr-meta'>MBBS, MD ({$safe_specialization})</p>
                                     <p class='dr-meta'>Reg. No: PMC-".rand(1000, 9999)."</p>
                                     <p style='color: #008080; font-weight: bold; font-size: 15px; margin-top: 5px; font-family: sans-serif;'>Consultant Physician</p>
                                 </div>
@@ -241,6 +256,41 @@ class CertificateService {
 
     public function getPatientCertificates($userId) {
         return $this->certificateRepo->getByPatientUserId($userId);
+    }
+
+    /**
+     * Verifies that the authenticated user has permission to download the requested file.
+     * Throws PermissionException if access is denied, NotFoundException if file record not found.
+     */
+    public function authorizeFileAccess($userId, $roleId, $fileType, $filename) {
+        // Admins (1) and Doctors (2) can access all files
+        if ($roleId == 1 || $roleId == 2) return;
+
+        if ($fileType === 'cert') {
+            // Patient can only download their own approved certificate
+            $patient = $this->patientRepo->findByUserId($userId);
+            $record  = $this->certificateRepo->findByCertPdf($filename);
+            if (!$record || !$patient || $record['patient_id'] != $patient['patient_id']) {
+                throw new PermissionException("Access denied to this file.");
+            }
+        } elseif ($fileType === 'proof') {
+            // Receptionist (role 3) can view all proofs; patients can only view their own
+            if ($roleId == 3) return;
+            $patient = $this->patientRepo->findByUserId($userId);
+            $record  = $this->certificateRepo->findByProofDocument($filename);
+            if (!$record || !$patient || $record['patient_id'] != $patient['patient_id']) {
+                throw new PermissionException("Access denied to this file.");
+            }
+        } elseif ($fileType === 'presc') {
+            // Patient can only download their own prescription
+            $patient = $this->patientRepo->findByUserId($userId);
+            $record  = $this->prescriptionRepo->findByPdfFilename($filename);
+            if (!$record || !$patient || $record['patient_id'] != $patient['patient_id']) {
+                throw new PermissionException("Access denied to this file.");
+            }
+        } else {
+            throw new PermissionException("Invalid file type.");
+        }
     }
 }
 ?>

@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as authService from '../../services/authService';
 import logo from '../../assets/logo.png';
+import PasswordInput from '../../components/PasswordInput';
+import PasswordStrengthIndicator from '../../components/PasswordStrengthIndicator';
+import { isPasswordValid } from '../../utils/passwordValidator';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -9,12 +12,20 @@ const Register = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const passwordValid = isPasswordValid(formData.password);
+    const confirmMatch = formData.confirm_password.length > 0 && formData.password === formData.confirm_password;
+    const confirmMismatch = formData.confirm_password.length > 0 && formData.password !== formData.confirm_password;
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         
+        if (!passwordValid) {
+            return setError('Password does not meet the security requirements.');
+        }
+
         if (formData.password !== formData.confirm_password) {
-            return setError('Passwords do not match');
+            return setError('Passwords do not match.');
         }
 
         setLoading(true);
@@ -66,28 +77,46 @@ const Register = () => {
                                     required
                                 />
                             </div>
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">Password</label>
-                                <input 
-                                    type="password" 
-                                    className="form-control" 
-                                    value={formData.password} 
-                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="form-label fw-semibold">Confirm Password</label>
-                                <input 
-                                    type="password" 
-                                    className="form-control" 
-                                    value={formData.confirm_password} 
-                                    onChange={(e) => setFormData({...formData, confirm_password: e.target.value})}
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="btn btn-primary w-100 py-2 rounded-pill mb-3" disabled={loading}>
-                                {loading ? 'Registering...' : 'Register Account'}
+                            
+                            <PasswordInput
+                                label="Password"
+                                id="register-password"
+                                name="password"
+                                value={formData.password}
+                                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                placeholder="Create a strong password"
+                                required
+                                autoComplete="new-password"
+                            />
+
+                            <PasswordStrengthIndicator password={formData.password} />
+
+                            <PasswordInput
+                                label="Confirm Password"
+                                id="register-confirm-password"
+                                name="confirm_password"
+                                value={formData.confirm_password}
+                                onChange={(e) => setFormData({...formData, confirm_password: e.target.value})}
+                                placeholder="Re-enter your password"
+                                required
+                                error={confirmMismatch ? 'Passwords do not match.' : ''}
+                                helperText={confirmMatch ? '✓ Passwords match' : ''}
+                                autoComplete="new-password"
+                            />
+
+                            <button 
+                                type="submit" 
+                                className="btn btn-primary w-100 py-2 rounded-pill mb-3 mt-2" 
+                                disabled={loading || !passwordValid || formData.password !== formData.confirm_password}
+                            >
+                                {loading ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Registering Account...
+                                    </>
+                                ) : (
+                                    'Register Account'
+                                )}
                             </button>
                             <div className="text-center">
                                 <span className="text-muted">Already have an account? </span>

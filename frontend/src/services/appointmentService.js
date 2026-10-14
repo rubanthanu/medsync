@@ -1,8 +1,11 @@
 import api from '../api/axios';
 
-export const getWindows = (date) => {
-    const params = date ? `?date=${date}` : '';
-    return api.get(`/appointment/get_windows${params}`);
+export const getWindows = (date, forBooking = false) => {
+    const params = new URLSearchParams();
+    if (date) params.append('date', date);
+    if (forBooking) params.append('for_booking', '1');
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    return api.get(`/appointment/get_windows${queryString}`);
 };
 
 export const bookAppointment = (window_id, appointment_date) => api.post('/appointment/book', { window_id, appointment_date });

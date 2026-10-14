@@ -12,21 +12,25 @@ class UserValidator {
         self::validatePhoneFormat($data->phone, "Phone number");
         self::validatePhoneFormat($data->emergency_contact_phone, "Emergency contact phone");
         self::validateAddressFormat($data->address);
+        self::validateAge18($data->date_of_birth);
     }
 
     public static function validateUpdateProfile($data) {
     
-          if (isset($data->full_name) && !empty($data->full_name)) {
+        if (isset($data->full_name) && !empty($data->full_name)) {
             self::validateFullNameFormat($data->full_name, "Full Name");
         }
-    if (isset($data->phone) && !empty($data->phone)) {
+        if (isset($data->phone) && !empty($data->phone)) {
             self::validatePhoneFormat($data->phone, "Phone number");
         }
         if (isset($data->emergency_contact_phone) && !empty($data->emergency_contact_phone)) {
             self::validatePhoneFormat($data->emergency_contact_phone, "Emergency contact phone");
         }
-         if (isset($data->address) && !empty($data->address)) {
+        if (isset($data->address) && !empty($data->address)) {
             self::validateAddressFormat($data->address);
+        }
+        if (isset($data->date_of_birth) && !empty($data->date_of_birth)) {
+            self::validateAge18($data->date_of_birth);
         }
     }
 
@@ -54,6 +58,30 @@ class UserValidator {
         }
         if (preg_match('/^[0-9]+$/', preg_replace('/\s+/', '', $trimmed))) {
             throw new ValidationException("Address cannot contain only numbers.");
+        }
+    }
+
+    private static function validateAge18($dob) {
+        $trimmedDob = trim($dob);
+        if ($trimmedDob === '') {
+            return;
+        }
+
+        $dobTime = strtotime($trimmedDob);
+        if (!$dobTime) {
+            throw new ValidationException("Invalid date of birth format.");
+        }
+
+        $dobDate = new DateTime($trimmedDob);
+        $today = new DateTime('today');
+
+        if ($dobDate > $today) {
+            throw new ValidationException("Date of birth cannot be in the future.");
+        }
+
+        $age = $today->diff($dobDate)->y;
+        if ($age < 18) {
+            throw new ValidationException("You must be at least 18 years old.");
         }
     }
 }

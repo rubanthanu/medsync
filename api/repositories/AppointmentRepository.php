@@ -6,11 +6,12 @@ class AppointmentRepository {
         $this->conn = $conn;
     }
 
-   public function getWindows($date){
-$query ="SELECT aw.*,
-       (SELECT COUNT(*) FROM appointments a WHERE a.window_id=aw.window_id AND a.appointment_date = :date AND a.appointment_status IN ('Booked', 'Walk-In', 'Current')) as booked_count,
-                  (SELECT COUNT(*) FROM active_windows act WHERE act.window_id = aw.window_id AND act.appointment_date = :date AND act.status = 'Ongoing') as is_active 
-                  FROM appointment_windows aw";
+    public function getWindows($date){
+        $query ="SELECT aw.*,
+                 (SELECT COUNT(*) FROM appointments a WHERE a.window_id=aw.window_id AND a.appointment_date = :date AND a.appointment_status IN ('Booked', 'Walk-In', 'Current')) as booked_count,
+                 (SELECT COUNT(*) FROM active_windows act WHERE act.window_id = aw.window_id AND act.appointment_date = :date AND act.status = 'Ongoing') as is_active,
+                 (SELECT COUNT(*) FROM active_windows act WHERE act.window_id = aw.window_id AND act.appointment_date = :date AND act.status = 'Finished') as is_finished
+                 FROM appointment_windows aw";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":date", $date);
         $stmt->execute();
@@ -173,6 +174,15 @@ $query ="SELECT aw.*,
         return $stmt->rowCount() > 0;
     }
 
+    public function isWindowFinished($windowId, $date) {
+        $query = "SELECT active_id FROM active_windows WHERE window_id = :window_id AND appointment_date = :date AND status = 'Finished'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":window_id", $windowId);
+        $stmt->bindParam(":date", $date);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
     public function hasAnyActiveWindow($doctorId, $date) {
         $query = "SELECT active_id, window_id FROM active_windows 
                   WHERE doctor_id = :doctor_id AND appointment_date = :date AND status = 'Ongoing'
@@ -219,6 +229,23 @@ $query ="SELECT aw.*,
         return $stmt->fetch(PDO::FETCH_ASSOC)['current_count'];
     }
 
+    /**
+     * Returns the highest queue_number ever assigned for this window/date.
+     * Uses MAX instead of COUNT to prevent duplicate numbers after cancellations.
+     * Called inside a transaction with FOR UPDATE to prevent race conditions.
+     */
+    public function getMaxQueueForUpdate($windowId, $date) {
+        $query = "SELECT COALESCE(MAX(queue_number), 0) as max_queue 
+                  FROM appointments 
+                  WHERE window_id = :window_id AND appointment_date = :date
+                  FOR UPDATE";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":window_id", $windowId);
+        $stmt->bindParam(":date", $date);
+        $stmt->execute();
+        return (int)$stmt->fetch(PDO::FETCH_ASSOC)['max_queue'];
+    }
+
     public function getPatientQueuePosition($userId, $windowId, $date) {
         $query = "SELECT a.appointment_id, a.queue_number, a.appointment_status, a.estimated_time,
                          (SELECT COUNT(*) FROM appointments 
@@ -249,6 +276,18 @@ $query ="SELECT aw.*,
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function markExpiredAsAbsent() {
+        $query = "UPDATE appointments a
+                  JOIN appointment_windows aw ON a.window_id = aw.window_id
+                  SET a.appointment_status = 'Absent'
+                  WHERE a.appointment_status IN ('Booked', 'Walk-In')
+                  AND (
+                      a.appointment_date < CURDATE()
+                      OR (a.appointment_date = CURDATE() AND aw.end_time <= CURTIME())
+                  )";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
 }
-   
 ?>

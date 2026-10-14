@@ -23,7 +23,7 @@ class AppointmentService {
         $this->notificationService = new NotificationService($conn);
     }
 
-    public function getWindows($date, $roleId) {
+    public function getWindows($date, $roleId, $forBooking = false) {
         // Validate date range (today + 2 days only)
         $today = date('Y-m-d');
         $max_date = date('Y-m-d', strtotime('+2 days'));
@@ -46,9 +46,12 @@ class AppointmentService {
             $window['status'] = $window['available_slots'] <= 0 ? 'Full' : 'Available';
 
             // Patients should not see windows that have already started today.
-            // unless the window is currently active (ongoing) for live queue tracking.
+            // When booking, never show windows that have already started.
+            // For live queue tracking, allow ongoing active windows.
             if ($roleId == 4 && $date == $today && $window['start_time'] <= $current_time) {
-                if ($window['is_active'] > 0) {
+                if ($forBooking) {
+                    continue;
+                } else if ($window['is_active'] > 0) {
                     $window['status'] = 'Full';
                 } else {
                     continue;
@@ -123,11 +126,14 @@ class AppointmentService {
                 throw new AppointmentException("This appointment window has already passed for today.");
             }
 
-            // Get next queue number (locked to prevent race condition)
-            $current_count = $this->appointmentRepo->getBookedCountForUpdate($windowId, $appointmentDate);
-            $queue_number = $current_count + 1;
+            // Get next queue number using MAX (not COUNT) to prevent collision on cancellations.
+            // MAX gives the highest number ever issued; cancelled slots don't lower the baseline.
+            $max_queue = $this->appointmentRepo->getMaxQueueForUpdate($windowId, $appointmentDate);
+            $queue_number = $max_queue + 1;
 
-            if ($queue_number > $window['max_slots']) {
+            // Separately check active count to enforce slot limit
+            $active_count = $this->appointmentRepo->getBookedCountForUpdate($windowId, $appointmentDate);
+            if ($active_count >= $window['max_slots']) {
                 throw new AppointmentException("This appointment window is full for selected date.");
             }
 
@@ -151,26 +157,37 @@ class AppointmentService {
             $this->notificationService->create($notifyUserId, $msg, 'Appointment');
 
             // Email
+            $patientRecord = $this->patientRepo->findById($patientId);
+            $patientName = !empty($patientRecord['full_name']) ? $patientRecord['full_name'] : 'Patient';
+
+            $box = EmailHelper::createInfoTableBox([
+                'Appointment Date' => htmlspecialchars($appointmentDate),
+                'Time Window' => htmlspecialchars($window_time),
+                'Queue Number' => "<span style='color: #198754; font-size: 16px;'>#{$queue_number}</span>",
+                'Estimated Time' => htmlspecialchars($formatted_time)
+            ], '#198754', '#f0fdf4');
+
             if ($isSelfBooking) {
                 $subject = "UWU MedSync - Appointment Confirmation";
-                $body = "<h2>Appointment Confirmed!</h2>
-                         <p>Date: <strong>{$appointmentDate}</strong></p>
-                         <p>Time Window: <strong>{$window_time}</strong></p>
-                         <p>Queue Number: <strong>{$queue_number}</strong></p>
-                         <p>Estimated Time: <strong>{$formatted_time}</strong></p>
-                         <p></p>";
+                $mainText = "<p>Your appointment has been successfully booked at the UWU Medical Center. Below are your confirmed appointment details:</p>";
+                $secText = "<p>Please arrive at the medical center a few minutes before your estimated time. You can monitor your live queue position anytime on your MedSync dashboard.</p>";
+                $body = EmailHelper::wrapCard("Appointment Confirmed!", $patientName, $mainText, $box, $secText, "#198754");
             } else {
                 $subject = "UWU MedSync - Appointment Booked by Clinic";
-                $body = "<h2>Appointment Confirmed!</h2>
-                         <p>A clinic staff member has scheduled an appointment for you.</p>
-                         <p>Date: <strong>{$appointmentDate}</strong></p>
-                         <p>Time Window: <strong>{$window_time}</strong></p>
-                         <p>Queue Number: <strong>{$queue_number}</strong></p>
-                         <p>Estimated Time: <strong>{$formatted_time}</strong></p>";
+                $mainText = "<p>A clinic staff member has scheduled an appointment for you at the UWU Medical Center. Below are your appointment details:</p>";
+                $secText = "<p>Please arrive on time. If you need to reschedule or have questions, please contact the clinic or check your MedSync portal.</p>";
+                $body = EmailHelper::wrapCard("Appointment Confirmed!", $patientName, $mainText, $box, $secText, "#198754");
             }
-            EmailHelper::sendEmail($notifyEmail, $subject, $body);
 
+            // Commit transaction first so DB locks are released immediately
             $this->conn->commit();
+
+            // Send email after successful commit without blocking or rolling back DB
+            try {
+                EmailHelper::sendEmail($notifyEmail, $subject, $body);
+            } catch (\Throwable $e) {
+                error_log("Failed to send booking email: " . $e->getMessage());
+            }
 
             return [
                 'queue_number' => $queue_number,
@@ -193,11 +210,12 @@ class AppointmentService {
         $timePerPatient = $maxAllowed > 0 ? $totalMinutes / $maxAllowed : 0;
         $bufferMinutes = $timePerPatient / 2;
         $offsetMinutes = round(($queueNumber - 1) * $timePerPatient - $bufferMinutes);
-        $offsetMinutes = max(0, $offsetMinutes); // Prevent negative estimated times
         return date('H:i:s', $startTime + ($offsetMinutes * 60));
     }
 
     public function getPatientAppointments($userId) {
+        // Auto-mark any past Booked/Walk-In appointments as Absent
+        $this->appointmentRepo->markExpiredAsAbsent();
         return $this->appointmentRepo->getPatientAppointments($userId);
     }
 
@@ -235,10 +253,14 @@ class AppointmentService {
 
             // Send email
             $subject = "UWU MedSync - Appointment Cancellation Notice";
-            $body = "<h2>Appointment Cancelled</h2><p>Dear {$apt['full_name']},</p>
-                     <p>We regret to inform you that your appointment on <strong>{$leaveDate}</strong> has been cancelled due to doctor leave.</p>
-                     <p>We suggest you rebook your appointment for another available date.</p>
-                     <p>Sorry for the inconvenience.</p>";
+            $mainText = "<p>We regret to inform you that your appointment scheduled for <strong>" . htmlspecialchars($leaveDate) . "</strong> has been cancelled due to the doctor being on leave.</p>";
+            $box = EmailHelper::createNoticeBox(
+                "Please log in to your UWU MedSync dashboard to rebook your appointment for another available date.",
+                "Action Required:"
+            );
+            $secText = "<p>We sincerely apologize for any inconvenience caused. For urgent medical concerns, please contact the clinic reception directly.</p>";
+            $body = EmailHelper::wrapCard("Appointment Cancelled", $apt['full_name'] ?? 'Patient', $mainText, $box, $secText, "#dc3545");
+
             EmailHelper::sendEmail($apt['email'], $subject, $body);
 
             // Create Notification

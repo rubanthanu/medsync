@@ -16,8 +16,9 @@ const ReceptionistDashboard = () => {
     const [selectedWindow, setSelectedWindow] = useState(null);
     const [queue, setQueue] = useState([]);
     const [activeTab, setActiveTab] = useState('queue');
-    const [bookingData, setBookingData] = useState({ email: '', window_id: '', appointment_date: getTodayISO() });
+    const [bookingData, setBookingData] = useState({ email: '', window_id: '', appointment_date: '' });
     const [bookingMsg, setBookingMsg] = useState({ text: '', type: '' });
+    const [isSubmitting, setIsSubmitting] = useState(false);
     
     useEffect(() => {
         fetchWindows();
@@ -29,7 +30,6 @@ const ReceptionistDashboard = () => {
             setWindows(res.data);
             if(res.data.length > 0 && !selectedWindow) {
                 handleSelectWindow(res.data[0]);
-                setBookingData(prev => ({ ...prev, window_id: res.data[0].window_id }));
             }
         } catch (err) {
             console.error(err);
@@ -58,16 +58,19 @@ const ReceptionistDashboard = () => {
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         setBookingMsg({ text: 'Processing...', type: 'info' });
         try {
             await appointmentService.staffBook(bookingData);
             setBookingMsg({ text: 'Booking successful!', type: 'success' });
-            setBookingData({ ...bookingData, email: '' });
+            setBookingData({ email: '', window_id: '', appointment_date: '' });
             if (activeTab === 'queue' && selectedWindow?.window_id == bookingData.window_id) {
                 handleSelectWindow(selectedWindow);
             }
         } catch (err) {
             setBookingMsg({ text: err.response?.data?.message || 'Error booking appointment', type: 'danger' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -84,6 +87,7 @@ const ReceptionistDashboard = () => {
                         setBookingData={setBookingData}
                         onSubmit={handleBookingSubmit}
                         bookingMsg={bookingMsg}
+                        isSubmitting={isSubmitting}
                     />
                 </div>
                 

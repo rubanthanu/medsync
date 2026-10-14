@@ -1,11 +1,29 @@
 import { getTodayISO, getMaxDateISO } from '../../utils/dateUtils';
 
-const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, bookingMsg }) => {
+const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, bookingMsg, isSubmitting }) => {
     return (
-        <div className="card border-0 shadow-sm rounded-4 " style={{ top: '20px' }}>
-            <div className="card-header bg-white border-bottom-0 pt-4 px-4 pb-2">
-                <h5 className="fw-bold mb-0">Quick Booking</h5>
-                <small className="text-muted">Register walk-in or manual booking</small>
+        <div className="card border-0 shadow-sm rounded-4 overflow-hidden" style={{ top: '20px' }}>
+            <div className="card-header border-0 p-0">
+                <div style={{
+                    background: 'linear-gradient(135deg, #dbeafe 0%, #eff6ff 60%, #e0f2fe 100%)',
+                    padding: '20px 24px 18px',
+                }}>
+                    <div className="d-flex align-items-center gap-2 mb-1">
+                        <div style={{
+                            width: 34, height: 34, borderRadius: '10px',
+                            background: 'rgba(37,99,235,0.12)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            flexShrink: 0
+                        }}>
+                            <i className="bi bi-calendar2-plus" style={{ fontSize: '1rem', color: '#1d4ed8' }}></i>
+                        </div>
+                        <h5 className="fw-bold mb-0" style={{ color: '#1e3a8a' }}>Quick Booking</h5>
+                    </div>
+                    <small style={{ color: '#3b82f6', fontSize: '0.8rem' }}>
+                        Register walk-in or manual booking
+                    </small>
+                </div>
+                <div style={{ height: 3, background: 'linear-gradient(90deg, #1d4ed8, #60a5fa, #e0f2fe)' }} />
             </div>
             <div className="card-body p-4">
                 {bookingMsg.text && (
@@ -46,7 +64,7 @@ const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, book
                         <label className="form-label small fw-bold">DATE</label>
                         <input 
                             type="date" 
-                            className="form-control border-0 bg-light"
+                            className="form-control border-0 bg-light" 
                             value={bookingData.appointment_date}
                             min={getTodayISO()}
                             max={getMaxDateISO(2)}
@@ -54,8 +72,19 @@ const QuickBookingForm = ({ windows, bookingData, setBookingData, onSubmit, book
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary w-100 rounded-pill py-2 fw-bold mt-2 shadow-sm">
-                        Book Appointment
+                    <button 
+                        type="submit" 
+                        className="btn btn-primary w-100 rounded-pill py-2 fw-bold mt-2 shadow-sm"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Booking...
+                            </>
+                        ) : (
+                            'Book Appointment'
+                        )}
                     </button>
                 </form>
             </div>

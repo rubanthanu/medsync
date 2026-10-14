@@ -1,24 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as certificateService from '../../services/certificateService';
 import * as prescriptionService from '../../services/prescriptionService';
 import { getCertificatePdfUrl, getPrescriptionPdfUrl } from '../../utils/fileUtils';
+import { getTodayISO, getPastDateISO } from '../../utils/dateUtils';
+
+const CERTS_PER_PAGE = 4;
+const PRESCRIPTIONS_PER_PAGE = 4;
 
 const Certificates = () => {
     const [formData, setFormData] = useState({ start_date: '', end_date: '', reason: '' });
     const [proofFile, setProofFile] = useState(null);
+    const fileInputRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
     // Documents list states
     const [certificates, setCertificates] = useState([]);
     const [prescriptions, setPrescriptions] = useState([]);
+    const [visibleCerts, setVisibleCerts] = useState(CERTS_PER_PAGE);
+    const [visiblePrescriptions, setVisiblePrescriptions] = useState(PRESCRIPTIONS_PER_PAGE);
     const [activeTab, setActiveTab] = useState('request'); // 'request', 'documents'
 
-    useEffect(() => {
-        if (activeTab === 'documents') {
-            fetchDocuments();
-        }
-    }, [activeTab]);
+    const todayISO = getTodayISO();
+    const minStartDate = getPastDateISO(14); // 2 weeks before today
 
     const fetchDocuments = async () => {
         try {
@@ -34,9 +38,26 @@ const Certificates = () => {
         }
     };
 
+    useEffect(() => {
+        if (activeTab === 'documents') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            fetchDocuments();
+        }
+    }, [activeTab]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage({ type: '', text: '' });
+
+        if (formData.start_date < minStartDate) {
+            setMessage({ type: 'danger', text: 'Start date cannot be more than 2 weeks before today.' });
+            return;
+        }
+
+        if (formData.start_date > todayISO) {
+            setMessage({ type: 'danger', text: 'Start date cannot be in the future.' });
+            return;
+        }
 
         if (formData.start_date && formData.end_date && formData.start_date > formData.end_date) {
             setMessage({ type: 'danger', text: 'Start date cannot be after end date.' });
@@ -56,6 +77,7 @@ const Certificates = () => {
             setMessage({ type: 'success', text: 'Certificate request submitted successfully.' });
             setFormData({ start_date: '', end_date: '', reason: '' });
             setProofFile(null);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (err) {
             setMessage({ type: 'danger', text: err.response?.data?.message || 'Failed to submit request.' });
         } finally {
@@ -102,7 +124,8 @@ const Certificates = () => {
                                             type="date" 
                                             className="form-control rounded-pill px-3" 
                                             value={formData.start_date} 
-                                            max={formData.end_date || undefined}
+                                            min={minStartDate}
+                                            max={formData.end_date && formData.end_date < todayISO ? formData.end_date : todayISO}
                                             onChange={e => {
                                                 const newStart = e.target.value;
                                                 setFormData(prev => ({
@@ -113,6 +136,7 @@ const Certificates = () => {
                                             }} 
                                             required 
                                         />
+                                      
                                     </div>
                                     <div className="col-12 col-sm-6">
                                         <label className="form-label fw-semibold text-secondary small">END DATE</label>
@@ -120,7 +144,7 @@ const Certificates = () => {
                                             type="date" 
                                             className="form-control rounded-pill px-3" 
                                             value={formData.end_date} 
-                                            min={formData.start_date || undefined}
+                                            min={formData.start_date || minStartDate}
                                             onChange={e => setFormData({ ...formData, end_date: e.target.value })} 
                                             required 
                                         />
@@ -132,7 +156,7 @@ const Certificates = () => {
                                 </div>
                                 <div className="mb-4">
                                     <label className="form-label fw-semibold text-secondary small">UPLOAD MEDICAL PROOF (PDF/IMAGE)</label>
-                                    <input type="file" className="form-control rounded-pill px-3" accept=".pdf,image/*" onChange={e => setProofFile(e.target.files[0])} required />
+                                    <input ref={fileInputRef} type="file" className="form-control rounded-pill px-3" accept=".pdf,image/*" onChange={e => setProofFile(e.target.files[0])} required />
                                     <div className="form-text text-muted small px-2">Please upload a valid scan/photo of your clinical prescription or report.</div>
                                 </div>
                                 <button type="submit" className="btn btn-primary rounded-pill px-5 py-2 w-100 w-sm-auto shadow-sm fw-bold hover-grow" disabled={loading}>
@@ -161,33 +185,52 @@ const Certificates = () => {
                                 <i className="bi bi-file-earmark-medical text-primary me-2"></i> Approved Certificates
                             </h4>
                             {certificates.length > 0 ? (
-                                <div className="d-flex flex-column gap-3">
-                                    {certificates.map(cert => (
-                                        <div key={cert.certificate_id} className="card border-0 bg-light p-3 rounded-4 shadow-sm small hover-grow">
-                                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <span className={`badge rounded-pill px-3 py-1 fw-semibold ${cert.status === 'Approved' ? 'bg-success-subtle text-success' : (cert.status === 'Pending' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger')}`}>
-                                                    {cert.status}
-                                                </span>
-                                                <span className="text-muted small">{new Date(cert.requested_at).toLocaleDateString()}</span>
-                                            </div>
-                                            <p className="mb-1"><strong>Period:</strong> {cert.start_date} to {cert.end_date}</p>
-                                            <p className="mb-1 text-muted"><strong>Reason:</strong> {cert.reason}</p>
-                                            {cert.doctor_name && <p className="mb-1 text-muted"><strong>Reviewed By:</strong> Dr. {cert.doctor_name}</p>}
-                                            {cert.rejection_reason && <p className="mb-1 text-danger"><strong>Rejection Reason:</strong> {cert.rejection_reason}</p>}
+                                <>
+                                    <div className="d-flex flex-column gap-3">
+                                        {certificates.slice(0, visibleCerts).map(cert => (
+                                            <div key={cert.certificate_id} className="card border-0 bg-light p-3 rounded-4 shadow-sm small hover-grow">
+                                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                                    <span className={`badge rounded-pill px-3 py-1 fw-semibold ${cert.status === 'Approved' ? 'bg-success-subtle text-success' : (cert.status === 'Pending' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger')}`}>
+                                                        {cert.status}
+                                                    </span>
+                                                    <span className="text-muted small">{new Date(cert.requested_at).toLocaleDateString()}</span>
+                                                </div>
+                                                <p className="mb-1"><strong>Period:</strong> {cert.start_date} to {cert.end_date}</p>
+                                                <p className="mb-1 text-muted"><strong>Reason:</strong> {cert.reason}</p>
+                                                {cert.doctor_name && <p className="mb-1 text-muted"><strong>Reviewed By:</strong> Dr. {cert.doctor_name}</p>}
+                                                {cert.rejection_reason && <p className="mb-1 text-danger"><strong>Rejection Reason:</strong> {cert.rejection_reason}</p>}
 
-                                            {cert.status === 'Approved' && cert.certificate_pdf && (
-                                                <a
-                                                    href={getCertificatePdfUrl(cert.certificate_pdf)}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="btn btn-outline-primary btn-sm rounded-pill mt-3 shadow-sm text-decoration-none text-center"
-                                                >
-                                                    <i className="bi bi-download me-1"></i> Download Certificate PDF
-                                                </a>
-                                            )}
+                                                {cert.status === 'Approved' && cert.certificate_pdf && (
+                                                    <a
+                                                        href={getCertificatePdfUrl(cert.certificate_pdf)}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="btn btn-outline-primary btn-sm rounded-pill mt-3 shadow-sm text-decoration-none text-center"
+                                                    >
+                                                        <i className="bi bi-download me-1"></i> Download Certificate PDF
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {certificates.length > CERTS_PER_PAGE && (
+                                        <div className="text-center mt-3">
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-secondary rounded-pill px-4"
+                                                onClick={() => setVisibleCerts(prev =>
+                                                    prev >= certificates.length ? CERTS_PER_PAGE : prev + CERTS_PER_PAGE
+                                                )}
+                                            >
+                                                {visibleCerts >= certificates.length ? (
+                                                    <><i className="bi bi-chevron-up me-2"></i>Show Less</>
+                                                ) : (
+                                                    <><i className="bi bi-chevron-down me-2"></i>Show More ({certificates.length - visibleCerts} remaining)</>
+                                                )}
+                                            </button>
                                         </div>
-                                    ))}
-                                </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="text-center py-5 text-muted">
                                     <i className="bi bi-folder-x display-6"></i>
@@ -204,34 +247,53 @@ const Certificates = () => {
                                 <i className="bi bi-prescription text-success me-2"></i> My e-Prescriptions
                             </h4>
                             {prescriptions.length > 0 ? (
-                                <div className="d-flex flex-column gap-3">
-                                    {prescriptions.map(presc => (
-                                        <div key={presc.prescription_id} className="card border-0 bg-light p-3 rounded-4 shadow-sm small hover-grow">
-                                            <div className="d-flex justify-content-between mb-2">
-                                                <span className="fw-bold text-success">Prescription #{presc.prescription_id}</span>
-                                                <span className="text-muted small">{new Date(presc.created_at).toLocaleDateString()}</span>
-                                            </div>
-                                            <p className="mb-1"><strong>Doctor:</strong> Dr. {presc.doctor_name}</p>
-                                            <div className="bg-white p-2 rounded-3 my-2 small border-start border-success border-3">
-                                                <strong>Medicines:</strong>
-                                                <div className="text-secondary whitespace-pre">{presc.medicines}</div>
-                                                {presc.dosage && <div className="text-muted text-xs">Dosage: {presc.dosage}</div>}
-                                                {presc.instructions && <div className="text-muted text-xs">Instructions: {presc.instructions}</div>}
-                                            </div>
+                                <>
+                                    <div className="d-flex flex-column gap-3">
+                                        {prescriptions.slice(0, visiblePrescriptions).map(presc => (
+                                            <div key={presc.prescription_id} className="card border-0 bg-light p-3 rounded-4 shadow-sm small hover-grow">
+                                                <div className="d-flex justify-content-between mb-2">
+                                                    <span className="fw-bold text-success">Prescription #{presc.prescription_id}</span>
+                                                    <span className="text-muted small">{new Date(presc.created_at).toLocaleDateString()}</span>
+                                                </div>
+                                                <p className="mb-1"><strong>Doctor:</strong> Dr. {presc.doctor_name}</p>
+                                                <div className="bg-white p-2 rounded-3 my-2 small border-start border-success border-3">
+                                                    <strong>Medicines:</strong>
+                                                    <div className="text-secondary whitespace-pre">{presc.medicines}</div>
+                                                    {presc.dosage && <div className="text-muted text-xs">Dosage: {presc.dosage}</div>}
+                                                    {presc.instructions && <div className="text-muted text-xs">Instructions: {presc.instructions}</div>}
+                                                </div>
 
-                                            {presc.prescription_pdf && (
-                                                <a
-                                                    href={getPrescriptionPdfUrl(presc.prescription_pdf)}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="btn btn-outline-success btn-sm rounded-pill mt-2 shadow-sm text-decoration-none text-center"
-                                                >
-                                                    <i className="bi bi-download me-1"></i> Download Prescription PDF
-                                                </a>
-                                            )}
+                                                {presc.prescription_pdf && (
+                                                    <a
+                                                        href={getPrescriptionPdfUrl(presc.prescription_pdf)}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="btn btn-outline-success btn-sm rounded-pill mt-2 shadow-sm text-decoration-none text-center"
+                                                    >
+                                                        <i className="bi bi-download me-1"></i> Download Prescription PDF
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {prescriptions.length > PRESCRIPTIONS_PER_PAGE && (
+                                        <div className="text-center mt-3">
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-secondary rounded-pill px-4"
+                                                onClick={() => setVisiblePrescriptions(prev =>
+                                                    prev >= prescriptions.length ? PRESCRIPTIONS_PER_PAGE : prev + PRESCRIPTIONS_PER_PAGE
+                                                )}
+                                            >
+                                                {visiblePrescriptions >= prescriptions.length ? (
+                                                    <><i className="bi bi-chevron-up me-2"></i>Show Less</>
+                                                ) : (
+                                                    <><i className="bi bi-chevron-down me-2"></i>Show More ({prescriptions.length - visiblePrescriptions} remaining)</>
+                                                )}
+                                            </button>
                                         </div>
-                                    ))}
-                                </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="text-center py-5 text-muted">
                                     <i className="bi bi-folder-x display-6"></i>

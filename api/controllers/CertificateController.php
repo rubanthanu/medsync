@@ -86,5 +86,76 @@ class CertificateController extends BaseController {
             $this->handleException($e);
         }
     }
+
+    /**
+     * Authenticated file download endpoint.
+     * Route: GET /api/?request=certificate/download_file/{type}/{filename}
+     * Types: cert | proof | presc
+     * Requires an active user session; enforces per-role ownership rules.
+     */
+    public function download_file($fileType = null, $filename = null) {
+        try {
+            // Must be authenticated
+            $auth = AuthMiddleware::authenticate();
+
+            // Validate file type
+            $allowedTypes = ['cert', 'proof', 'presc'];
+            if (!in_array($fileType, $allowedTypes, true) || empty($filename)) {
+                http_response_code(400);
+                echo json_encode(["message" => "Invalid request."]);
+                return;
+            }
+
+            // Strict filename whitelist: only alphanumeric, underscore, hyphen, dot
+            if (!preg_match('/^[a-zA-Z0-9_\-\.]+$/', $filename)) {
+                http_response_code(400);
+                echo json_encode(["message" => "Invalid filename."]);
+                return;
+            }
+
+            // Map type to directory
+            $dirMap = [
+                'cert'  => __DIR__ . '/../uploads/generated_pdfs/',
+                'presc' => __DIR__ . '/../uploads/generated_pdfs/',
+                'proof' => __DIR__ . '/../uploads/medical_proofs/',
+            ];
+            $dir = $dirMap[$fileType];
+            $filepath = realpath($dir . $filename);
+
+            // Path traversal guard
+            if (!$filepath || strpos($filepath, realpath($dir)) !== 0) {
+                http_response_code(404);
+                echo json_encode(["message" => "File not found."]);
+                return;
+            }
+
+            // Authorization: verify the user owns or is permitted to access this file
+            $this->certificateService->authorizeFileAccess($auth->id, $auth->role_id, $fileType, $filename);
+
+            // Detect real MIME type — proof files can be JPG/PNG/PDF
+            $mimeType = 'application/octet-stream';
+            if (function_exists('finfo_open')) {
+                $finfo    = finfo_open(FILEINFO_MIME_TYPE);
+                $detected = finfo_file($finfo, $filepath);
+                finfo_close($finfo);
+                if ($detected) $mimeType = $detected;
+            } elseif (function_exists('mime_content_type')) {
+                $mimeType = mime_content_type($filepath);
+            }
+
+            // Stream file to client with correct MIME type
+            ob_end_clean();
+            header('Content-Description: File Transfer');
+            header('Content-Type: ' . $mimeType);
+            header('Content-Disposition: inline; filename="' . basename($filepath) . '"');
+            header('Content-Length: ' . filesize($filepath));
+            header('Cache-Control: private');
+            readfile($filepath);
+            exit();
+
+        } catch (Exception $e) {
+            $this->handleException($e);
+        }
+    }
 }
 ?>

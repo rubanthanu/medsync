@@ -23,11 +23,37 @@ const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('users');
     const { posts, newPost, setNewPost, handleCreatePost, handleDeletePost } = useHealthPosts();
 
-    const toggleStatus = async (user_id, current_status) => {
+    const toggleStatus = async (user_id, current_status, userName = '') => {
+        if (current_status === 'Active') {
+            const result = await Swal.fire({
+                title: 'Deactivate User?',
+                text: userName
+                    ? `Are you sure you want to deactivate ${userName}? An email notification will be sent, and they will not be able to log in.`
+                    : 'Are you sure you want to deactivate this user? An email notification will be sent, and they will not be able to log in.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, deactivate',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (!result.isConfirmed) return;
+        }
+
         const newStatus = current_status === 'Active' ? 'Blocked' : 'Active';
         try {
             await adminService.updateUserStatus(user_id, newStatus);
             fetchUsers();
+            Swal.fire({
+                icon: 'success',
+                title: newStatus === 'Blocked' ? 'Deactivated!' : 'Activated!',
+                text: newStatus === 'Blocked'
+                    ? `User ${userName ? `"${userName}" ` : ''}has been deactivated and notified via email.`
+                    : `User ${userName ? `"${userName}" ` : ''}has been activated successfully.`,
+                timer: 2000,
+                showConfirmButton: false
+            });
         } catch (err) {
             Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data?.message || 'Failed to update user status' });
         }
