@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/DatabaseInterface.php';
+require_once __DIR__ . '/../helpers/EnvHelper.php';
 
 class Database implements DatabaseInterface {
     private $host = "localhost";
@@ -9,10 +10,10 @@ class Database implements DatabaseInterface {
     public $conn;
 
     public function __construct() {
-        $this->host = getenv('DB_HOST') ?: (isset($_ENV['DB_HOST']) ? $_ENV['DB_HOST'] : $this->host);
-        $this->db_name = getenv('DB_NAME') ?: (isset($_ENV['DB_NAME']) ? $_ENV['DB_NAME'] : $this->db_name);
-        $this->username = getenv('DB_USER') ?: (isset($_ENV['DB_USER']) ? $_ENV['DB_USER'] : $this->username);
-        $this->password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : (isset($_ENV['DB_PASS']) ? $_ENV['DB_PASS'] : $this->password);
+        $this->host = EnvHelper::get('DB_HOST', $this->host);
+        $this->db_name = EnvHelper::get('DB_NAME', $this->db_name);
+        $this->username = EnvHelper::get('DB_USER', $this->username);
+        $this->password = EnvHelper::get('DB_PASS', $this->password);
     }
 
     public function getConnection() {
