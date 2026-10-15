@@ -3,20 +3,32 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/EnvHelper.php';
 
 class EmailHelper {
     public static function sendEmail($to, $subject, $body) {
         $mail = new PHPMailer(true);
         try {
-            $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'medsyncuwu@gmail.com';
-            $mail->Password   = 'xyhj xuli ymnm dqme';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = 465;
+            $host     = EnvHelper::get('SMTP_HOST', 'smtp.gmail.com');
+            $port     = (int) EnvHelper::get('SMTP_PORT', 465);
+            $username = EnvHelper::get('SMTP_USER', '');
+            $password = EnvHelper::get('SMTP_PASS', '');
+            $fromName = EnvHelper::get('SMTP_FROM_NAME', 'UWU MedSync');
 
-            $mail->setFrom('medsyncuwu@gmail.com', 'UWU MedSync');
+            if (empty($username) || empty($password)) {
+                error_log("EmailHelper: SMTP credentials are not configured in environment.");
+                return false;
+            }
+
+            $mail->isSMTP();
+            $mail->Host       = $host;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $username;
+            $mail->Password   = $password;
+            $mail->SMTPSecure = ($port === 465) ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = $port;
+
+            $mail->setFrom($username, $fromName);
             $mail->addAddress($to);
 
             $mail->isHTML(true);
@@ -26,6 +38,7 @@ class EmailHelper {
             $mail->send();
             return true;
         } catch (Exception $e) {
+            error_log("EmailHelper Error: " . $e->getMessage());
             return false;
         }
     }
