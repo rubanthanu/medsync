@@ -114,7 +114,7 @@ flowchart TD
 | Layer | Technologies |
 |---|---|
 | **Frontend** | React 19, Vite, Bootstrap 5.3, Bootstrap Icons, SweetAlert2, Axios, React Router v7 |
-| **Backend** | PHP 8.1+, RESTful API, Object-Oriented MVC Architecture |
+| **Backend** | PHP 8.1+, RESTful API, Layered Architecture (Controller-Service-Repository) |
 | **Database** | MySQL 5.7+ / MariaDB 10.4+, PDO with Prepared Statements |
 | **Document Engine** | Dompdf (Secure HTML-to-PDF generation with remote asset blocking) |
 | **Security** | Role-Based Access Control (RBAC), CSRF Double-Submit tokens, Bcrypt hashing, `.htaccess` PHI isolation |
